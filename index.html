@@ -7,22 +7,50 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Hevjîn - Dein Weg zur Liebe">
 
-  <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Hevjîn">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
   <title>Hevjîn</title>
   <link rel="manifest" href="manifest.json">
 
   <script>
-    // With usePathUrlStrategy(), Flutter no longer uses # for routing
-    // So Supabase can read #access_token=... directly from the URL
-    // No manual token parsing needed - supabase_flutter handles it
+    // Supabase OAuth Token Catcher for Flutter Web
+    // Catches the #access_token from implicit flow and stores it
+    // in the format SharedPreferencesLocalStorage expects
+    (function() {
+      var hash = window.location.hash;
+      if (hash && hash.indexOf('access_token') !== -1) {
+        var params = new URLSearchParams(hash.substring(1));
+        var accessToken = params.get('access_token');
+        var refreshToken = params.get('refresh_token');
+        var expiresIn = params.get('expires_in');
+        var tokenType = params.get('token_type');
+        var expiresAt = Math.floor(Date.now() / 1000) + parseInt(expiresIn || '3600');
+        
+        if (accessToken && refreshToken) {
+          // Flutter SharedPreferences uses "flutter." prefix on web
+          var key = 'flutter.sb-lrmoxfjuhqesjoxjkftw-auth-token';
+          var session = JSON.stringify({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+            expires_in: parseInt(expiresIn || '3600'),
+            expires_at: expiresAt,
+            token_type: tokenType || 'bearer'
+          });
+          window.localStorage.setItem(key, session);
+          
+          // Also set without flutter prefix (some versions use this)
+          window.localStorage.setItem('sb-lrmoxfjuhqesjoxjkftw-auth-token', session);
+          
+          // Clean URL and reload
+          window.location.replace(window.location.origin + window.location.pathname);
+        }
+      }
+    })();
   </script>
 </head>
 <body>
