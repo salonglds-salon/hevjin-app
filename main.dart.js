@@ -115482,7 +115482,7 @@ l=m.b
 if(l==null){n.O(new A.aRV(n))
 s=1
 break}s=8
-return A.n(j.b.cD("profiles").abL(A.a_(["id",l.a,"display_name",g,"birth_date",n.r.D6().split("T")[0],"gender",n.w],t.N,t.T)),$async$Af)
+return A.n(j.b.cD("profiles").abL(A.a_(["id",l.a,"display_name",g,"birth_date",n.r.D6().split("T")[0],"gender",n.w,"caste","murid"],t.N,t.T)),$async$Af)
 case 8:j=n.c
 if(j==null){s=1
 break}A.b14(j,A.fC(new A.aRW(),null,t.z))
