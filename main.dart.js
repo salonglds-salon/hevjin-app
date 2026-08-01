@@ -117981,7 +117981,7 @@ r.toString
 s=A.ax(r,B.y,s)
 s=s==null?l:s.gmU()
 s=A.Q(s==null?"Interessen & Hobbys":s,l,l,l,l,B.hu,l,l,l)
-r=A.Q("W\xe4hle bis zu 3 Eigenschaften ("+m.db.length+"/3)",l,l,l,l,B.aW,l,l,l)
+r=A.Q("W\xe4hle bis zu 3 Eigenschaften ("+m.db.length+"/5)",l,l,l,l,B.aW,l,l,l)
 q=m.dy
 p=A.Y(q).i("a2<1,m4>")
 q=A.a1(new A.a2(q,new A.aIW(m),p),p.i("aq.E"))
@@ -118185,7 +118185,7 @@ $1(a){var s=this.a
 s.O(new A.aIT(s,a,this.b))},
 $S:10}
 A.aIT.prototype={
-$0(){var s=this,r=s.b&&s.a.db.length<3,q=s.c,p=s.a.db
+$0(){var s=this,r=s.b&&s.a.db.length<5,q=s.c,p=s.a.db
 if(r)p.push(q)
 else B.b.G(p,q)},
 $S:0}
