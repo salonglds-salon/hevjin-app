@@ -18,29 +18,8 @@
   <link rel="manifest" href="manifest.json">
 
   <script>
-    // OAuth Token Catcher - stores access_token from hash before Flutter loads
-    (function() {
-      var hash = window.location.hash;
-      if (hash && hash.includes('access_token')) {
-        var params = new URLSearchParams(hash.substring(1));
-        var accessToken = params.get('access_token');
-        var refreshToken = params.get('refresh_token');
-        var expiresIn = params.get('expires_in');
-        var tokenType = params.get('token_type');
-        if (accessToken && refreshToken) {
-          var key = 'sb-lrmoxfjuhqesjoxjkftw-auth-token';
-          var session = JSON.stringify({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-            expires_in: parseInt(expiresIn || '3600'),
-            expires_at: Math.floor(Date.now() / 1000) + parseInt(expiresIn || '3600'),
-            token_type: tokenType || 'bearer'
-          });
-          window.localStorage.setItem(key, session);
-          window.history.replaceState(null, '', window.location.pathname);
-        }
-      }
-    })();
+    // Let Supabase handle OAuth token from URL hash natively
+    // No manual parsing needed - supabase_flutter reads it on init
   </script>
 </head>
 <body>
