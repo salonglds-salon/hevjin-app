@@ -19,32 +19,8 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <script>
-    // OAuth Token Catcher v3 - Save token to Supabase's localStorage key
-    // Then let Flutter start normally - Supabase will find the session
-    (function() {
-      var hash = window.location.hash;
-      if (hash && hash.includes('access_token')) {
-        var params = new URLSearchParams(hash.substring(1));
-        var accessToken = params.get('access_token');
-        var refreshToken = params.get('refresh_token');
-        var expiresIn = params.get('expires_in');
-        var tokenType = params.get('token_type');
-        if (accessToken && refreshToken) {
-          // Save in Supabase Flutter's exact key format
-          var key = 'sb-lrmoxfjuhqesjoxjkftw-auth-token';
-          var session = JSON.stringify({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-            expires_in: parseInt(expiresIn || '3600'),
-            expires_at: Math.floor(Date.now() / 1000) + parseInt(expiresIn || '3600'),
-            token_type: tokenType || 'bearer'
-          });
-          window.localStorage.setItem(key, session);
-          // Clean URL but DON'T reload - let Flutter boot with token in storage
-          window.history.replaceState(null, '', window.location.pathname);
-        }
-      }
-    })();
+    // Keep hash for Supabase to process on app start
+    // Don't clear it - let supabase_flutter handle the OAuth redirect
   </script>
 </head>
 <body>
