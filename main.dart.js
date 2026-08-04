@@ -115786,7 +115786,7 @@ NF(){var s=0,r=A.v(t.T),q,p
 var $async$NF=A.q(function(a,b){if(a===1)return A.r(b,r)
 for(;;)switch(s){case 0:p=new A.a9($.at,t._T)
 globalThis._onGoogleSignIn=A.bst(new A.aWD(new A.b0(p,t.lB)))
-globalThis.eval('      (function() {\n        google.accounts.id.initialize({\n          client_id: "800780334596-s21sv1jmvq2oa6risc3f2oppsdhgv1op.apps.googleusercontent.com",\n          callback: window._onGoogleSignIn\n        });\n        google.accounts.id.prompt();\n      })()\n    ')
+globalThis.eval('      (function() {\n        google.accounts.id.initialize({\n          client_id: "729031509479-brcsl3no0uq4ifemt19r73f1vpkkaacj.apps.googleusercontent.com",\n          callback: window._onGoogleSignIn\n        });\n        google.accounts.id.prompt();\n      })()\n    ')
 q=p.aNV(0,B.Tc,new A.aWE())
 s=1
 break
