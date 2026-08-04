@@ -118114,7 +118114,7 @@ i=A.w(t.N,m)
 if(j!=null)i.n(0,"id",j)
 h=B.c.d7(p.d.a.a)
 if(h.length!==0)i.n(0,"display_name",h)
-else{o=o.b.gcT().e.a
+else if(p.a.c===0){o=o.b.gcT().e.a
 l=o==null?null:o.r
 o=l==null
 if(o)h=null
