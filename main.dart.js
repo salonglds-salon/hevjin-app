@@ -118008,7 +118008,7 @@ r.toString
 s=A.aC(r,B.B,s)
 s=s==null?l:s.gmR()
 s=A.Q(s==null?"Interessen & Hobbys":s,l,l,l,l,B.jk,l,l,l)
-r=A.Q("W\xe4hle bis zu 3 Eigenschaften ("+m.db.length+"/5)",l,l,l,l,B.aZ,l,l,l)
+r=A.Q("W\xe4hle bis zu 5 Eigenschaften ("+m.db.length+"/5)",l,l,l,l,B.aZ,l,l,l)
 q=m.dy
 p=A.Y(q).i("a1<1,m4>")
 q=A.a2(new A.a1(q,new A.aJq(m),p),p.i("ar.E"))
