@@ -117789,30 +117789,33 @@ r=s.x
 r.R$=q
 r.K$=0
 s.aD()},
-J(a){var s,r,q,p,o,n,m=this,l=null,k=t.B,j=A.aA(a,B.B,k)
-j=j==null?l:j.gma(j)
-if(j==null)j="Schritt"
-j=A.Q(j+" "+(m.cy+1)+" / 7",l,l,l,l,l,l,l,l)
+J(a){var s,r,q,p,o,n,m,l=this,k=null,j=t.B,i=A.aA(a,B.B,j)
+i=i==null?k:i.gma(i)
+if(i==null)i="Schritt"
+s=l.cy
+r=l.a.c
+r=A.Q(i+" "+(s-r+1)+" / "+(7-r),k,k,k,k,k,k,k,k)
 s=t.p
-r=A.b([],s)
-q=m.cy
-if(q>0&&q<6){q=A.aA(a,B.B,k)
-q=q==null?l:q.gm8(q)
-r.push(A.fU(A.Q(q==null?"Ueberspringen":q,l,l,l,l,B.jk,l,l,l),m.ga1e(),l))}j=A.kM(r,l,l,!0,!1,l,l,1,l,l,l,!1,l,!1,l,l,l,l,!0,l,l,l,l,l,j,l,l,l,1,l,!0)
-r=m.cy
-q=A.ch(A.qO(m.akP(),l,B.r,B.fN,l,B.a0),1)
-p=A.b([],s)
-if(m.cy>0){o=A.aA(a,B.B,k)
-o=o==null?l:o.gmn(o)
-p.push(A.ch(A.b7U(A.Q(o==null?"Zur\xfcck":o,l,l,l,l,l,l,l,l),new A.aJB(m),l),1))}if(m.cy>0)p.push(B.cp)
-o=m.cy===6
-n=o?m.gayS():m.ga1e()
-if(o){k=A.aA(a,B.B,k)
-k=k==null?l:k.gmC()
-if(k==null)k="Profil erstellen"}else{k=A.aA(a,B.B,k)
-k=k==null?l:k.ghP(k)
-if(k==null)k="Weiter"}p.push(A.ch(A.kY(A.Q(k,l,l,l,l,l,l,l,l),n,l),2))
-return A.i3(j,B.c7,A.aQ(A.b([new A.FT(3,(r+1)/7,B.by,l,new A.pd(B.i,t.ZU),l,l,l),q,new A.aR(B.fN,A.bP(p,B.t,B.l,B.p,0),l)],s),B.t,B.l,B.p))},
+i=A.b([],s)
+q=l.cy
+if(q>0&&q<6){q=A.aA(a,B.B,j)
+q=q==null?k:q.gm8(q)
+i.push(A.fU(A.Q(q==null?"Ueberspringen":q,k,k,k,k,B.jk,k,k,k),l.ga1e(),k))}i=A.kM(i,k,k,!0,!1,k,k,1,k,k,k,!1,k,!1,k,k,k,k,!0,k,k,k,k,k,r,k,k,k,1,k,!0)
+r=l.cy
+q=l.a.c
+p=A.ch(A.qO(l.akP(),k,B.r,B.fN,k,B.a0),1)
+o=A.b([],s)
+if(l.cy>l.a.c){n=A.aA(a,B.B,j)
+n=n==null?k:n.gmn(n)
+o.push(A.ch(A.b7U(A.Q(n==null?"Zur\xfcck":n,k,k,k,k,k,k,k,k),new A.aJB(l),k),1))}if(l.cy>l.a.c)o.push(B.cp)
+n=l.cy===6
+m=n?l.gayS():l.ga1e()
+if(n){j=A.aA(a,B.B,j)
+j=j==null?k:j.gmC()
+if(j==null)j="Profil erstellen"}else{j=A.aA(a,B.B,j)
+j=j==null?k:j.ghP(j)
+if(j==null)j="Weiter"}o.push(A.ch(A.kY(A.Q(j,k,k,k,k,k,k,k,k),m,k),2))
+return A.i3(i,B.c7,A.aQ(A.b([new A.FT(3,(r-q+1)/(7-q),B.by,k,new A.pd(B.i,t.ZU),k,k,k),p,new A.aR(B.fN,A.bP(o,B.t,B.l,B.p,0),k)],s),B.t,B.l,B.p))},
 avJ(){var s=this,r=s.cy
 if(r===0)if(B.c.d7(s.d.a.a).length===0||s.cx==null){s.Gp("Name und Geburtsdatum sind Pflicht")
 return}if(r===1&&s.z.length===0){s.Gp("Bitte w\xe4hle deine Kaste")
