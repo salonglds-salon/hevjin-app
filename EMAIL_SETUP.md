@@ -11,7 +11,7 @@ Stand: 07.08.2026
 | TXT (resend._domainkey) | `v=DKIM1; k=rsa; p=MIGfMA0...` | OK - DKIM aktiv |
 | TXT (send.hevjin.app) | `v=spf1 include:amazonses.com ~all` | OK - Resend SPF |
 | MX (send.hevjin.app) | `feedback-smtp.eu-west-1.amazonses.com` | OK - Bounce-Handling |
-| TXT (_dmarc.hevjin.app) | `v=DMARC1; p=none;` | VERBESSERN |
+| TXT (_dmarc.hevjin.app) | `v=DMARC1; p=none; rua=mailto:hevjinsupport@gmail.com; fo=1` | OK - erledigt 07.08.2026 |
 
 **Fazit:** Die Technik ist korrekt. SPF, DKIM und Bounce-Handling stimmen.
 DKIM signiert mit `d=hevjin.app`, passt also zur Absenderadresse
@@ -32,7 +32,14 @@ Die zwei loesbaren Punkte gehen wir jetzt an.
 
 ---
 
-## Fix 1: DMARC verbessern (IONOS)
+## Fix 1: DMARC verbessern (IONOS) -- ERLEDIGT 07.08.2026
+
+Der alte Eintrag war ein CNAME `_dmarc` -> `dmarc.ionos.de` (von IONOS gehostet,
+Wert `v=DMARC1; p=none;`). CNAME wurde geloescht und durch einen eigenen
+TXT-Record ersetzt. Verifiziert per DNS-Abfrage: live.
+
+Hinweis: `adkim=r` / `aspf=r` wurden weggelassen, da relaxed laut RFC 7489
+ohnehin der Standardwert ist. Echter Gewinn ist nur `rua=` (Reports).
 
 **IONOS -> Domains & SSL -> hevjin.app -> DNS**
 
