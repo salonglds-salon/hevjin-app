@@ -1,0 +1,13 @@
+# Copy this file to android/key.properties and fill in your real values.
+# NEVER commit key.properties or the .jks file to git!
+#
+# Create the keystore first (run in the android/ folder):
+#
+#   keytool -genkey -v -keystore hevjin-release.jks -storetype JKS ^
+#     -keyalg RSA -keysize 2048 -validity 10000 -alias hevjin
+#
+storePassword=DEIN_STORE_PASSWORT
+keyPassword=DEIN_KEY_PASSWORT
+keyAlias=hevjin
+# Path relative to the android/app folder, or an absolute path
+storeFile=../hevjin-release.jks

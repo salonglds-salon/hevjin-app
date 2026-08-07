@@ -1,0 +1,520 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../services/profile_service.dart';
+import '../../utils/theme.dart';
+
+class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key});
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  final _nameController = TextEditingController();
+  final _bioController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _tribeController = TextEditingController();
+  final _jobController = TextEditingController();
+  final _moviesController = TextEditingController();
+  final _musicController = TextEditingController();
+  final _booksController = TextEditingController();
+  final _languagesController = TextEditingController();
+  final _petsController = TextEditingController();
+
+  String _caste = 'murid';
+  String _lookingFor = 'heirat';
+  String? _education;
+  String? _jobStatus;
+  String? _familyStatus;
+  String? _childWish;
+  String? _smoking;
+  String? _sportFrequency;
+  bool? _hasChildren;
+  int _height = 175;
+  bool _isSaving = false;
+
+  // Tags & Interests & Sport & Travel
+  List<String> _selectedTags = [];
+  List<String> _selectedInterests = [];
+  List<String> _selectedSports = [];
+  List<String> _selectedTravel = [];
+
+  final List<String> _availableTags = [
+    'Humorvoll', 'Romantisch', 'Sportlich', 'Familiär',
+    'Zuverlässig', 'Ehrgeizig', 'Herzlich', 'Weltoffen',
+    'Traditionell', 'Spontan', 'Kreativ', 'Spirituell',
+    'Fürsorglich', 'Liebevoll', 'Gelassen', 'Schüchtern',
+    'Zielstrebig', 'Abenteuerlustig', 'Empathisch', 'Loyal',
+  ];
+
+  final List<String> _availableInterests = [
+    'Sport & Fitness', 'Zeit mit Familie', 'Kochen & Essen', 'Reisen',
+    'Lesen & Lernen', 'Gaming & Filme', 'Musik & Tanzen', 'Natur & Spazieren',
+    'Café & Freunde', 'Fotografie', 'Autos & Technik', 'Kunst & Design',
+  ];
+
+  final List<String> _availableSports = [
+    'Fitness', 'Fußball', 'Schwimmen', 'Joggen', 'Yoga', 'Boxen',
+    'Basketball', 'Tennis', 'Kampfsport', 'Tanzen', 'Radfahren', 'Wandern',
+  ];
+
+  final List<String> _availableTravel = [
+    'Strandurlaub', 'Städtereisen', 'Aktivurlaub', 'Camping & Natur',
+    'Wellness', 'Backpacking', 'Familienurlaub', 'Kreuzfahrt',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  void _loadProfile() {
+    final profile = context.read<ProfileService>().currentProfile;
+    if (profile != null) {
+      _nameController.text = profile.displayName;
+      _bioController.text = profile.bio ?? '';
+      _cityController.text = profile.city ?? '';
+      _tribeController.text = profile.tribe ?? '';
+      _jobController.text = profile.job ?? '';
+      _caste = profile.caste;
+      _lookingFor = profile.lookingFor;
+      _education = profile.education;
+      _jobStatus = profile.jobStatus;
+      _familyStatus = profile.familyStatus;
+      _childWish = profile.childWish;
+      _hasChildren = profile.hasChildren;
+      _height = profile.height ?? 175;
+      _selectedTags = List.from(profile.tags);
+      _selectedInterests = List.from(profile.interests);
+      // Sports & Travel laden (aus interests oder eigene Felder)
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _bioController.dispose();
+    _cityController.dispose();
+    _tribeController.dispose();
+    _jobController.dispose();
+    _moviesController.dispose();
+    _musicController.dispose();
+    _booksController.dispose();
+    _languagesController.dispose();
+    _petsController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: HevjinTheme.background,
+      appBar: AppBar(
+        title: const Text('Profil bearbeiten'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          TextButton(
+            onPressed: _isSaving ? null : _saveProfile,
+            child: Text('Speichern', style: TextStyle(color: HevjinTheme.secondary, fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // === GRUNDDATEN ===
+            _sectionHeader('GRUNDDATEN'),
+            _textField(_nameController, 'Vorname', Icons.person_outline),
+            const SizedBox(height: 14),
+            _dropdown('Geschlecht', null, [
+              const MapEntry('male', 'Männlich'),
+              const MapEntry('female', 'Weiblich'),
+            ]),
+            const SizedBox(height: 14),
+            _textField(_cityController, 'Stadt', Icons.location_city),
+            const SizedBox(height: 28),
+
+            // === ÊZÎDISCHE IDENTITÄT ===
+            _sectionHeader('ÊZÎDISCHE IDENTITÄT'),
+            _label('Kaste'),
+            Row(
+              children: [
+                _casteChip('scheich', '☀️ Scheich'),
+                const SizedBox(width: 8),
+                _casteChip('pir', '🌙 Pir'),
+                const SizedBox(width: 8),
+                _casteChip('murid', '⭐ Murid'),
+              ],
+            ),
+            const SizedBox(height: 14),
+            _textField(_tribeController, 'Stamm / Ashiret', Icons.groups_outlined),
+            const SizedBox(height: 14),
+            _label('Ich suche'),
+            Row(
+              children: [
+                _lookingChip('heirat', '💍 Heirat'),
+                const SizedBox(width: 8),
+                _lookingChip('dating', '❤️ Dating'),
+                const SizedBox(width: 8),
+                _lookingChip('freundschaft', '🤝 Freunde'),
+              ],
+            ),
+            const SizedBox(height: 28),
+
+            // === ÜBER MICH ===
+            _sectionHeader('ÜBER MICH'),
+            TextField(
+              controller: _bioController,
+              maxLines: 4,
+              maxLength: 300,
+              decoration: const InputDecoration(hintText: 'Erzähl etwas über dich...'),
+            ),
+            const SizedBox(height: 28),
+
+            // === KÖRPER & LEBENSSTIL ===
+            _sectionHeader('KÖRPER & LEBENSSTIL'),
+            _label('Körpergröße: $_height cm'),
+            Slider(
+              value: _height.toDouble(),
+              min: 140, max: 220, divisions: 80,
+              activeColor: HevjinTheme.secondary,
+              label: '$_height cm',
+              onChanged: (v) => setState(() => _height = v.round()),
+            ),
+            const SizedBox(height: 14),
+            _dropdownField('Rauchverhalten', _smoking, [
+              const MapEntry('nie', 'Nichtraucher'),
+              const MapEntry('gelegentlich', 'Gelegentlich'),
+              const MapEntry('regelmaessig', 'Regelmäßig'),
+            ], (v) => setState(() => _smoking = v)),
+            const SizedBox(height: 14),
+            _dropdownField('Sport', _sportFrequency, [
+              const MapEntry('taeglich', 'Täglich'),
+              const MapEntry('mehrmals_woche', 'Mehrmals/Woche'),
+              const MapEntry('mehrmals_monat', 'Mehrmals/Monat'),
+              const MapEntry('selten', 'Selten'),
+              const MapEntry('nie', 'Gar nicht'),
+            ], (v) => setState(() => _sportFrequency = v)),
+            const SizedBox(height: 14),
+            _textField(_languagesController, 'Sprachen', Icons.translate),
+            const SizedBox(height: 14),
+            _textField(_petsController, 'Haustiere', Icons.pets),
+            const SizedBox(height: 28),
+
+            // === BERUF & BILDUNG ===
+            _sectionHeader('BERUF & BILDUNG'),
+            _textField(_jobController, 'Beruf', Icons.work_outline),
+            const SizedBox(height: 14),
+            _dropdownField('Status', _jobStatus, [
+              const MapEntry('angestellt', 'Angestellt'),
+              const MapEntry('selbstaendig', 'Selbständig'),
+              const MapEntry('student', 'Student/in'),
+              const MapEntry('ausbildung', 'In Ausbildung'),
+              const MapEntry('arbeitssuchend', 'Arbeitssuchend'),
+            ], (v) => setState(() => _jobStatus = v)),
+            const SizedBox(height: 14),
+            _dropdownField('Bildungsabschluss', _education, [
+              const MapEntry('hauptschule', 'Hauptschule'),
+              const MapEntry('realschule', 'Realschule / Ausbildung'),
+              const MapEntry('abitur', 'Abitur / Fachabitur'),
+              const MapEntry('studium', 'Noch im Studium'),
+              const MapEntry('bachelor', 'Bachelor'),
+              const MapEntry('master', 'Master / Promotion'),
+            ], (v) => setState(() => _education = v)),
+            const SizedBox(height: 28),
+
+            // === FAMILIE ===
+            _sectionHeader('FAMILIE'),
+            _dropdownField('Familienstand', _familyStatus, [
+              const MapEntry('ledig', 'Ledig'),
+              const MapEntry('geschieden', 'Geschieden'),
+              const MapEntry('getrennt', 'Getrennt lebend'),
+              const MapEntry('verwitwet', 'Verwitwet'),
+            ], (v) => setState(() => _familyStatus = v)),
+            const SizedBox(height: 14),
+            _label('Hast du Kinder?'),
+            Row(
+              children: [
+                _boolChip(true, 'Ja', _hasChildren == true),
+                const SizedBox(width: 8),
+                _boolChip(false, 'Nein', _hasChildren == false),
+              ],
+            ),
+            const SizedBox(height: 14),
+            _dropdownField('Kinderwunsch', _childWish, [
+              const MapEntry('ja', 'Ja'),
+              const MapEntry('vielleicht', 'Vielleicht'),
+              const MapEntry('nein', 'Nein'),
+            ], (v) => setState(() => _childWish = v)),
+            const SizedBox(height: 28),
+
+            // === CHARAKTER & EIGENSCHAFTEN ===
+            _sectionHeader('CHARAKTER & EIGENSCHAFTEN (max. 3)'),
+            Wrap(
+              spacing: 8, runSpacing: 8,
+              children: _availableTags.map((tag) {
+                final selected = _selectedTags.contains(tag);
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      if (selected) {
+                        _selectedTags.remove(tag);
+                      } else if (_selectedTags.length < 3) {
+                        _selectedTags.add(tag);
+                      }
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: selected ? HevjinTheme.secondary.withOpacity(0.12) : const Color(0xFFF5F5F5),
+                      border: Border.all(color: selected ? HevjinTheme.secondary : Colors.grey.shade300),
+                    ),
+                    child: Text(tag, style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                      color: selected ? HevjinTheme.secondary : HevjinTheme.textPrimary,
+                    )),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 28),
+
+            // === INTERESSEN & HOBBYS ===
+            _sectionHeader('INTERESSEN & HOBBYS (max. 5)'),
+            _chipSelection(_availableInterests, _selectedInterests, 5),
+            const SizedBox(height: 28),
+
+            // === SPORT ===
+            _sectionHeader('SPORT (max. 5)'),
+            _chipSelection(_availableSports, _selectedSports, 5),
+            const SizedBox(height: 28),
+
+            // === REISEN ===
+            _sectionHeader('REISEN (max. 5)'),
+            _chipSelection(_availableTravel, _selectedTravel, 5),
+            const SizedBox(height: 28),
+
+            // === ENTERTAINMENT ===
+            _sectionHeader('ENTERTAINMENT'),
+            _textField(_moviesController, 'Liebste Serien & Filme', Icons.movie_outlined),
+            const SizedBox(height: 14),
+            _textField(_musicController, 'Musik', Icons.music_note),
+            const SizedBox(height: 14),
+            _textField(_booksController, 'Lieblingsbücher', Icons.book_outlined),
+            const SizedBox(height: 32),
+
+            // === SPEICHERN ===
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isSaving ? null : _saveProfile,
+                child: _isSaving
+                    ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : const Text('Änderungen speichern'),
+              ),
+            ),
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ===== HELPER WIDGETS =====
+
+  Widget _sectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: HevjinTheme.textSecondary, letterSpacing: 1.5)),
+    );
+  }
+
+  Widget _label(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(text, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13)),
+    );
+  }
+
+  Widget _textField(TextEditingController controller, String hint, IconData icon) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(hintText: hint, prefixIcon: Icon(icon, size: 20)),
+    );
+  }
+
+  Widget _dropdown(String hint, String? value, List<MapEntry<String, String>> options) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      decoration: InputDecoration(hintText: hint),
+      items: options.map((o) => DropdownMenuItem(value: o.key, child: Text(o.value))).toList(),
+      onChanged: (v) {},
+    );
+  }
+
+  Widget _dropdownField(String label, String? value, List<MapEntry<String, String>> options, Function(String?) onChanged) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      decoration: InputDecoration(labelText: label),
+      items: options.map((o) => DropdownMenuItem(value: o.key, child: Text(o.value))).toList(),
+      onChanged: onChanged,
+    );
+  }
+
+  Widget _casteChip(String value, String label) {
+    final selected = _caste == value;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _caste = value),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: selected ? HevjinTheme.secondary.withOpacity(0.1) : const Color(0xFFF5F5F5),
+            border: Border.all(color: selected ? HevjinTheme.secondary : Colors.grey.shade300),
+          ),
+          child: Center(child: Text(label, style: TextStyle(fontSize: 13, fontWeight: selected ? FontWeight.w600 : FontWeight.normal))),
+        ),
+      ),
+    );
+  }
+
+  Widget _lookingChip(String value, String label) {
+    final selected = _lookingFor == value;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _lookingFor = value),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: selected ? HevjinTheme.secondary.withOpacity(0.1) : const Color(0xFFF5F5F5),
+            border: Border.all(color: selected ? HevjinTheme.secondary : Colors.grey.shade300),
+          ),
+          child: Center(child: Text(label, style: TextStyle(fontSize: 12, fontWeight: selected ? FontWeight.w600 : FontWeight.normal))),
+        ),
+      ),
+    );
+  }
+
+  Widget _chipSelection(List<String> available, List<String> selected, int max) {
+    return Wrap(
+      spacing: 8, runSpacing: 8,
+      children: available.map((item) {
+        final isSelected = selected.contains(item);
+        return GestureDetector(
+          onTap: () {
+            setState(() {
+              if (isSelected) {
+                selected.remove(item);
+              } else if (selected.length < max) {
+                selected.add(item);
+              }
+            });
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: isSelected ? HevjinTheme.secondary.withOpacity(0.12) : const Color(0xFFF5F5F5),
+              border: Border.all(color: isSelected ? HevjinTheme.secondary : Colors.grey.shade300),
+            ),
+            child: Text(item, style: TextStyle(
+              fontSize: 13,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              color: isSelected ? HevjinTheme.secondary : HevjinTheme.textPrimary,
+            )),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _boolChip(bool value, String label, bool selected) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _hasChildren = value),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: selected ? HevjinTheme.secondary.withOpacity(0.1) : const Color(0xFFF5F5F5),
+            border: Border.all(color: selected ? HevjinTheme.secondary : Colors.grey.shade300),
+          ),
+          child: Center(child: Text(label, style: TextStyle(fontSize: 14, fontWeight: selected ? FontWeight.w600 : FontWeight.normal))),
+        ),
+      ),
+    );
+  }
+
+  // ===== SAVE =====
+  Future<void> _saveProfile() async {
+    if (_nameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Name darf nicht leer sein')),
+      );
+      return;
+    }
+
+    setState(() => _isSaving = true);
+
+    try {
+      final userId = Supabase.instance.client.auth.currentUser!.id;
+
+      await Supabase.instance.client.from('profiles').update({
+        'display_name': _nameController.text.trim(),
+        'bio': _bioController.text.trim().isNotEmpty ? _bioController.text.trim() : null,
+        'city': _cityController.text.trim().isNotEmpty ? _cityController.text.trim() : null,
+        'tribe': _tribeController.text.trim().isNotEmpty ? _tribeController.text.trim() : null,
+        'job': _jobController.text.trim().isNotEmpty ? _jobController.text.trim() : null,
+        'caste': _caste,
+        'looking_for': _lookingFor,
+        'height': _height != 175 ? _height : null,
+        'education': _education,
+        'job_status': _jobStatus,
+        'family_status': _familyStatus,
+        'has_children': _hasChildren,
+        'child_wish': _childWish,
+        'smoking': _smoking,
+        'sport_frequency': _sportFrequency,
+        'languages': _languagesController.text.trim().isNotEmpty ? _languagesController.text.trim() : null,
+        'pets': _petsController.text.trim().isNotEmpty ? _petsController.text.trim() : null,
+        'fav_movies': _moviesController.text.trim().isNotEmpty ? _moviesController.text.trim() : null,
+        'fav_music': _musicController.text.trim().isNotEmpty ? _musicController.text.trim() : null,
+        'fav_books': _booksController.text.trim().isNotEmpty ? _booksController.text.trim() : null,
+        'tags': _selectedTags,
+        'interests': _selectedInterests,
+        'sports': _selectedSports,
+        'travel': _selectedTravel,
+      }).eq('id', userId);
+
+      // Refresh profile
+      if (mounted) {
+        await context.read<ProfileService>().fetchProfile();
+        setState(() => _isSaving = false);
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profil gespeichert ✓'), backgroundColor: HevjinTheme.success),
+        );
+      }
+    } catch (e) {
+      setState(() => _isSaving = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Fehler: $e'), backgroundColor: HevjinTheme.error),
+        );
+      }
+    }
+  }
+}
+
