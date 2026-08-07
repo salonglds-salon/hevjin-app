@@ -136,12 +136,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                // Sprachwahl oben rechts - nimmt keine eigene Zeile mehr ein
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: _buildLanguageSelector(context),
-                ),
-                const SizedBox(height: 26),
+                // Sprachwahl liegt als eigenes Stack-Element oben rechts (siehe unten)
+                // - hier nur vertikalen Platz dafuer freihalten
+                const SizedBox(height: 48),
                 // C) Pulsierendes Logo mit Gold-Glow
                 AnimatedBuilder(
                   animation: _pulseCtrl,
@@ -202,46 +199,44 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                   ),
                   const SizedBox(height: 18),
                 ],
-
-                // ---- Aktionen ----
-                // Primaer: E-Mail (Markenfarbe)
+                // ---- Aktionen: beide transparent mit Rahmen ----
+                // Primaer: E-Mail (etwas hellerer Rahmen = leicht betont)
                 SizedBox(
                   width: double.infinity,
                   height: 52,
-                  child: ElevatedButton.icon(
+                  child: OutlinedButton.icon(
                     onPressed: () => _showEmailDialog(context),
                     icon: const Icon(Icons.email_outlined, size: 19),
                     label: Text(AppLocalizations.of(context)?.loginWithEmail ?? 'Mit E-Mail einloggen'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE02020),
+                    style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      elevation: 0,
+                      backgroundColor: Colors.white.withOpacity(0.06),
+                      side: const BorderSide(color: Colors.white70, width: 1.3),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
                       textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
 
-                // Sekundaer: Google (weiss - Google-Branding-konform, kein Blau-Bruch)
+                // Sekundaer: Google (dezenterer Rahmen)
                 SizedBox(
                   width: double.infinity,
                   height: 52,
-                  child: ElevatedButton.icon(
+                  child: OutlinedButton.icon(
                     onPressed: _isLoading ? null : () => _signInWithGoogle(),
                     icon: const SizedBox(
                       width: 20,
                       height: 20,
                       child: Center(
                         child: Text('G',
-                            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Color(0xFF4285F4))),
+                            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white)),
                       ),
                     ),
                     label: Text(AppLocalizations.of(context)?.continueWithGoogle ?? 'Weiter mit Google'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: const Color(0xFF1F1F1F),
-                      elevation: 0,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Colors.white38),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
                       textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                     ),
@@ -308,6 +303,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
           ),
         ),
       ),
+                ),
+
+                // B) Sprachwahl - fix oben rechts am Bildschirmrand,
+                // ausserhalb der 400px-Inhaltsspalte
+                SafeArea(
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 4, right: 10),
+                      child: _buildLanguageSelector(context),
+                    ),
+                  ),
                 ),
               ],
             ),
