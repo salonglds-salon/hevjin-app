@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'dart:js_util' as js_util;
+// dart:js_util entfernt - war ein Ueberrest der alten JS-Interop-Google-Anmeldung,
+// wurde nicht mehr verwendet und haette den Android-Build zerstoert.
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../utils/theme.dart';
@@ -125,15 +126,22 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                   ),
                 ),
                 SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Language Selector (top)
-                _buildLanguageSelector(context),
-                const SizedBox(height: 16),
+                  child: Center(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+                      child: ConstrainedBox(
+                        // verhindert, dass Buttons auf Tablet/Desktop quer ueber
+                        // den ganzen Bildschirm gezogen werden
+                        constraints: const BoxConstraints(maxWidth: 400),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                // Sprachwahl oben rechts - nimmt keine eigene Zeile mehr ein
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: _buildLanguageSelector(context),
+                ),
+                const SizedBox(height: 26),
                 // C) Pulsierendes Logo mit Gold-Glow
                 AnimatedBuilder(
                   animation: _pulseCtrl,
@@ -167,98 +175,131 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                const Text('Hevj\u00een', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 1)),
-                const SizedBox(height: 8),
-                Text(AppLocalizations.of(context)?.welcome ?? 'Partnersuche f\u00fcr \u00caziden', style: const TextStyle(color: Colors.white70, fontSize: 15)),
-                const SizedBox(height: 32),
+                // ---- Marken-Block: Logo + Name + Claim gehoeren zusammen ----
+                const SizedBox(height: 18),
+                const Text('Hevj\u00een',
+                    style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.5)),
+                const SizedBox(height: 6),
+                Text(AppLocalizations.of(context)?.welcome ?? 'Partnersuche f\u00fcr \u00caziden',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white60, fontSize: 14.5)),
 
-                // Error
+                const SizedBox(height: 38),
+
+                // Fehlermeldung
                 if (_error != null) ...[
                   Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(color: HevjinTheme.error.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
-                    child: Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: HevjinTheme.error.withOpacity(0.18),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: HevjinTheme.error.withOpacity(0.35)),
+                    ),
+                    child: Text(_error!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Color(0xFFFF8A80), fontSize: 12.5)),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 18),
                 ],
 
-                // ===== BUTTONS (Tinder-Style) =====
-
-                // 1. Mit E-Mail einloggen
+                // ---- Aktionen ----
+                // Primaer: E-Mail (Markenfarbe)
                 SizedBox(
                   width: double.infinity,
-                  child: OutlinedButton.icon(
+                  height: 52,
+                  child: ElevatedButton.icon(
                     onPressed: () => _showEmailDialog(context),
-                    icon: const Icon(Icons.email_outlined, size: 20),
+                    icon: const Icon(Icons.email_outlined, size: 19),
                     label: Text(AppLocalizations.of(context)?.loginWithEmail ?? 'Mit E-Mail einloggen'),
-                    style: OutlinedButton.styleFrom(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE02020),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                      side: const BorderSide(color: Colors.white54),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
                       textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
 
-                // 2. Weiter mit Google (blau)
+                // Sekundaer: Google (weiss - Google-Branding-konform, kein Blau-Bruch)
                 SizedBox(
                   width: double.infinity,
+                  height: 52,
                   child: ElevatedButton.icon(
                     onPressed: _isLoading ? null : () => _signInWithGoogle(),
-                    icon: const Text('G', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                    icon: const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: Center(
+                        child: Text('G',
+                            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Color(0xFF4285F4))),
+                      ),
+                    ),
                     label: Text(AppLocalizations.of(context)?.continueWithGoogle ?? 'Weiter mit Google'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4285F4),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                      backgroundColor: Colors.white,
+                      foregroundColor: const Color(0xFF1F1F1F),
                       elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
                       textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 2),
 
-                // 3. Probleme bei der Anmeldung?
+                // Hilfe-Link gehoert zu den Buttons -> direkt darunter
                 TextButton(
                   onPressed: () => _showResetPasswordDialog(context),
-                  child: Text(AppLocalizations.of(context)?.loginProblems ?? 'Probleme bei der Anmeldung?', style: const TextStyle(color: HevjinTheme.secondaryLight, fontSize: 13, fontWeight: FontWeight.w500)),
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(0, 40),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                  ),
+                  child: Text(AppLocalizations.of(context)?.loginProblems ?? 'Probleme bei der Anmeldung?',
+                      style: const TextStyle(
+                          color: HevjinTheme.secondaryLight, fontSize: 13, fontWeight: FontWeight.w500)),
                 ),
-                const SizedBox(height: 24),
 
-                // Badges
+                const SizedBox(height: 26),
+
+                // ---- Vertrauens-Block, visuell abgesetzt ----
+                Container(height: 1, color: Colors.white.withOpacity(0.10)),
+                const SizedBox(height: 18),
+
                 Wrap(
                   alignment: WrapAlignment.center,
-                  spacing: 16,
-                  runSpacing: 8,
+                  spacing: 14,
+                  runSpacing: 10,
                   children: [
                     _badge(Icons.shield_outlined, AppLocalizations.of(context)?.anonymous ?? '100% Anonym'),
                     _badge(Icons.verified_outlined, AppLocalizations.of(context)?.emailVerified ?? 'E-Mail Verifiziert'),
                     _badge(Icons.favorite_outline, AppLocalizations.of(context)?.onlyEzidi ?? 'Nur \u00caziden'),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
 
-                // Legal links
+                // ---- Rechtliches ----
                 Wrap(
                   alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen())),
-                      child: const Text('AGB', style: TextStyle(color: HevjinTheme.secondaryLight, fontSize: 11, decoration: TextDecoration.underline)),
+                      child: const Text('AGB',
+                          style: TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
                     ),
-                    const Text('  \u2022  ', style: TextStyle(color: Colors.white54, fontSize: 11)),
+                    const Text('  \u00b7  ', style: TextStyle(color: Colors.white38, fontSize: 11)),
                     GestureDetector(
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
-                      child: const Text('Datenschutz', style: TextStyle(color: HevjinTheme.secondaryLight, fontSize: 11, decoration: TextDecoration.underline)),
+                      child: const Text('Datenschutz',
+                          style: TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
                     ),
-                    const Text('  \u2022  ', style: TextStyle(color: Colors.white54, fontSize: 11)),
+                    const Text('  \u00b7  ', style: TextStyle(color: Colors.white38, fontSize: 11)),
                     GestureDetector(
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ImprintScreen())),
-                      child: const Text('Impressum', style: TextStyle(color: HevjinTheme.secondaryLight, fontSize: 11, decoration: TextDecoration.underline)),
+                      child: const Text('Impressum',
+                          style: TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
                     ),
                   ],
                 ),
@@ -266,6 +307,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
             ),
           ),
         ),
+      ),
                 ),
               ],
             ),
