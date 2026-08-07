@@ -24,7 +24,8 @@ class WelcomeScreen extends StatefulWidget {
   State<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateMixin {
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   // === MEM U ZIN ANIMATION ===
   late AnimationController _gradientCtrl;
   late AnimationController _pulseCtrl;
@@ -38,10 +39,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
   bool _passwordVisible = false;
   String? _error;
   StreamSubscription<AuthState>? _authSub;
+  /// Notbremse: falls der OAuth-Redirect nie stattfindet oder der Nutzer
+  /// zurueckkommt, ohne dass die Seite neu geladen wird.
+  Timer? _oauthTimeout;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     // B) Atmender Gradient (langsam, 8 Sek)
     _gradientCtrl = AnimationController(duration: const Duration(seconds: 8), vsync: this)..repeat(reverse: true);
@@ -81,8 +86,28 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
     );
   }
 
+  /// Wird aufgerufen, wenn der Nutzer zur App zurueckkehrt - z.B. nachdem er
+  /// den Google-Login abgebrochen und "Zurueck" gedrueckt hat.
+  /// Ohne das bliebe der Button dauerhaft deaktiviert.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _resetLoading();
+    }
+  }
+
+  void _resetLoading() {
+    _oauthTimeout?.cancel();
+    _oauthTimeout = null;
+    if (mounted && _isLoading) {
+      setState(() => _isLoading = false);
+    }
+  }
+
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _oauthTimeout?.cancel();
     _gradientCtrl.dispose();
     _pulseCtrl.dispose();
     _petalCtrl.dispose();
@@ -225,12 +250,22 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
                   height: 52,
                   child: OutlinedButton.icon(
                     onPressed: _isLoading ? null : () => _signInWithGoogle(),
-                    icon: const SizedBox(
+                    icon: SizedBox(
                       width: 20,
                       height: 20,
                       child: Center(
-                        child: Text('G',
-                            style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white)),
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: Colors.white70),
+                              )
+                            : const Text('G',
+                                style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white)),
                       ),
                     ),
                     label: Text(AppLocalizations.of(context)?.continueWithGoogle ?? 'Weiter mit Google'),
@@ -671,14 +706,32 @@ class _WelcomeScreenState extends State<WelcomeScreen> with TickerProviderStateM
     );
   }
   Future<void> _signInWithGoogle() async {
-    setState(() => _isLoading = true);
+    if (_isLoading) return; // Doppelklick verhindern
+    setState(() { _isLoading = true; _error = null; });
+
+    // Notbremse: Wenn der Nutzer den Google-Login abbricht und zurueckkommt,
+    // ohne dass die Seite neu geladen wird, bliebe der Button sonst
+    // dauerhaft gesperrt. Nach 8 Sekunden wieder freigeben.
+    _oauthTimeout?.cancel();
+    _oauthTimeout = Timer(const Duration(seconds: 8), () {
+      if (mounted && _isLoading) {
+        setState(() => _isLoading = false);
+      }
+    });
+
     try {
       await Supabase.instance.client.auth.signInWithOAuth(
         OAuthProvider.google,
         redirectTo: 'https://hevjin.app',
       );
     } catch (e) {
-      setState(() { _isLoading = false; _error = 'Google Login fehlgeschlagen: ${e.toString()}'; });
+      _oauthTimeout?.cancel();
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _error = 'Google Login fehlgeschlagen: ${e.toString()}';
+        });
+      }
     }
   }
 }
