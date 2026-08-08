@@ -3,7 +3,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'utils/url_strategy_stub.dart'
+    if (dart.library.js_interop) 'utils/url_strategy_web.dart';
 import 'services/auth_service.dart';
 import 'services/profile_service.dart';
 import 'services/language_provider.dart';
@@ -13,7 +14,7 @@ import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  usePathUrlStrategy();
+  configureUrlStrategy();
   
   await Supabase.initialize(
     url: 'https://lrmoxfjuhqesjoxjkftw.supabase.co',
