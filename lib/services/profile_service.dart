@@ -227,7 +227,7 @@ class ProfileService extends ChangeNotifier {
         id: id,
         displayName: name,
         birthDate: DateTime(DateTime.now().year - age, 5, 12),
-        gender: 'weiblich',
+        gender: 'female',
         caste: caste,
         lookingFor: 'heirat',
         city: city,
