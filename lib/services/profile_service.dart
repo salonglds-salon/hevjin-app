@@ -166,13 +166,16 @@ class ProfileService extends ChangeNotifier {
       print('Discover error: $e');
       _discoveryProfiles = [];
     }
+      if (const bool.fromEnvironment('MATCH_PREVIEW')) {
+        _discoveryProfiles = [..._discoveryProfiles, ..._demoProfiles()];
+      }
     
     _isLoading = false;
     notifyListeners();
   }
 
-  /// Like a user - returns true if it's a mutual match
-  Future<bool> likeUser(String targetUserId) async {
+  /// Like a user - returns the matchId if mutual, else null
+  Future<String?> likeUser(String targetUserId) async {
     final userId = _supabase.auth.currentUser!.id;
 
     await _supabase.from('likes').insert({
@@ -190,13 +193,13 @@ class ProfileService extends ChangeNotifier {
 
     if (mutual != null) {
       // Create match
-      await _supabase.from('matches').insert({
+      final match = await _supabase.from('matches').insert({
         'user1': userId,
         'user2': targetUserId,
-      });
-      return true; // It's a match!
+      }).select('id').maybeSingle();
+      return match?['id']?.toString();
     }
-    return false;
+    return null;
   }
 
   /// Upload profile photo
@@ -213,5 +216,38 @@ class ProfileService extends ChangeNotifier {
     } catch (e) {
       return null;
     }
+  }
+
+  /// Demo-Profile fuer den Test-Modus (--dart-define=MATCH_PREVIEW=true).
+  /// Landen NIE in einem normalen Build.
+  List<UserProfile> _demoProfiles() {
+    UserProfile p(String id, String name, int age, String caste, String city,
+        String bio, List<String> interests) {
+      return UserProfile(
+        id: id,
+        displayName: name,
+        birthDate: DateTime(DateTime.now().year - age, 5, 12),
+        gender: 'weiblich',
+        caste: caste,
+        lookingFor: 'heirat',
+        city: city,
+        bio: bio,
+        interests: interests,
+        createdAt: DateTime.now(),
+        isVerified: true,
+      );
+    }
+
+    return [
+      p('demo-1', 'Z\u00een', 26, 'murid', 'K\u00f6ln',
+          'Liebe die kurdische Musik und gutes Essen. Suche etwas Ernstes.',
+          ['Musik', 'Kochen', 'Reisen']),
+      p('demo-2', 'Nasrin', 29, 'pir', 'Hannover',
+          'Krankenschwester, familienorientiert, humorvoll.',
+          ['Familie', 'Lesen', 'Yoga']),
+      p('demo-3', 'Delal', 24, 'murid', 'Bielefeld',
+          'Studentin. Mag lange Gespr\u00e4che und Spaziergaenge.',
+          ['Kunst', 'Natur', 'Fotografie']),
+    ];
   }
 }

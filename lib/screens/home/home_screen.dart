@@ -1,3 +1,4 @@
+import '../match/match_screen.dart';
 import 'dart:async';
 import '../../l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -684,14 +685,25 @@ class DiscoverTab extends StatelessWidget {
           _AnimatedLikeButton(
             onTap: () async {
               if (profiles.isEmpty) return;
-              final matched = await profileService.likeUser(profiles.first.id);
+              final liked = profiles.first;
+              final isDemo = liked.id.startsWith('demo-');
+              final matchId = isDemo ? 'demo' : await profileService.likeUser(liked.id);
               profileService.discoveryProfiles.removeAt(0);
               // ignore: invalid_use_of_protected_member
               profileService.notifyListeners();
-              if (matched && context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('It\u0027s a Match! \u2764'), backgroundColor: HevjinTheme.success),
-                );
+              if (matchId != null && context.mounted) {
+                Navigator.of(context).push(MaterialPageRoute(
+                  fullscreenDialog: true,
+                  builder: (_) => MatchScreen(
+                    matchId: matchId,
+                    otherUserId: liked.id,
+                    otherName: liked.displayName,
+                    otherAvatar: liked.avatarUrl ??
+                        (liked.photos.isNotEmpty ? liked.photos.first : null),
+                    myAvatar: profileService.currentProfile?.avatarUrl,
+                    preview: isDemo,
+                  ),
+                ));
               }
             },
           ),
@@ -1761,6 +1773,20 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
             ),
           ),
           const SizedBox(height: 16),
+          if (const bool.fromEnvironment('MATCH_PREVIEW'))
+            _settingsItem(Icons.favorite, 'Match-Screen testen', 'Nur im Debug-Modus', onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                fullscreenDialog: true,
+                builder: (_) => const MatchScreen(
+                  matchId: 'debug',
+                  otherUserId: 'debug-user',
+                  otherName: 'Z\u00een',
+                  otherAvatar: 'https://i.pravatar.cc/300?img=45',
+                  myAvatar: 'https://i.pravatar.cc/300?img=12',
+                  preview: true,
+                ),
+              ));
+            }),
           _settingsItem(Icons.email_outlined, 'E-Mail', Supabase.instance.client.auth.currentUser?.email ?? '-'),
           const SizedBox(height: 8),
           _settingsItem(Icons.logout, 'Abmelden', 'Ausloggen', onTap: () async {
