@@ -28,27 +28,38 @@
 </head>
 <body>
   <script>
-    // Cache-Reset NUR einmal pro Build - und NIEMALS im PWA/Standalone-Modus.
-    // (Vorher lief das bei JEDEM Start -> SW+Cache weg -> App laedt alles neu -> haengt.)
+    // Cache-Reset EINMAL pro Build - auch in der PWA, aber garantiert nur einmal.
+    //
+    // Historie (nicht wieder kaputt machen):
+    //   - Frueher lief das bei JEDEM Start -> SW+Cache weg -> App laedt alles
+    //     neu -> Homescreen-App haengt.
+    //   - Dann im Standalone-Modus GAR NICHT -> PWA behielt den alten Service
+    //     Worker und servierte dauerhaft die alte Version.
+    //   - Jetzt: genau einmal pro BUILD, danach einmal Reload, damit der frische
+    //     Service Worker uebernimmt. BUILD bei jedem Deploy hochzaehlen!
     (function () {
-      var BUILD = '2026-08-09a'; // hochzaehlen, wenn ein Hard-Reset erzwungen werden soll
+      var BUILD = '2026-08-09b';
       try {
-        var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
-                         || window.navigator.standalone === true;
-        if (standalone) return;                                     // PWA: Cache behalten
-        if (localStorage.getItem('hevjin_reset') === BUILD) return;  // schon erledigt
+        if (localStorage.getItem('hevjin_reset') === BUILD) return;
+        // Marker ZUERST setzen -> kein Reload-Loop, falls der Reload frueh greift
+        localStorage.setItem('hevjin_reset', BUILD);
+
+        var jobs = [];
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(function (rs) {
-            rs.forEach(function (r) { r.unregister(); });
-          });
+          jobs.push(navigator.serviceWorker.getRegistrations().then(function (rs) {
+            return Promise.all(rs.map(function (r) { return r.unregister(); }));
+          }));
         }
         if (window.caches) {
-          caches.keys().then(function (names) {
-            names.forEach(function (n) { caches.delete(n); });
-          });
+          jobs.push(caches.keys().then(function (names) {
+            return Promise.all(names.map(function (n) { return caches.delete(n); }));
+          }));
         }
-        localStorage.setItem('hevjin_reset', BUILD);
-      } catch (e) { /* Storage blockiert - egal */ }
+        if (jobs.length) {
+          Promise.all(jobs).then(function () { location.reload(); })
+                           .catch(function () { /* egal */ });
+        }
+      } catch (e) { /* Storage blockiert - dann eben kein Reset */ }
     })();
   </script>
   <script src="flutter_bootstrap.js" async></script>
