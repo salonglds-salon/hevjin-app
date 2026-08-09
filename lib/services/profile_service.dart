@@ -155,6 +155,13 @@ class ProfileService extends ChangeNotifier {
           .not('id', 'in', '(${excludeIds.join(",")})')
           .isFilter('deleted_at', null); // Don't show deactivated profiles
       
+      // Seed/demo profiles stay hidden unless explicitly enabled via
+      // --dart-define=SHOW_DEMO=true. Must remain OFF for release builds:
+      // fake profiles violate Google Play's Deceptive Behavior policy.
+      if (!const bool.fromEnvironment('SHOW_DEMO')) {
+        query = query.eq('is_demo', false);
+      }
+
       if (oppositeGender != null) {
         query = query.eq('gender', oppositeGender);
       }

@@ -34,11 +34,21 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   DateTime? _birthDate;
   int _currentPage = 0;
 
+  /// Effective start page. Falls back to 0 when the basics (name/birthdate)
+  /// are missing, so we never persist a profile without a display_name.
+  late final int _effStart;
+
   @override
   void initState() {
     super.initState();
-    _currentPage = widget.startPage;
     _prefillFromAuthMetadata();
+    // Guard: register_screen passes startPage=2 to skip the basics page.
+    // If the auth metadata did not supply name/birthdate, show the full
+    // wizard instead of silently writing a NULL display_name.
+    final basicsMissing =
+        _nameController.text.trim().isEmpty || _birthDate == null;
+    _effStart = (widget.startPage > 0 && basicsMissing) ? 0 : widget.startPage;
+    _currentPage = _effStart;
   }
 
   /// Prefills name, birthdate and gender from auth user_metadata
@@ -115,7 +125,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     return Scaffold(
       backgroundColor: HevjinTheme.background,
       appBar: AppBar(
-        title: Text('${AppLocalizations.of(context)?.step ?? 'Schritt'} ${_currentPage - widget.startPage + 1} / ${_totalPages - widget.startPage}'),
+        title: Text('${AppLocalizations.of(context)?.step ?? 'Schritt'} ${_currentPage - _effStart + 1} / ${_totalPages - _effStart}'),
         automaticallyImplyLeading: false,
         actions: [
           // Überspringen Button (nicht auf Pflicht-Seiten)
@@ -131,7 +141,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         children: [
           // Progress Bar
           LinearProgressIndicator(
-            value: (_currentPage - widget.startPage + 1) / (_totalPages - widget.startPage),
+            value: (_currentPage - _effStart + 1) / (_totalPages - _effStart),
             backgroundColor: Colors.grey.shade200,
             valueColor: AlwaysStoppedAnimation<Color>(HevjinTheme.secondary),
             minHeight: 3,
@@ -150,14 +160,14 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             padding: const EdgeInsets.all(24),
             child: Row(
               children: [
-                if (_currentPage > widget.startPage)
+                if (_currentPage > _effStart)
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => setState(() => _currentPage--),
                       child: Text(AppLocalizations.of(context)?.back ?? 'Zur\u00fcck'),
                     ),
                   ),
-                if (_currentPage > widget.startPage) const SizedBox(width: 12),
+                if (_currentPage > _effStart) const SizedBox(width: 12),
                 Expanded(
                   flex: 2,
                   child: ElevatedButton(
@@ -711,7 +721,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   // ===== SAVE =====
   Future<void> _saveProfile() async {
     // Only validate name/birthdate if user started at page 0 (full wizard)
-    if (widget.startPage == 0 && (_nameController.text.trim().isEmpty || _birthDate == null)) {
+    if (_effStart == 0 && (_nameController.text.trim().isEmpty || _birthDate == null)) {
       _showError('Name und Geburtsdatum sind Pflicht');
       return;
     }
@@ -727,7 +737,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     // Set display_name — NEVER fall back to the email prefix
     if (_nameController.text.trim().isNotEmpty) {
       profileData['display_name'] = _nameController.text.trim();
-    } else if (widget.startPage == 0) {
+    } else if (_effStart == 0) {
       final user = Supabase.instance.client.auth.currentUser;
       final metaName = (user?.userMetadata?['full_name'] ?? user?.userMetadata?['name'])?.toString().trim();
       if (metaName != null && metaName.isNotEmpty) {
@@ -738,6 +748,13 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     }
     // If startPage > 0: don't touch display_name (already saved)
     
+    // Hard guard: never persist a profile row without a display name
+    // (display_name is NOT NULL in the database).
+    if (!profileData.containsKey('display_name')) {
+      _showError('Name und Geburtsdatum sind Pflicht');
+      return;
+    }
+
     // Set birthdate if available
     if (_birthDate != null) {
       profileData['birth_date'] = _birthDate!.toIso8601String().split('T').first;
