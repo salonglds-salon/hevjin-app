@@ -1,11 +1,12 @@
 {
-    "name": "hevjin",
-    "short_name": "hevjin",
-    "start_url": ".",
+    "name": "Hevj\u00een",
+    "short_name": "Hevj\u00een",
+    "start_url": "/",
+    "scope": "/",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#2D2016",
+    "theme_color": "#2D2016",
+    "description": "Hevj\u00een - Partnersuche f\u00fcr \u00cazid\u00een",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
