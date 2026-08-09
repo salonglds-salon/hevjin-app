@@ -151,23 +151,27 @@ class UserProfile {
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
-      id: json['id'],
-      phone: json['phone'],
-      displayName: json['display_name'],
-      birthDate: json['birth_date'] != null ? DateTime.parse(json['birth_date']) : DateTime(2000, 1, 1),
+      id: json['id']?.toString() ?? '',
+      phone: json['phone']?.toString(),
+      displayName: (json['display_name']?.toString().trim().isNotEmpty ?? false)
+          ? json['display_name'].toString()
+          : 'Mitglied',
+      birthDate: DateTime.tryParse(json['birth_date']?.toString() ?? '') ?? DateTime(2000, 1, 1),
       gender: json['gender']?.toString(),
-      bio: json['bio'],
-      city: json['city'],
-      zipCode: json['zip_code'],
-      country: json['country'] ?? 'DE',
-      caste: json['caste'],
-      tribe: json['tribe'],
-      lookingFor: json['looking_for'],
+      bio: json['bio']?.toString(),
+      city: json['city']?.toString(),
+      zipCode: json['zip_code']?.toString(),
+      country: json['country']?.toString() ?? 'DE',
+      // caste/lookingFor sind non-nullable -> NULL in der DB darf die App nicht
+      // abschiessen (war die Ursache des "Null check operator"-Crashs im Discover)
+      caste: json['caste']?.toString() ?? '',
+      tribe: json['tribe']?.toString(),
+      lookingFor: json['looking_for']?.toString() ?? '',
       photos: _toStringList(json['photos']),
-      avatarUrl: json['avatar_url'],
+      avatarUrl: json['avatar_url']?.toString(),
       isVerified: json['is_verified'] ?? false,
       isActive: json['is_active'] ?? true,
-      createdAt: DateTime.parse(json['created_at']),
+      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ?? DateTime.now(),
       height: json['height'],
       education: json['education'],
       job: json['job'],
