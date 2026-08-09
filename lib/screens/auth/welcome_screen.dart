@@ -5,7 +5,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../utils/theme.dart';
-import '../../utils/app_mode.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/language_provider.dart';
 import '../splash_screen.dart';
@@ -246,45 +245,39 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 const SizedBox(height: 12),
 
                 // Sekundaer: Google (dezenterer Rahmen)
-                // In der installierten PWA (Homescreen) ausgeblendet: Der OAuth-
-                // Redirect verlaesst die Standalone-App, kehrt im Browser statt in
-                // der App zurueck -> Login haengt / Button flackert.
-                // TODO: Wieder einblenden, sobald der GSI-ID-Token-Flow steht.
-                if (!AppMode.isPwa) ...[
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: OutlinedButton.icon(
-                      onPressed: _isLoading ? null : () => _signInWithGoogle(),
-                      icon: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: Center(
-                          child: _isLoading
-                              ? const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2, color: Colors.white70),
-                                )
-                              : const Text('G',
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white)),
-                        ),
-                      ),
-                      label: Text(AppLocalizations.of(context)?.continueWithGoogle ?? 'Weiter mit Google'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        side: const BorderSide(color: Colors.white38),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
-                        textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: OutlinedButton.icon(
+                    onPressed: _isLoading ? null : () => _signInWithGoogle(),
+                    icon: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: Center(
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: Colors.white70),
+                              )
+                            : const Text('G',
+                                style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white)),
                       ),
                     ),
+                    label: Text(AppLocalizations.of(context)?.continueWithGoogle ?? 'Weiter mit Google'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Colors.white38),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+                      textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                    ),
                   ),
-                  const SizedBox(height: 2),
-                ],
+                ),
+                const SizedBox(height: 2),
 
                 // Hilfe-Link gehoert zu den Buttons -> direkt darunter
                 TextButton(

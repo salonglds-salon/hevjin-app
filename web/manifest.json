@@ -1,9 +1,9 @@
-﻿{
+{
     "name": "Hevj\u00een",
     "short_name": "Hevj\u00een",
-    "start_url": "/?pwa=1",
+    "start_url": "/",
     "scope": "/",
-    "display": "standalone",
+    "display": "browser",
     "background_color": "#2D2016",
     "theme_color": "#2D2016",
     "description": "Hevj\u00een - Partnersuche f\u00fcr \u00cazid\u00een",

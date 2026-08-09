@@ -7,9 +7,13 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Hevjin - Partnersuche fuer Eziden">
 
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- Standalone/PWA-Modus ist ABSICHTLICH deaktiviert (manifest display: browser).
+       Die Homescreen-Variante hatte eigenen Speicher (User ausgeloggt), kaputten
+       Google-Redirect und Service-Worker-Probleme. Der Weg zur "echten" App ist
+       die native Android-App aus dem Play Store.
+       Zum Reaktivieren: display: "standalone" im manifest.json + die beiden
+       *-web-app-capable Metas hier wieder ergaenzen. -->
+
   <meta name="apple-mobile-web-app-title" content="Hevj&#238;n">
   <meta name="theme-color" content="#2D2016">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -28,27 +32,35 @@
 </head>
 <body>
   <script>
-    // Cache-Reset NUR einmal pro Build - und NIEMALS im PWA/Standalone-Modus.
-    // (Vorher lief das bei JEDEM Start -> SW+Cache weg -> App laedt alles neu -> haengt.)
+    // Cache-Reset EINMAL pro Build, danach ein Reload.
+    //
+    // Historie (nicht wieder kaputt machen):
+    //   - Frueher lief das bei JEDEM Start -> SW+Cache weg -> App laedt alles neu.
+    //   - Dann gar nicht im Standalone-Modus -> alte Version blieb haengen.
+    //   - Jetzt: genau einmal pro BUILD. BUILD bei jedem Deploy hochzaehlen!
     (function () {
-      var BUILD = '2026-08-09a'; // hochzaehlen, wenn ein Hard-Reset erzwungen werden soll
+      var BUILD = '2026-08-09c';
       try {
-        var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
-                         || window.navigator.standalone === true;
-        if (standalone) return;                                     // PWA: Cache behalten
-        if (localStorage.getItem('hevjin_reset') === BUILD) return;  // schon erledigt
+        if (localStorage.getItem('hevjin_reset') === BUILD) return;
+        // Marker ZUERST setzen -> kein Reload-Loop
+        localStorage.setItem('hevjin_reset', BUILD);
+
+        var jobs = [];
         if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(function (rs) {
-            rs.forEach(function (r) { r.unregister(); });
-          });
+          jobs.push(navigator.serviceWorker.getRegistrations().then(function (rs) {
+            return Promise.all(rs.map(function (r) { return r.unregister(); }));
+          }));
         }
         if (window.caches) {
-          caches.keys().then(function (names) {
-            names.forEach(function (n) { caches.delete(n); });
-          });
+          jobs.push(caches.keys().then(function (names) {
+            return Promise.all(names.map(function (n) { return caches.delete(n); }));
+          }));
         }
-        localStorage.setItem('hevjin_reset', BUILD);
-      } catch (e) { /* Storage blockiert - egal */ }
+        if (jobs.length) {
+          Promise.all(jobs).then(function () { location.reload(); })
+                           .catch(function () { /* egal */ });
+        }
+      } catch (e) { /* Storage blockiert - dann eben kein Reset */ }
     })();
   </script>
   <script src="flutter_bootstrap.js" async></script>

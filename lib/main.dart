@@ -10,14 +10,10 @@ import 'services/profile_service.dart';
 import 'services/language_provider.dart';
 import 'screens/splash_screen.dart';
 import 'utils/theme.dart';
-import 'utils/app_mode.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // PWA/Homescreen-Modus einmalig erkennen (manifest start_url = "/?pwa=1")
-  AppMode.init();
 
   // Statt grauem Kasten (Release-Default) eine lesbare Info anzeigen
   ErrorWidget.builder = (FlutterErrorDetails details) {
