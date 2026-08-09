@@ -7,9 +7,13 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Hevjin - Partnersuche fuer Eziden">
 
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- Standalone/PWA-Modus ist ABSICHTLICH deaktiviert (manifest display: browser).
+       Die Homescreen-Variante hatte eigenen Speicher (User ausgeloggt), kaputten
+       Google-Redirect und Service-Worker-Probleme. Der Weg zur "echten" App ist
+       die native Android-App aus dem Play Store.
+       Zum Reaktivieren: display: "standalone" im manifest.json + die beiden
+       *-web-app-capable Metas hier wieder ergaenzen. -->
+
   <meta name="apple-mobile-web-app-title" content="Hevj&#238;n">
   <meta name="theme-color" content="#2D2016">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -28,20 +32,17 @@
 </head>
 <body>
   <script>
-    // Cache-Reset EINMAL pro Build - auch in der PWA, aber garantiert nur einmal.
+    // Cache-Reset EINMAL pro Build, danach ein Reload.
     //
     // Historie (nicht wieder kaputt machen):
-    //   - Frueher lief das bei JEDEM Start -> SW+Cache weg -> App laedt alles
-    //     neu -> Homescreen-App haengt.
-    //   - Dann im Standalone-Modus GAR NICHT -> PWA behielt den alten Service
-    //     Worker und servierte dauerhaft die alte Version.
-    //   - Jetzt: genau einmal pro BUILD, danach einmal Reload, damit der frische
-    //     Service Worker uebernimmt. BUILD bei jedem Deploy hochzaehlen!
+    //   - Frueher lief das bei JEDEM Start -> SW+Cache weg -> App laedt alles neu.
+    //   - Dann gar nicht im Standalone-Modus -> alte Version blieb haengen.
+    //   - Jetzt: genau einmal pro BUILD. BUILD bei jedem Deploy hochzaehlen!
     (function () {
-      var BUILD = '2026-08-09b';
+      var BUILD = '2026-08-09c';
       try {
         if (localStorage.getItem('hevjin_reset') === BUILD) return;
-        // Marker ZUERST setzen -> kein Reload-Loop, falls der Reload frueh greift
+        // Marker ZUERST setzen -> kein Reload-Loop
         localStorage.setItem('hevjin_reset', BUILD);
 
         var jobs = [];
