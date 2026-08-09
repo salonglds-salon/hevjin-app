@@ -18,11 +18,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _password2Controller = TextEditingController();
   DateTime? _birthDate;
   String? _gender;
   bool _isLoading = false;
   String? _error;
   bool _passwordVisible = false;
+  bool _password2Visible = false;
 
   int _calculateAge() {
     if (_birthDate == null) return 0;
@@ -41,6 +43,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       setState(() => _error = 'Bitte alle Pflichtfelder ausf\u00fcllen');
       return;
     }
+    if (password != _password2Controller.text.trim()) {
+      setState(() => _error = 'Die Passwörter stimmen nicht überein');
+      return;
+    }
+
     if (password.length < 6) {
       setState(() => _error = 'Passwort muss mindestens 6 Zeichen haben');
       return;
@@ -215,6 +222,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 14),
+
+            // Passwort wiederholen
+            Text('${l?.password ?? 'Passwort'} wiederholen *', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+            const SizedBox(height: 6),
+            TextField(
+              controller: _password2Controller,
+              obscureText: !_password2Visible,
+              onChanged: (_) => setState(() {}),
+              decoration: InputDecoration(
+                hintText: 'Passwort erneut eingeben',
+                prefixIcon: const Icon(Icons.lock_reset_outlined),
+                suffixIcon: IconButton(
+                  icon: Icon(_password2Visible ? Icons.visibility : Icons.visibility_off, size: 20),
+                  onPressed: () => setState(() => _password2Visible = !_password2Visible),
+                ),
+                errorText: (_password2Controller.text.isNotEmpty &&
+                        _password2Controller.text != _passwordController.text)
+                    ? 'Passwörter stimmen nicht überein'
+                    : null,
+                suffixIconConstraints: const BoxConstraints(minWidth: 48),
+              ),
+            ),
+            if (_password2Controller.text.isNotEmpty &&
+                _password2Controller.text == _passwordController.text)
+              const Padding(
+                padding: EdgeInsets.only(top: 6, left: 4),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle, size: 15, color: Color(0xFF4CAF50)),
+                    SizedBox(width: 6),
+                    Text('Passwörter stimmen überein',
+                        style: TextStyle(fontSize: 12, color: Color(0xFF4CAF50))),
+                  ],
+                ),
+              ),
             const SizedBox(height: 24),
 
             // Register Button

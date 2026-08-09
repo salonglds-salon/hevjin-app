@@ -170,7 +170,7 @@ class _MatchScreenState extends State<MatchScreen>
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                'Du und ${widget.otherName} m\u00f6gen euch.',
+                                'Du und ${_cap(widget.otherName)} m\u00f6gen euch.',
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontSize: 16,
@@ -209,6 +209,17 @@ class _MatchScreenState extends State<MatchScreen>
         ),
       ),
     );
+  }
+
+  String _cap(String s) {
+    final t = s.trim();
+    if (t.isEmpty) return t;
+    return t
+        .split(' ')
+        .map((w) => w.isEmpty
+            ? w
+            : w[0].toUpperCase() + (w.length > 1 ? w.substring(1) : ''))
+        .join(' ');
   }
 
   Widget _avatars(Animation<double> slide) {
@@ -319,7 +330,7 @@ class _MatchScreenState extends State<MatchScreen>
     return Container(
       padding: const EdgeInsets.only(left: 18, right: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.14),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(32),
         border: Border.all(color: Colors.white24),
       ),
@@ -329,13 +340,13 @@ class _MatchScreenState extends State<MatchScreen>
             child: TextField(
               controller: _msg,
               enabled: !_sending && !_sent,
-              style: const TextStyle(color: Colors.white),
-              cursorColor: HevjinTheme.secondaryLight,
+              style: const TextStyle(color: Color(0xFF1A1A1A), fontSize: 15),
+              cursorColor: HevjinTheme.secondary,
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => _send(),
               decoration: const InputDecoration(
                 hintText: 'Sag etwas Nettes ...',
-                hintStyle: TextStyle(color: Colors.white54),
+                hintStyle: TextStyle(color: Color(0xFF8A8A8A)),
                 border: InputBorder.none,
               ),
             ),
@@ -354,7 +365,7 @@ class _MatchScreenState extends State<MatchScreen>
               onPressed: _sent ? null : _send,
               icon: Icon(
                 _sent ? Icons.check : Icons.send_rounded,
-                color: _sent ? HevjinTheme.success : HevjinTheme.secondaryLight,
+                color: _sent ? HevjinTheme.success : HevjinTheme.secondary,
               ),
             ),
         ],

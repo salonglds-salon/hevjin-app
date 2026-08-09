@@ -238,17 +238,66 @@ class DiscoverTab extends StatelessWidget {
 
     if (profiles.isEmpty) {
       return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(40),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(width: 80, height: 80, decoration: BoxDecoration(color: HevjinTheme.secondary.withOpacity(0.1), shape: BoxShape.circle),
-                child: Icon(Icons.search_off, size: 40, color: HevjinTheme.secondary.withOpacity(0.5))),
-              const SizedBox(height: 20),
-              Text(AppLocalizations.of(context)?.noNewProfiles ?? 'Keine neuen Profile', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 8),
-              const Text('Schau später nochmal vorbei!', textAlign: TextAlign.center, style: TextStyle(color: HevjinTheme.textSecondary)),
+              Container(
+                width: 104,
+                height: 104,
+                decoration: BoxDecoration(
+                  color: HevjinTheme.secondary.withOpacity(0.10),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      color: HevjinTheme.secondary.withOpacity(0.35), width: 2),
+                ),
+                child: const Icon(Icons.favorite_border,
+                    size: 48, color: HevjinTheme.secondary),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                AppLocalizations.of(context)?.noNewProfiles ??
+                    'Keine neuen Profile',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: HevjinTheme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Du hast alle Profile gesehen, die zu dir passen.\nEs kommen laufend neue Mitglieder dazu \u2014 schau sp\u00e4ter nochmal vorbei!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  height: 1.5,
+                  color: HevjinTheme.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 28),
+              OutlinedButton.icon(
+                onPressed: () => profileService.fetchDiscoveryProfiles(),
+                icon: const Icon(Icons.refresh, size: 20),
+                label: const Text('Neu laden'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: HevjinTheme.secondary,
+                  side: const BorderSide(color: HevjinTheme.secondary, width: 1.5),
+                  padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 14),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                'Tipp: Vervollst\u00e4ndige dein Profil \u2014 das erh\u00f6ht deine Treffer.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: HevjinTheme.textSecondary.withOpacity(0.8),
+                ),
+              ),
             ],
           ),
         ),
