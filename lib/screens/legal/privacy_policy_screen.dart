@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../utils/theme.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
@@ -22,7 +22,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             _Section(title: '1. Verantwortlicher', content:
               'Verantwortlich f\u00fcr die Datenverarbeitung ist:\n\n'
               'Dalshad Kasim\n'
-              'Bahnhofstr. 30, 49413 Dinklage, Deutschland\nTelefon: +49 1516 4013969\n'
+              'Bahnhofstr. 30, 49413 Dinklage, Deutschland\n'
               'E-Mail: hevjinsupport@gmail.com\n'),
 
             _Section(title: '2. Welche Daten wir erheben', content:

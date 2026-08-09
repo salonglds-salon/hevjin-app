@@ -58,3 +58,6 @@ create_err.txt
 *_out.txt
 *_err.txt
 flutter_*.log
+
+# local throwaway patch/deploy scripts (may contain tokens)
+tool/*.ps1

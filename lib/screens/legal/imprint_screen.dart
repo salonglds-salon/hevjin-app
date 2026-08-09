@@ -26,7 +26,6 @@ class ImprintScreen extends StatelessWidget {
               'Deutschland'),
 
             _Section(title: 'Kontakt', content:
-              'Telefon: +49 1516 4013969\n'
               'E-Mail: hevjinsupport@gmail.com\n'
               'Website: https://hevjin.app'),
 

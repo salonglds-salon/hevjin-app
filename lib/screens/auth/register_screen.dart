@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
@@ -293,12 +294,98 @@ class _RegisterScreenState extends State<RegisterScreen> {
 }
 
 // ===== EMAIL CONFIRMATION SCREEN =====
-class _EmailConfirmationScreen extends StatelessWidget {
+class _EmailConfirmationScreen extends StatefulWidget {
   final String email;
   const _EmailConfirmationScreen({required this.email});
 
   @override
+  State<_EmailConfirmationScreen> createState() =>
+      _EmailConfirmationScreenState();
+}
+
+class _EmailConfirmationScreenState extends State<_EmailConfirmationScreen> {
+  /// Supabase enforces a per-user cooldown between auth mails.
+  static const int _cooldownSeconds = 60;
+
+  int _secondsLeft = 0;
+  bool _sending = false;
+  Timer? _timer;
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startCooldown([int seconds = _cooldownSeconds]) {
+    _timer?.cancel();
+    setState(() => _secondsLeft = seconds);
+    _timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (!mounted) {
+        t.cancel();
+        return;
+      }
+      setState(() => _secondsLeft--);
+      if (_secondsLeft <= 0) t.cancel();
+    });
+  }
+
+  /// Extracts the wait time from Supabase's rate-limit message
+  /// ("... you can only request this after 56 seconds").
+  int _waitFromError(Object e) {
+    final m = RegExp(r'after (\d+) seconds').firstMatch(e.toString());
+    if (m == null) return _cooldownSeconds;
+    return int.tryParse(m.group(1)!) ?? _cooldownSeconds;
+  }
+
+  Future<void> _resend() async {
+    if (_secondsLeft > 0 || _sending) return;
+    setState(() => _sending = true);
+    try {
+      await Supabase.instance.client.auth
+          .resend(type: OtpType.signup, email: widget.email);
+      if (!mounted) return;
+      _startCooldown();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('E-Mail erneut gesendet!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } on AuthException catch (e) {
+      if (!mounted) return;
+      final wait = _waitFromError(e);
+      _startCooldown(wait);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'Bitte warte $wait Sekunden, bevor du eine neue E-Mail anforderst.'),
+          backgroundColor: const Color(0xFFE08A20),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'E-Mail konnte nicht gesendet werden. Bitte pr\u00fcfe deine Internetverbindung.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
+  }
+
+  String get _buttonLabel {
+    if (_sending) return 'Wird gesendet ...';
+    if (_secondsLeft > 0) return 'Erneut senden ($_secondsLeft s)';
+    return 'E-Mail erneut senden';
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final blocked = _secondsLeft > 0 || _sending;
     return Scaffold(
       backgroundColor: const Color(0xFFFFFFFF),
       body: Center(
@@ -307,36 +394,29 @@ class _EmailConfirmationScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.mark_email_read_outlined, size: 64, color: Color(0xFFE02020)),
+              const Icon(Icons.mark_email_read_outlined,
+                  size: 64, color: Color(0xFFE02020)),
               const SizedBox(height: 24),
-              const Text('E-Mail best\u00e4tigen', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              const Text('E-Mail best\u00e4tigen',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               Text(
-                'Wir haben eine Best\u00e4tigungs-E-Mail an\n\n$email\n\ngesendet. Bitte klicke den Link in der E-Mail um dein Konto zu aktivieren.',
+                'Wir haben eine Best\u00e4tigungs-E-Mail an\n\n${widget.email}\n\ngesendet. Bitte klicke den Link in der E-Mail um dein Konto zu aktivieren.',
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 14, color: Color(0xFF666666)),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 12),
+              const Text(
+                'Keine E-Mail erhalten? Schau auch im Spam-Ordner nach.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: Color(0xFF999999)),
+              ),
+              const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () async {
-                    try {
-                      await Supabase.instance.client.auth.resend(type: OtpType.signup, email: email);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('E-Mail erneut gesendet!'), backgroundColor: Colors.green),
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Fehler: $e'), backgroundColor: Colors.red),
-                        );
-                      }
-                    }
-                  },
-                  child: const Text('E-Mail erneut senden'),
+                  onPressed: blocked ? null : _resend,
+                  child: Text(_buttonLabel),
                 ),
               ),
               const SizedBox(height: 16),
@@ -347,7 +427,8 @@ class _EmailConfirmationScreen extends StatelessWidget {
                     (route) => false,
                   );
                 },
-                child: const Text('Zur\u00fcck zum Login', style: TextStyle(color: Color(0xFF999999))),
+                child: const Text('Zur\u00fcck zum Login',
+                    style: TextStyle(color: Color(0xFF999999))),
               ),
             ],
           ),
