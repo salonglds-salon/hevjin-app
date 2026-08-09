@@ -405,11 +405,33 @@ class _EmailConfirmationScreenState extends State<_EmailConfirmationScreen> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 14, color: Color(0xFF666666)),
               ),
-              const SizedBox(height: 12),
-              const Text(
-                'Keine E-Mail erhalten? Schau auch im Spam-Ordner nach.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Color(0xFF999999)),
+              const SizedBox(height: 20),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF8E1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFE0A020)),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Icon(Icons.warning_amber_rounded,
+                        size: 20, color: Color(0xFFE08A20)),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Wichtig: Bitte schau auch im SPAM- bzw. Junk-Ordner nach \u2013 die Mail landet dort h\u00e4ufig.\n\nFalls der Link nicht klickbar ist, tippe in der Mail auf "Bilder anzeigen" und markiere sie als "Kein Spam".',
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          height: 1.45,
+                          color: Color(0xFF5D4037),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 32),
               SizedBox(

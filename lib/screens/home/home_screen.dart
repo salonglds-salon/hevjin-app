@@ -1257,13 +1257,22 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
 
         // PROFILFRAGEN
         _sectionCard(
-          title: AppLocalizations.of(context)?.aboutMe ?? 'PROFILFRAGEN',
+          title: 'PROFILFRAGEN',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _promptQuestion('Drei Dinge, die mir wichtig sind:', 'Familie, Ehrlichkeit und gute Gespräche ❤️'),
-              const Divider(height: 24),
-              _promptQuestion('Mein perfekter Sonntag:', profile.bio ?? 'Noch nicht beantwortet...'),
+              if (profile.promptAnswers.isEmpty)
+                Text(
+                  'Noch keine Frage beantwortet. Beantworte Fragen, damit andere dich besser kennenlernen.',
+                  style: TextStyle(
+                      fontSize: 13,
+                      color: HevjinTheme.textSecondary,
+                      fontStyle: FontStyle.italic),
+                ),
+              for (int i = 0; i < profile.promptAnswers.length; i++) ...[
+                if (i > 0) const Divider(height: 24),
+                _promptQuestion(context, profile, i),
+              ],
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
@@ -1274,7 +1283,8 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                   style: ElevatedButton.styleFrom(
                     backgroundColor: HevjinTheme.secondary,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24)),
                   ),
                 ),
               ),
@@ -1488,27 +1498,112 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
     );
   }
 
-  Widget _promptQuestion(String question, String answer) {
+  Future<void> _savePrompts(
+      BuildContext context, List<Map<String, String>> list) async {
+    final userId = Supabase.instance.client.auth.currentUser!.id;
+    await Supabase.instance.client
+        .from('profiles')
+        .update({'prompt_answers': list})
+        .eq('id', userId);
+    if (context.mounted) context.read<ProfileService>().fetchProfile();
+  }
+
+  Widget _promptQuestion(
+      BuildContext context, UserProfile profile, int index) {
+    final list = profile.promptAnswers
+        .map((e) => {'q': e['q'] ?? '', 'a': e['a'] ?? ''})
+        .toList();
+    final item = list[index];
+    final isFirst = index == 0;
+    final isLast = index == list.length - 1;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(question, style: const TextStyle(fontSize: 12, color: HevjinTheme.textSecondary)),
+        Text(item['q'] ?? '',
+            style:
+                TextStyle(fontSize: 12, color: HevjinTheme.textSecondary)),
         const SizedBox(height: 6),
-        Text(answer, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+        Text(item['a'] ?? '',
+            style:
+                const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
         const SizedBox(height: 8),
         Row(
           children: [
-            Icon(Icons.arrow_upward, size: 14, color: HevjinTheme.textSecondary.withOpacity(0.4)),
-            const SizedBox(width: 4),
-            Icon(Icons.arrow_downward, size: 14, color: HevjinTheme.textSecondary.withOpacity(0.4)),
-            const Spacer(),
-            Text('L\u00f6schen', style: TextStyle(fontSize: 11, color: HevjinTheme.textSecondary)),
-            const SizedBox(width: 4),
-            Icon(Icons.delete_outline, size: 14, color: HevjinTheme.textSecondary),
+            InkWell(
+              onTap: isFirst
+                  ? null
+                  : () {
+                      final m = list.removeAt(index);
+                      list.insert(index - 1, m);
+                      _savePrompts(context, list);
+                    },
+              child: Icon(Icons.arrow_upward,
+                  size: 16,
+                  color: HevjinTheme.textSecondary
+                      .withOpacity(isFirst ? 0.25 : 0.75)),
+            ),
             const SizedBox(width: 12),
-            Text('Bearbeiten', style: TextStyle(fontSize: 11, color: HevjinTheme.textSecondary)),
-            const SizedBox(width: 4),
-            Icon(Icons.arrow_forward_ios, size: 12, color: HevjinTheme.textSecondary),
+            InkWell(
+              onTap: isLast
+                  ? null
+                  : () {
+                      final m = list.removeAt(index);
+                      list.insert(index + 1, m);
+                      _savePrompts(context, list);
+                    },
+              child: Icon(Icons.arrow_downward,
+                  size: 16,
+                  color: HevjinTheme.textSecondary
+                      .withOpacity(isLast ? 0.25 : 0.75)),
+            ),
+            const Spacer(),
+            InkWell(
+              onTap: () async {
+                final ok = await showDialog<bool>(
+                  context: context,
+                  builder: (d) => AlertDialog(
+                    title: const Text('Antwort l\u00f6schen?'),
+                    content: Text(item['q'] ?? ''),
+                    actions: [
+                      TextButton(
+                          onPressed: () => Navigator.pop(d, false),
+                          child: const Text('Abbrechen')),
+                      TextButton(
+                        onPressed: () => Navigator.pop(d, true),
+                        child: Text('L\u00f6schen',
+                            style: TextStyle(color: HevjinTheme.error)),
+                      ),
+                    ],
+                  ),
+                );
+                if (ok == true) {
+                  list.removeAt(index);
+                  await _savePrompts(context, list);
+                }
+              },
+              child: Row(children: [
+                Text('L\u00f6schen',
+                    style: TextStyle(
+                        fontSize: 11, color: HevjinTheme.textSecondary)),
+                const SizedBox(width: 4),
+                Icon(Icons.delete_outline,
+                    size: 15, color: HevjinTheme.textSecondary),
+              ]),
+            ),
+            const SizedBox(width: 14),
+            InkWell(
+              onTap: () =>
+                  _showPromptSheet(context, profile, editIndex: index),
+              child: Row(children: [
+                Text('Bearbeiten',
+                    style: TextStyle(
+                        fontSize: 11, color: HevjinTheme.textSecondary)),
+                const SizedBox(width: 4),
+                Icon(Icons.arrow_forward_ios,
+                    size: 12, color: HevjinTheme.textSecondary),
+              ]),
+            ),
           ],
         ),
       ],
@@ -1519,66 +1614,128 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
     return _LifestyleSectionWidget(profile: profile);
   }
 
-  void _showPromptSheet(BuildContext context, UserProfile profile) {
+  void _showPromptSheet(BuildContext context, UserProfile profile,
+      {int? editIndex}) {
     final prompts = [
       'Drei Dinge, die mir wichtig sind:',
       'Mein perfekter Sonntag:',
-      'Das macht mich glücklich:',
+      'Das macht mich gl\u00fccklich:',
       'In 5 Jahren sehe ich mich:',
-      'Das schätze ich an einem Partner:',
+      'Das sch\u00e4tze ich an einem Partner:',
       'Das solltest du \u00fcber mich wissen:',
       'Mein lustigstes Erlebnis:',
       'Das kann ich besonders gut:',
     ];
+    final existing = profile.promptAnswers
+        .map((e) => {'q': e['q'] ?? '', 'a': e['a'] ?? ''})
+        .toList();
+    final ei = editIndex ?? -1;
+    final isEdit = ei >= 0 && ei < existing.length;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) {
-        String? selectedPrompt;
-        final answerController = TextEditingController();
+        String? selectedPrompt = isEdit ? existing[ei]['q'] : null;
+        final answerController =
+            TextEditingController(text: isEdit ? existing[ei]['a'] : '');
+        final available = prompts
+            .where((p) => !existing.any((e) => e['q'] == p))
+            .toList();
 
         return StatefulBuilder(
           builder: (ctx, setSheetState) => Padding(
-            padding: EdgeInsets.only(left: 24, right: 24, top: 24, bottom: MediaQuery.of(ctx).viewInsets.bottom + 24),
+            padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 24,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
+                Center(
+                    child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(2)))),
                 const SizedBox(height: 20),
-                const Text('Profilfrage beantworten', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(isEdit ? 'Antwort bearbeiten' : 'Profilfrage beantworten',
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
                 if (selectedPrompt == null) ...[
-                  const Text('Wähle eine Frage:', style: TextStyle(fontSize: 13, color: HevjinTheme.textSecondary)),
+                  Text('W\u00e4hle eine Frage:',
+                      style: TextStyle(
+                          fontSize: 13, color: HevjinTheme.textSecondary)),
                   const SizedBox(height: 12),
-                  ...prompts.map((p) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(p, style: const TextStyle(fontSize: 14)),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 14),
-                    onTap: () => setSheetState(() => selectedPrompt = p),
-                  )),
+                  if (available.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Text('Du hast schon alle Fragen beantwortet.',
+                          style: TextStyle(
+                              fontSize: 13, color: HevjinTheme.textSecondary)),
+                    ),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: available
+                            .map((p) => ListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text(p,
+                                      style: const TextStyle(fontSize: 14)),
+                                  trailing: const Icon(Icons.arrow_forward_ios,
+                                      size: 14),
+                                  onTap: () =>
+                                      setSheetState(() => selectedPrompt = p),
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                  ),
                 ] else ...[
-                  Text(selectedPrompt!, style: const TextStyle(fontSize: 14, color: HevjinTheme.textSecondary)),
+                  Text(selectedPrompt!,
+                      style: TextStyle(
+                          fontSize: 14, color: HevjinTheme.textSecondary)),
                   const SizedBox(height: 12),
                   TextField(
                     controller: answerController,
                     maxLines: 3,
                     maxLength: 200,
                     autofocus: true,
-                    decoration: const InputDecoration(hintText: 'Deine Antwort...'),
+                    decoration:
+                        const InputDecoration(hintText: 'Deine Antwort...'),
                   ),
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (answerController.text.trim().isEmpty) return;
-                        final bio = '${selectedPrompt!}\n${answerController.text.trim()}';
-                        final userId = Supabase.instance.client.auth.currentUser!.id;
-                        await Supabase.instance.client.from('profiles').update({'bio': bio}).eq('id', userId);
+                        final text = answerController.text.trim();
+                        if (text.isEmpty) return;
+                        final entry = {'q': selectedPrompt!, 'a': text};
+                        if (isEdit) {
+                          existing[ei] = entry;
+                        } else {
+                          final at = existing
+                              .indexWhere((e) => e['q'] == selectedPrompt);
+                          if (at >= 0) {
+                            existing[at] = entry;
+                          } else {
+                            existing.add(entry);
+                          }
+                        }
+                        final userId =
+                            Supabase.instance.client.auth.currentUser!.id;
+                        await Supabase.instance.client
+                            .from('profiles')
+                            .update({'prompt_answers': existing})
+                            .eq('id', userId);
                         if (ctx.mounted) {
                           ctx.read<ProfileService>().fetchProfile();
                           Navigator.pop(ctx);

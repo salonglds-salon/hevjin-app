@@ -35,6 +35,7 @@ class UserProfile {
   final String? favBooks; // Lieblingsbuecher
   final String? pets; // Haustiere
   final bool photosPrivate; // Foto-Privatsph\u00e4re
+  final List<Map<String, String>> promptAnswers; // Profilfragen: [{q,a}]
 
   UserProfile({
     required this.id,
@@ -71,6 +72,7 @@ class UserProfile {
     this.favBooks,
     this.pets,
     this.photosPrivate = false,
+    this.promptAnswers = const [],
   });
 
   int get age {
@@ -189,11 +191,20 @@ class UserProfile {
       favBooks: json['fav_books']?.toString(),
       pets: json['pets']?.toString(),
       photosPrivate: json['photos_private'] ?? false,
+      promptAnswers: ((json['prompt_answers'] as List?) ?? const [])
+          .whereType<Map>()
+          .map((e) => {
+                'q': e['q']?.toString() ?? '',
+                'a': e['a']?.toString() ?? '',
+              })
+          .where((e) => (e['a'] ?? '').trim().isNotEmpty)
+          .toList(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'prompt_answers': promptAnswers,
       'id': id,
       'phone': phone,
       'display_name': displayName,
