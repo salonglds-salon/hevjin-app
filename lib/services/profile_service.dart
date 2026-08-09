@@ -174,32 +174,53 @@ class ProfileService extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Like a user - returns the matchId if mutual, else null
+  /// Like a user - returns the matchId if mutual, else null.
+  /// Wirft nie: Ein fehlgeschlagener Like darf den Like-Button nicht blockieren.
   Future<String?> likeUser(String targetUserId) async {
-    final userId = _supabase.auth.currentUser!.id;
+    try {
+      final userId = _supabase.auth.currentUser!.id;
 
-    await _supabase.from('likes').insert({
-      'from_user': userId,
-      'to_user': targetUserId,
-    });
+      // Doppel-Like darf nicht crashen (moeglicher Unique-Constraint auf likes)
+      try {
+        await _supabase.from('likes').insert({
+          'from_user': userId,
+          'to_user': targetUserId,
+        });
+      } catch (_) {
+        // Like existiert bereits - egal, Match-Pruefung laeuft trotzdem weiter
+      }
 
-    // Check for mutual like (= match!)
-    final mutual = await _supabase
-        .from('likes')
-        .select()
-        .eq('from_user', targetUserId)
-        .eq('to_user', userId)
-        .maybeSingle();
+      // Check for mutual like (= match!)
+      final mutual = await _supabase
+          .from('likes')
+          .select()
+          .eq('from_user', targetUserId)
+          .eq('to_user', userId)
+          .maybeSingle();
 
-    if (mutual != null) {
-      // Create match
+      if (mutual == null) return null;
+
+      // Bestehendes Match wiederverwenden statt ein Duplikat anzulegen
+      // (Richtung ist nicht garantiert -> beide Kombinationen pruefen)
+      final existing = await _supabase
+          .from('matches')
+          .select('id')
+          .or('and(user1.eq.$userId,user2.eq.$targetUserId),'
+              'and(user1.eq.$targetUserId,user2.eq.$userId)')
+          .maybeSingle();
+
+      if (existing != null) return existing['id']?.toString();
+
       final match = await _supabase.from('matches').insert({
         'user1': userId,
         'user2': targetUserId,
       }).select('id').maybeSingle();
+
       return match?['id']?.toString();
+    } catch (e) {
+      print('likeUser error: $e');
+      return null;
     }
-    return null;
   }
 
   /// Upload profile photo
