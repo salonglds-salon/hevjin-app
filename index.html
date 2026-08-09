@@ -28,17 +28,28 @@
 </head>
 <body>
   <script>
-    // Unregister ALL service workers to force fresh load
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for (let registration of registrations) {
-          registration.unregister();
+    // Cache-Reset NUR einmal pro Build - und NIEMALS im PWA/Standalone-Modus.
+    // (Vorher lief das bei JEDEM Start -> SW+Cache weg -> App laedt alles neu -> haengt.)
+    (function () {
+      var BUILD = '2026-08-09a'; // hochzaehlen, wenn ein Hard-Reset erzwungen werden soll
+      try {
+        var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+                         || window.navigator.standalone === true;
+        if (standalone) return;                                     // PWA: Cache behalten
+        if (localStorage.getItem('hevjin_reset') === BUILD) return;  // schon erledigt
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function (rs) {
+            rs.forEach(function (r) { r.unregister(); });
+          });
         }
-      });
-      caches.keys().then(function(names) {
-        for (let name of names) caches.delete(name);
-      });
-    }
+        if (window.caches) {
+          caches.keys().then(function (names) {
+            names.forEach(function (n) { caches.delete(n); });
+          });
+        }
+        localStorage.setItem('hevjin_reset', BUILD);
+      } catch (e) { /* Storage blockiert - egal */ }
+    })();
   </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
