@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:math' as math;
 // dart:js_util entfernt - war ein Ueberrest der alten JS-Interop-Google-Anmeldung,
 // wurde nicht mehr verwendet und haette den Android-Build zerstoert.
@@ -451,7 +452,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   final email = resetController.text.trim();
                   if (email.isEmpty) return;
                   try {
-                    await Supabase.instance.client.auth.resetPasswordForEmail(email);
+                    await Supabase.instance.client.auth.resetPasswordForEmail(
+                      email,
+                      redirectTo: kIsWeb ? Uri.base.origin : 'app.hevjin://login-callback',
+                    );
                     Navigator.pop(ctx);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Reset-Link an $email gesendet!'), backgroundColor: HevjinTheme.success),
