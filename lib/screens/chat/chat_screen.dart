@@ -642,7 +642,16 @@ class _MessageBubble extends StatelessWidget {
     final isImage = message.startsWith('[IMAGE]');
     
     // Check if message is just an emoji
-    final isEmoji = !isImage && message.length <= 4 && RegExp(r'^[\p{Emoji}]+$', unicode: true).hasMatch(message);
+    // Emoji-Erkennung ohne \p{Emoji} (von der Dart VM auf Android nicht unterstuetzt)
+    final txt = message.trim();
+    final isEmoji = !isImage && txt.isNotEmpty && txt.runes.length <= 3 && txt.runes.every((r) =>
+        (r >= 0x1F300 && r <= 0x1FAFF) ||
+        (r >= 0x1F000 && r <= 0x1F2FF) ||
+        (r >= 0x2600 && r <= 0x27BF) ||
+        (r >= 0x2B00 && r <= 0x2BFF) ||
+        (r >= 0x1F1E6 && r <= 0x1F1FF) ||
+        (r >= 0xFE00 && r <= 0xFE0F) ||
+        r == 0x200D);
 
     if (isImage) {
       final imageUrl = message.replaceFirst('[IMAGE]', '');
