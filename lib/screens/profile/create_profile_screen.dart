@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/profile_service.dart';
 import '../../utils/theme.dart';
 import '../../l10n/app_localizations.dart';
-import '../home/home_screen.dart';
+import 'onboarding_photo_screen.dart';
 
 class CreateProfileScreen extends StatefulWidget {
   final int startPage;
@@ -791,7 +791,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     if (success && mounted) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const OnboardingPhotoScreen()),
       );
     } else if (mounted) {
       final error = profileService.errorMessage ?? 'Unbekannter Fehler';
