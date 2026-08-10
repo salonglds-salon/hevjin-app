@@ -44,6 +44,13 @@ class ProfileService extends ChangeNotifier {
       _isDeactivated = false;
       _currentProfile = UserProfile.fromJson(data);
       notifyListeners();
+    } else {
+      // Keine Profilzeile in der DB (noch nicht angelegt oder geloescht):
+      // gecachtes Profil verwerfen, sonst bleibt hasProfile true und der
+      // Wizard wird uebersprungen.
+      _currentProfile = null;
+      _isDeactivated = false;
+      notifyListeners();
     }
   }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -86,14 +88,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _childWish = profile.childWish;
       _hasChildren = profile.hasChildren;
       _height = profile.height ?? 175;
-      _selectedTags = List.from(profile.tags);
-      _selectedInterests = List.from(profile.interests);
-      // Sports & Travel laden (aus interests oder eigene Felder)
+      // Limit auch beim Laden durchsetzen (Altdaten koennen mehr enthalten)
+      _selectedTags = List<String>.from(profile.tags).take(5).toList();
+      _selectedInterests = List<String>.from(profile.interests).take(5).toList();
+      _selectedSports = List<String>.from(profile.sports).take(5).toList();
+      _selectedTravel = List<String>.from(profile.travel).take(5).toList();
     }
   }
 
   @override
   void dispose() {
+    _chipSaveTimer?.cancel();
     _nameController.dispose();
     _bioController.dispose();
     _cityController.dispose();
@@ -407,6 +412,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+  // ===== CHIP AUTO-SAVE =====
+  // Chips speichern sofort (debounced), damit der Steckbrief live mitgeht.
+  Timer? _chipSaveTimer;
+
+  void _autoSaveChips() {
+    _chipSaveTimer?.cancel();
+    _chipSaveTimer = Timer(const Duration(milliseconds: 700), () async {
+      final userId = Supabase.instance.client.auth.currentUser?.id;
+      if (userId == null) return;
+      try {
+        await Supabase.instance.client.from('profiles').update({
+          'tags': _selectedTags,
+          'interests': _selectedInterests,
+          'sports': _selectedSports,
+          'travel': _selectedTravel,
+        }).eq('id', userId);
+        if (mounted) await context.read<ProfileService>().fetchProfile();
+      } catch (e) {
+        debugPrint('Chip auto-save failed: $e');
+      }
+    });
+  }
+
   Widget _chipSelection(List<String> available, List<String> selected, int max) {
     return Wrap(
       spacing: 8, runSpacing: 8,
@@ -414,13 +442,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         final isSelected = selected.contains(item);
         return GestureDetector(
           onTap: () {
+            if (!isSelected && selected.length >= max) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Maximal $max Auswahlen moeglich')),
+              );
+              return;
+            }
             setState(() {
               if (isSelected) {
                 selected.remove(item);
-              } else if (selected.length < max) {
+              } else {
                 selected.add(item);
               }
             });
+            _autoSaveChips();
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),

@@ -502,62 +502,153 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         Text(AppLocalizations.of(context)?.characterTraits ?? 'Pers\u00f6nlichkeit', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
         Text(AppLocalizations.of(context)?.interestsHobbies ?? 'Interessen & Hobbys', style: const TextStyle(color: HevjinTheme.textSecondary)),
-        const SizedBox(height: 20),
-
-        Text('W\u00e4hle bis zu 5 Eigenschaften (${_selectedTags.length}/5)',
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
         const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: _availableTags.map((tag) {
-            final selected = _selectedTags.contains(tag);
-            return FilterChip(
-              label: Text(tag),
-              selected: selected,
-              selectedColor: HevjinTheme.secondary.withOpacity(0.2),
-              checkmarkColor: HevjinTheme.secondary,
-              onSelected: (v) {
-                setState(() {
-                  if (v && _selectedTags.length < 5) {
-                    _selectedTags.add(tag);
-                  } else {
-                    _selectedTags.remove(tag);
-                  }
-                });
-              },
-            );
-          }).toList(),
+        Row(
+          children: [
+            Icon(Icons.swipe_vertical_outlined, size: 15, color: HevjinTheme.secondary),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                'Zwei Bereiche - scrolle nach unten f\u00fcr die Interessen',
+                style: TextStyle(fontSize: 12, color: HevjinTheme.secondary, fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 28),
+        const SizedBox(height: 18),
 
-        Text('Interessen — bis zu 5 wählen (${_selectedInterests.length}/5)',
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: _availableInterests.map((item) {
-            final selected = _selectedInterests.contains(item['label']);
-            return FilterChip(
-              avatar: Text(item['icon']!, style: const TextStyle(fontSize: 16)),
-              label: Text(item['label']!),
-              selected: selected,
-              selectedColor: HevjinTheme.secondary.withOpacity(0.2),
-              checkmarkColor: HevjinTheme.secondary,
-              onSelected: (v) {
-                setState(() {
-                  if (v && _selectedInterests.length < 5) {
-                    _selectedInterests.add(item['label']!);
-                  } else {
-                    _selectedInterests.remove(item['label']);
-                  }
-                });
-              },
-            );
-          }).toList(),
+        // ===== Bereich 1: Eigenschaften =====
+        _chipSection(
+          icon: Icons.psychology_outlined,
+          title: 'Eigenschaften',
+          subtitle: 'Was beschreibt dich?',
+          count: _selectedTags.length,
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _availableTags.map((tag) {
+              final selected = _selectedTags.contains(tag);
+              return FilterChip(
+                label: Text(tag),
+                selected: selected,
+                backgroundColor: Colors.white,
+                selectedColor: HevjinTheme.secondary.withOpacity(0.2),
+                checkmarkColor: HevjinTheme.secondary,
+                onSelected: (v) {
+                  setState(() {
+                    if (v && _selectedTags.length < 5) {
+                      _selectedTags.add(tag);
+                    } else {
+                      _selectedTags.remove(tag);
+                    }
+                  });
+                },
+              );
+            }).toList(),
+          ),
+        ),
+
+        const SizedBox(height: 18),
+
+        // ===== Bereich 2: Interessen =====
+        _chipSection(
+          icon: Icons.interests_outlined,
+          title: 'Interessen',
+          subtitle: 'Was machst du gerne?',
+          count: _selectedInterests.length,
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _availableInterests.map((item) {
+              final selected = _selectedInterests.contains(item['label']);
+              return FilterChip(
+                avatar: Text(item['icon']!, style: const TextStyle(fontSize: 16)),
+                label: Text(item['label']!),
+                selected: selected,
+                backgroundColor: Colors.white,
+                selectedColor: HevjinTheme.secondary.withOpacity(0.2),
+                checkmarkColor: HevjinTheme.secondary,
+                onSelected: (v) {
+                  setState(() {
+                    if (v && _selectedInterests.length < 5) {
+                      _selectedInterests.add(item['label']!);
+                    } else {
+                      _selectedInterests.remove(item['label']);
+                    }
+                  });
+                },
+              );
+            }).toList(),
+          ),
         ),
       ],
+    );
+  }
+
+  /// Abgesetzte Karte mit Kopfzeile + Zaehler, damit auf dem Handy
+  /// sofort sichtbar ist, dass es zwei getrennte Auswahl-Bereiche gibt.
+  Widget _chipSection({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required int count,
+    required Widget child,
+  }) {
+    final active = count > 0;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+      decoration: BoxDecoration(
+        color: HevjinTheme.cardBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: active ? HevjinTheme.secondary.withOpacity(0.45) : Colors.grey.shade300,
+          width: active ? 1.5 : 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 20, color: HevjinTheme.secondary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                    ),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(fontSize: 11.5, color: HevjinTheme.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                decoration: BoxDecoration(
+                  color: active ? HevjinTheme.secondary : Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$count/5',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: active ? Colors.white : HevjinTheme.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 18),
+          child,
+        ],
+      ),
     );
   }
 

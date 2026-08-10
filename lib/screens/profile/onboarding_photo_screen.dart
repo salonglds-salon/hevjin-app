@@ -98,7 +98,10 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
         ],
       ),
       body: SafeArea(
-        child: Padding(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
@@ -227,6 +230,8 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
                 ),
               const SizedBox(height: 12),
             ],
+          ),
+            ),
           ),
         ),
       ),

@@ -145,6 +145,32 @@ class UserProfile {
     }
   }
 
+  String get childWishDisplay {
+    switch (childWish) {
+      case 'ja':
+        return 'Ja';
+      case 'vielleicht':
+        return 'Vielleicht';
+      case 'nein':
+        return 'Nein';
+      default:
+        return childWish ?? '';
+    }
+  }
+
+  String get smokingDisplay {
+    switch (smoking) {
+      case 'nie':
+        return 'Nichtraucher';
+      case 'gelegentlich':
+        return 'Gelegentlich';
+      case 'regelmaessig':
+        return 'Regelm\u00e4\u00dfig';
+      default:
+        return smoking ?? '';
+    }
+  }
+
   static List<String> _toStringList(dynamic value) {
     if (value == null) return [];
     if (value is List) return value.map((e) => e.toString()).toList();
