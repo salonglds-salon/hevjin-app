@@ -61,3 +61,4 @@ flutter_*.log
 
 # local throwaway patch/deploy scripts (may contain tokens)
 tool/*.ps1
+*.bak 

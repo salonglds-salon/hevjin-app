@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../utils/theme.dart';
+import 'package:provider/provider.dart';
+import '../../services/profile_service.dart';
 import '../home/home_screen.dart';
 
 /// Letzter Onboarding-Schritt: Profilbild hochladen (optional).
@@ -70,7 +72,10 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
     }
   }
 
-  void _goToDiscover() {
+  Future<void> _goToDiscover() async {
+    // Provider-Cache neu laden, damit Avatar/Fotos sofort sichtbar sind
+    await context.read<ProfileService>().fetchProfile();
+    if (!mounted) return;
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const HomeScreen()),
