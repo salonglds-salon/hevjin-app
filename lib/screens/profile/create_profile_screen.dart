@@ -24,6 +24,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   String _gender = 'male';
   String _caste = 'murid';
+  bool _art9Consent = false;
   String _lookingFor = 'heirat';
   String? _education;
   String? _jobStatus;
@@ -195,9 +196,15 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         return;
       }
     }
-    if (_currentPage == 1 && _caste.isEmpty) {
-      _showError('Bitte wähle deine Kaste');
-      return;
+    if (_currentPage == 1) {
+      if (!_art9Consent) {
+        _showError('Bitte best\u00e4tige die Einwilligung zu Kaste und Stamm');
+        return;
+      }
+      if (_caste.isEmpty) {
+        _showError('Bitte w\u00e4hle deine Kaste');
+        return;
+      }
     }
     setState(() => _currentPage++);
   }
@@ -298,6 +305,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         const SizedBox(height: 4),
         Text(AppLocalizations.of(context)?.caste ?? 'Kaste, Stamm und was du suchst', style: const TextStyle(color: HevjinTheme.textSecondary)),
         const SizedBox(height: 24),
+        _buildArt9Consent(),
 
         Text('${AppLocalizations.of(context)?.caste ?? 'Kaste'} *', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
         const SizedBox(height: 6),
@@ -720,6 +728,82 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     );
   }
 
+  Widget _buildArt9Consent() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFF3A2A1E),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: _art9Consent ? const Color(0xFF4CAF50) : const Color(0xFF7A2E2E),
+          width: 1.4,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: const [
+              Icon(Icons.shield_outlined, size: 18, color: Color(0xFFFF8A80)),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Besonders gesch\u00fctzte Daten',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    color: Color(0xFFFF8A80),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Kaste und Stamm geh\u00f6ren zu deiner ethnischen und religi\u00f6sen '
+            'Herkunft. Diese Angaben sind nach Art. 9 DSGVO besonders '
+            'gesch\u00fctzt. Wir verarbeiten sie ausschlie\u00dflich, um dir '
+            'passende Profile zu zeigen \u2013 niemals f\u00fcr Werbung, und wir '
+            'geben sie nicht an Dritte weiter. Du kannst deine Einwilligung '
+            'jederzeit widerrufen, indem du dein Profil l\u00f6schst.',
+            style: TextStyle(fontSize: 12, height: 1.45, color: Color(0xFFD9CFC6)),
+          ),
+          const SizedBox(height: 4),
+          InkWell(
+            onTap: () => setState(() => _art9Consent = !_art9Consent),
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                children: [
+                  Checkbox(
+                    value: _art9Consent,
+                    onChanged: (v) => setState(() => _art9Consent = v ?? false),
+                    activeColor: const Color(0xFF4CAF50),
+                    side: const BorderSide(color: Color(0xFFD9CFC6), width: 1.5),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                  const Expanded(
+                    child: Text(
+                      'Ich willige ausdr\u00fccklich in die Verarbeitung dieser Angaben ein.',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _casteButton(String value, String emoji, String label) {
     final selected = _caste == value;
     return GestureDetector(
@@ -857,6 +941,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     
     // Always save optional fields
     profileData['caste'] = _caste;
+    profileData['art9_consent_at'] = DateTime.now().toUtc().toIso8601String();
     if (_tribeController.text.trim().isNotEmpty) profileData['tribe'] = _tribeController.text.trim();
     profileData['looking_for'] = _lookingFor;
     if (_bioController.text.trim().isNotEmpty) profileData['bio'] = _bioController.text.trim();
