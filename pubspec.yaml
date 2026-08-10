@@ -33,7 +33,6 @@ flutter:
   generate: true
   assets:
     - assets/images/
-    - assets/fonts/
 
 # ===== App-Icons (flutter_launcher_icons) =====
 # Regenerate with:  dart run flutter_launcher_icons
