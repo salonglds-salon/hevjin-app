@@ -1882,9 +1882,6 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          _settingsItem(Icons.phone_outlined, 'Telefonnummer', profile.phone ?? 'Nicht angegeben', onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Telefonnummer kann nur \u00fcber SMS-Login ge\u00e4ndert werden.')));
-          }),
           _settingsItem(Icons.lock_outline, 'Privatsph\u00e4re', 'Fotos: ${profile.photosPrivate ? "Privat" : "\u00d6ffentlich"}', onTap: () async {
             final confirm = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
               title: const Text('Privatsph\u00e4re \u00e4ndern'),

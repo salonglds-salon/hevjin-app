@@ -1,6 +1,5 @@
 class UserProfile {
   final String id;
-  final String? phone;
   final String displayName;
   final DateTime birthDate;
   final String? gender;
@@ -39,7 +38,6 @@ class UserProfile {
 
   UserProfile({
     required this.id,
-    this.phone,
     required this.displayName,
     required this.birthDate,
     this.gender,
@@ -180,7 +178,6 @@ class UserProfile {
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
       id: json['id']?.toString() ?? '',
-      phone: json['phone']?.toString(),
       displayName: (json['display_name']?.toString().trim().isNotEmpty ?? false)
           ? json['display_name'].toString()
           : 'Mitglied',
@@ -232,7 +229,6 @@ class UserProfile {
     return {
       'prompt_answers': promptAnswers,
       'id': id,
-      'phone': phone,
       'display_name': displayName,
       'birth_date': birthDate.toIso8601String().split('T').first,
       'gender': gender,
