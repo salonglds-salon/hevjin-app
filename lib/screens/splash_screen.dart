@@ -6,6 +6,7 @@ import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../utils/theme.dart';
 import 'auth/welcome_screen.dart';
+import 'auth/set_new_password_screen.dart';
 import 'home/home_screen.dart';
 import 'profile/create_profile_screen.dart';
 
@@ -36,13 +37,41 @@ class _SplashScreenState extends State<SplashScreen>
     _setupAuthListener();
   }
 
+  /// Erkennt Passwort-Reset-Links: Supabase haengt beim Implicit-Flow
+  /// "type=recovery" an das URL-Fragment (Web) bzw. an den Deep-Link (Android).
+  /// Uri.base ist auf allen Plattformen verfuegbar (kein dart:html noetig).
+  bool _isRecoveryLink() {
+    try {
+      final uri = Uri.base;
+      if (uri.fragment.contains('type=recovery')) return true;
+      if (uri.queryParameters['type'] == 'recovery') return true;
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   void _setupAuthListener() {
+    // Reset-Link erkannt -> direkt zum Passwort-Screen, nichts anderes zaehlt.
+    if (_isRecoveryLink()) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _goTo(const SetNewPasswordScreen());
+      });
+      return;
+    }
+
     bool hasNavigated = false;
     
     // Listen for auth state changes (handles OAuth redirect)
     _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
       if (!mounted || hasNavigated) return;
       final event = data.event;
+      // Fallback: falls das URL-Fragment schon vom Token-Catcher geleert wurde
+      if (event == AuthChangeEvent.passwordRecovery) {
+        hasNavigated = true;
+        _goTo(const SetNewPasswordScreen());
+        return;
+      }
       if (event == AuthChangeEvent.signedIn || event == AuthChangeEvent.tokenRefreshed) {
         hasNavigated = true;
         _navigateAfterLogin();
