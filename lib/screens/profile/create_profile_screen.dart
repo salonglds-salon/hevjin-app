@@ -903,7 +903,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
     final profileService = context.read<ProfileService>();
     final user = Supabase.instance.client.auth.currentUser;
-    final phone = user?.phone;
     final uid = user?.id ?? widget.userId;
     
     final profileData = <String, dynamic>{};
@@ -957,10 +956,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     if (_selectedTags.isNotEmpty) profileData['tags'] = _selectedTags;
     if (_selectedInterests.isNotEmpty) profileData['interests'] = _selectedInterests;
     
-    // Only include phone if user actually has one (not Google login)
-    if (phone != null && phone.isNotEmpty) {
-      profileData['phone'] = phone;
-    }
     
     final success = await profileService.saveProfile(profileData);
 
