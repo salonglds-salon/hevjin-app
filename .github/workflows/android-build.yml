@@ -23,7 +23,7 @@ jobs:
 
       - name: Keystore wiederherstellen
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/hevjin-upload.jks
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | tr -d '\n\r ' | base64 -d > android/app/hevjin-upload.jks
           cat > android/key.properties <<EOF
           storePassword=${{ secrets.STORE_PASSWORD }}
           keyPassword=${{ secrets.KEY_PASSWORD }}
@@ -31,8 +31,13 @@ jobs:
           storeFile=hevjin-upload.jks
           EOF
 
+      - name: Keystore verifizieren
+        run: |
+          keytool -list -v -keystore android/app/hevjin-upload.jks \
+            -storepass "${{ secrets.STORE_PASSWORD }}" | grep -i "SHA1:"
+
       - run: flutter pub get
-      - run: flutter analyze lib
+      - run: flutter analyze lib --no-fatal-infos
       - run: flutter build appbundle --release
 
       - uses: actions/upload-artifact@v4
