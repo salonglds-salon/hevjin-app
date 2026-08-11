@@ -659,7 +659,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       onTap: () {
         showModalBottomSheet(
           context: context,
-          backgroundColor: const Color(0xFFFFFFFF),
+          backgroundColor: HevjinTheme.background,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
@@ -668,14 +668,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.white30, borderRadius: BorderRadius.circular(2))),
+                Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(2))),
                 const SizedBox(height: 16),
                 ...LanguageProvider.supportedLocales.map((locale) {
                   final code = locale.languageCode;
                   final name = LanguageProvider.localeNames[code] ?? code;
                   final isSelected = code == currentCode;
                   return ListTile(
-                    title: Text(name, style: TextStyle(color: isSelected ? HevjinTheme.secondary : Colors.white, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+                    title: Text(name, style: TextStyle(color: isSelected ? HevjinTheme.secondary : HevjinTheme.textPrimary, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
                     trailing: isSelected ? Icon(Icons.check, color: HevjinTheme.secondary) : null,
                     onTap: () {
                       langProvider.setLocale(locale);
