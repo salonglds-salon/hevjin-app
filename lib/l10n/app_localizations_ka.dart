@@ -24,10 +24,10 @@ class AppLocalizationsKa extends AppLocalizations {
   String get loginProblems => 'Shesul problema?';
 
   @override
-  String get anonymous => '100% Anonimuri';
+  String get anonymous => '100% დაშიფრული მონაცემები';
 
   @override
-  String get emailVerified => 'Email dadasturebuli';
+  String get emailVerified => 'ელფოსტა დადასტურდა';
 
   @override
   String get onlyEzidi => 'Mxolod Ezidebi';

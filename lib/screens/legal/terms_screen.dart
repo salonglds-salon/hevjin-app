@@ -1,5 +1,6 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../utils/theme.dart';
+import 'legal_layout.dart';
 
 class TermsScreen extends StatelessWidget {
   const TermsScreen({super.key});
@@ -9,8 +10,7 @@ class TermsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: HevjinTheme.background,
       appBar: AppBar(title: const Text('Nutzungsbedingungen')),
-      body: const SingleChildScrollView(
-        padding: EdgeInsets.all(20),
+      body: const LegalBody(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

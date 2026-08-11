@@ -24,10 +24,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get loginProblems => 'مشاكل في تسجيل الدخول؟';
 
   @override
-  String get anonymous => '100% مجهول';
+  String get anonymous => '100% بيانات مشفرة';
 
   @override
-  String get emailVerified => 'تم التحقق';
+  String get emailVerified => 'بريد موثق';
 
   @override
   String get onlyEzidi => 'إيزيديون فقط';

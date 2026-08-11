@@ -24,7 +24,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get loginProblems => 'Inlogproblemen?';
 
   @override
-  String get anonymous => '100% Anoniem';
+  String get anonymous => '100% data versleuteld';
 
   @override
   String get emailVerified => 'E-mail geverifieerd';

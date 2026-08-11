@@ -24,7 +24,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get loginProblems => 'Inloggningsproblem?';
 
   @override
-  String get anonymous => '100% Anonymt';
+  String get anonymous => '100% data krypterad';
 
   @override
   String get emailVerified => 'E-post verifierad';

@@ -24,10 +24,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get loginProblems => 'Giriş sorunları?';
 
   @override
-  String get anonymous => '100% Anonim';
+  String get anonymous => '100% veri şifreli';
 
   @override
-  String get emailVerified => 'E-posta Doğrulandı';
+  String get emailVerified => 'E-posta doğrulandı';
 
   @override
   String get onlyEzidi => 'Sadece Êzidiler';

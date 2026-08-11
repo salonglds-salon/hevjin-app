@@ -24,10 +24,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get loginProblems => 'Moshkel dar vorud?';
 
   @override
-  String get anonymous => '100%ناشناس';
+  String get anonymous => '100% داده‌ها رمزنگاری‌شده';
 
   @override
-  String get emailVerified => 'Email taeed shod';
+  String get emailVerified => 'ایمیل تایید شد';
 
   @override
   String get onlyEzidi => 'Faghat Ezidiha';

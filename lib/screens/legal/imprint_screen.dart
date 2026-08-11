@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/theme.dart';
+import 'legal_layout.dart';
 
 class ImprintScreen extends StatelessWidget {
   const ImprintScreen({super.key});
@@ -9,8 +10,7 @@ class ImprintScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: HevjinTheme.background,
       appBar: AppBar(title: const Text('Impressum')),
-      body: const SingleChildScrollView(
-        padding: EdgeInsets.all(20),
+      body: const LegalBody(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

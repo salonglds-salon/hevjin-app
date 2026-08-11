@@ -24,10 +24,10 @@ class AppLocalizationsHy extends AppLocalizations {
   String get loginProblems => 'Mutqi xndirner?';
 
   @override
-  String get anonymous => '100% Ananun';
+  String get anonymous => '100% գաղտնագրված տվյալներ';
 
   @override
-  String get emailVerified => 'Email-y hastatvel e';
+  String get emailVerified => 'Էլ. փոստը հաստատված';
 
   @override
   String get onlyEzidi => 'Miain Ezdiner';

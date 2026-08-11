@@ -24,10 +24,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get loginProblems => 'Probleme bei der Anmeldung?';
 
   @override
-  String get anonymous => '100% Anonym';
+  String get anonymous => '100% Daten verschlüsselt';
 
   @override
-  String get emailVerified => 'E-Mail Verifiziert';
+  String get emailVerified => 'E-Mail verifiziert';
 
   @override
   String get onlyEzidi => 'Nur Êziden';

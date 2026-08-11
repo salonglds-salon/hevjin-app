@@ -149,13 +149,13 @@ abstract class AppLocalizations {
   /// No description provided for @anonymous.
   ///
   /// In en, this message translates to:
-  /// **'100% Anonymous'**
+  /// **'100% data encrypted'**
   String get anonymous;
 
   /// No description provided for @emailVerified.
   ///
   /// In en, this message translates to:
-  /// **'Email Verified'**
+  /// **'Email verified'**
   String get emailVerified;
 
   /// No description provided for @onlyEzidi.

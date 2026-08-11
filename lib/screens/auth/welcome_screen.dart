@@ -302,8 +302,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   spacing: 14,
                   runSpacing: 10,
                   children: [
-                    _badge(Icons.shield_outlined, AppLocalizations.of(context)?.anonymous ?? '100% Anonym'),
-                    _badge(Icons.verified_outlined, AppLocalizations.of(context)?.emailVerified ?? 'E-Mail Verifiziert'),
+                    _badge(Icons.shield_outlined, AppLocalizations.of(context)?.anonymous ?? '100% Daten verschl\u00fcsselt'),
+                    _badge(Icons.verified_outlined, AppLocalizations.of(context)?.emailVerified ?? 'E-Mail verifiziert'),
                     _badge(Icons.favorite_outline, AppLocalizations.of(context)?.onlyEzidi ?? 'Nur \u00caziden'),
                   ],
                 ),

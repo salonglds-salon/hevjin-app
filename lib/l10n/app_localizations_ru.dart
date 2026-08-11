@@ -24,10 +24,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get loginProblems => 'Problemy so vhodom?';
 
   @override
-  String get anonymous => '100% Anonimno';
+  String get anonymous => '100% данные зашифрованы';
 
   @override
-  String get emailVerified => 'E-mail podtverzhden';
+  String get emailVerified => 'E-mail подтверждён';
 
   @override
   String get onlyEzidi => 'Tolko Ezidy';
