@@ -11,7 +11,6 @@ import '../../services/language_provider.dart';
 import '../splash_screen.dart';
 import '../home/home_screen.dart';
 import '../profile/create_profile_screen.dart';
-import 'login_screen.dart';
 import 'register_screen.dart';
 import '../legal/privacy_policy_screen.dart';
 import '../legal/terms_screen.dart';
