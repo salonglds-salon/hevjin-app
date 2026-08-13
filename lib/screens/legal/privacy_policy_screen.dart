@@ -23,6 +23,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               'Verantwortlich f\u00fcr die Datenverarbeitung ist:\n\n'
               'Dalshad Kasim\n'
               'Bahnhofstr. 30, 49413 Dinklage, Deutschland\n'
+              'Telefon: +49 1525 1322992\n'
               'E-Mail: hevjinsupport@gmail.com\n'),
 
             _Section(title: '2. Welche Daten wir erheben', content:

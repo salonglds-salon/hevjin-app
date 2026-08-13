@@ -84,6 +84,7 @@ class TermsScreen extends StatelessWidget {
             _Section(title: '12. Kontakt', content:
               'Bei Fragen zu diesen Nutzungsbedingungen:\n\n'
               'Dalshad Hajaj Kasim\n'
+              'Telefon: +49 1525 1322992\n'
               'E-Mail: hevjinsupport@gmail.com\n'),
 
             SizedBox(height: 40),

@@ -1,0 +1,74 @@
+name: Android Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: 'versionCode (leer = automatisch: 100 + run_number)'
+        required: false
+        default: ''
+      version_name:
+        description: 'versionName z.B. 1.0.2 (leer = aus pubspec.yaml)'
+        required: false
+        default: ''
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Keystore wiederherstellen
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | tr -d '\n\r ' | base64 -d > android/app/hevjin-upload.jks
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.STORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=hevjin
+          storeFile=hevjin-upload.jks
+          EOF
+
+      - name: Keystore verifizieren
+        run: |
+          keytool -list -v -keystore android/app/hevjin-upload.jks \
+            -storepass "${{ secrets.STORE_PASSWORD }}" | grep -i "SHA1:"
+
+      - name: Version bestimmen
+        id: ver
+        run: |
+          BN="${{ github.event.inputs.build_number }}"
+          if [ -z "$BN" ]; then BN=$((100 + ${{ github.run_number }})); fi
+          VN="${{ github.event.inputs.version_name }}"
+          if [ -z "$VN" ]; then VN=$(grep '^version:' pubspec.yaml | sed 's/version:[[:space:]]*//' | cut -d+ -f1 | tr -d '[:space:]'); fi
+          echo "bn=$BN" >> $GITHUB_OUTPUT
+          echo "vn=$VN" >> $GITHUB_OUTPUT
+          echo "==> versionName=$VN  versionCode=$BN"
+
+      - run: flutter pub get
+      - name: Analyze (nur Info, blockiert nicht)
+        continue-on-error: true
+        run: flutter analyze lib --no-fatal-infos --no-fatal-warnings
+
+      - name: Build AAB
+        run: |
+          flutter build appbundle --release \
+            --build-name=${{ steps.ver.outputs.vn }} \
+            --build-number=${{ steps.ver.outputs.bn }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hevjin-aab-${{ steps.ver.outputs.vn }}-${{ steps.ver.outputs.bn }}
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
