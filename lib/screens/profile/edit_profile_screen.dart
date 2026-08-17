@@ -268,7 +268,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 28),
 
             // === CHARAKTER & EIGENSCHAFTEN ===
-            _sectionHeader('CHARAKTER & EIGENSCHAFTEN (max. 3)'),
+            _sectionHeader('CHARAKTER & EIGENSCHAFTEN'),
             Wrap(
               spacing: 8, runSpacing: 8,
               children: _availableTags.map((tag) {
@@ -278,7 +278,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     setState(() {
                       if (selected) {
                         _selectedTags.remove(tag);
-                      } else if (_selectedTags.length < 3) {
+                      } else {
                         _selectedTags.add(tag);
                       }
                     });
@@ -302,17 +302,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 28),
 
             // === INTERESSEN & HOBBYS ===
-            _sectionHeader('INTERESSEN & HOBBYS (max. 5)'),
+            _sectionHeader('INTERESSEN & HOBBYS'),
             _chipSelection(_availableInterests, _selectedInterests, 5),
             const SizedBox(height: 28),
 
             // === SPORT ===
-            _sectionHeader('SPORT (max. 5)'),
+            _sectionHeader('SPORT'),
             _chipSelection(_availableSports, _selectedSports, 5),
             const SizedBox(height: 28),
 
             // === REISEN ===
-            _sectionHeader('REISEN (max. 5)'),
+            _sectionHeader('REISEN'),
             _chipSelection(_availableTravel, _selectedTravel, 5),
             const SizedBox(height: 28),
 
@@ -449,12 +449,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         final isSelected = selected.contains(item);
         return GestureDetector(
           onTap: () {
-            if (!isSelected && selected.length >= max) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Maximal $max Auswahlen moeglich')),
-              );
-              return;
-            }
             setState(() {
               if (isSelected) {
                 selected.remove(item);
