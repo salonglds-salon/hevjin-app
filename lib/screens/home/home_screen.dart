@@ -433,7 +433,7 @@ class DiscoverTab extends StatelessWidget {
                 Row(
                   children: [
                     Text('${profile.displayName}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                    Text('${profile.age}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w300, color: HevjinTheme.textSecondary)),
+                    Text(', ${profile.age}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w300, color: HevjinTheme.textSecondary)),
                   ],
                 ),
                 const SizedBox(height: 4),
@@ -495,7 +495,7 @@ class DiscoverTab extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('$score', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: HevjinTheme.secondary)),
+              Text('$score %', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: HevjinTheme.secondary)),
               const Text('\u00dcbereinstimmung', style: TextStyle(fontSize: 11, color: HevjinTheme.textSecondary)),
             ],
           ),
@@ -614,20 +614,11 @@ class DiscoverTab extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: profile.interests.map((i) => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.interests, size: 14, color: HevjinTheme.textSecondary),
-                  const SizedBox(width: 6),
-                  Text(i, style: const TextStyle(fontSize: 13)),
-                ],
-              ),
+            children: profile.interests.map((i) => _emojiChip(
+              i,
+              _interestEmoji[i] ?? '\u{2728}',
+              const Color(0xFFFFF3F0),
+              const Color(0xFFFFD9D0),
             )).toList(),
           ),
         ],
@@ -660,20 +651,11 @@ class DiscoverTab extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: profile.tags.map((t) => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.emoji_emotions_outlined, size: 14, color: HevjinTheme.textSecondary),
-                  const SizedBox(width: 6),
-                  Text(t, style: const TextStyle(fontSize: 13)),
-                ],
-              ),
+            children: profile.tags.map((t) => _emojiChip(
+              t,
+              _tagEmoji[t] ?? '\u{2728}',
+              const Color(0xFFFDF6E9),
+              const Color(0xFFF0DCB4),
             )).toList(),
           ),
         ],
@@ -681,8 +663,75 @@ class DiscoverTab extends StatelessWidget {
     );
   }
 
-  // ===== PROMPT CARD =====
+  // ===== EMOJI-MAPPING FUER CHIPS =====
+  static const Map<String, String> _interestEmoji = {
+    'Sport & Fitness': '\u{1F4AA}',
+    'Zeit mit Familie': '\u{1F46A}',
+    'Kochen & Essen': '\u{1F373}',
+    'Reisen': '\u{1F30E}',
+    'Lesen & Lernen': '\u{1F4DA}',
+    'Gaming & Filme': '\u{1F3AE}',
+    'Musik & Tanzen': '\u{1F3B5}',
+    'Natur & Spazieren': '\u{1F33F}',
+    'Fotografie': '\u{1F4F7}',
+    'Autos & Technik': '\u{1F697}',
+    'Kunst & Design': '\u{1F3A8}',
+  };
+
+  static const Map<String, String> _tagEmoji = {
+    'Humorvoll': '\u{1F604}',
+    'Romantisch': '\u{1F339}',
+    'Sportlich': '\u{1F3C3}',
+    'Zuverlaessig': '\u{1F91D}',
+    'Ehrgeizig': '\u{1F3AF}',
+    'Herzlich': '\u{1F49B}',
+    'Weltoffen': '\u{1F30D}',
+    'Traditionell': '\u{2600}',
+    'Spontan': '\u{26A1}',
+    'Kreativ': '\u{1F3A8}',
+    'Spirituell': '\u{1F54A}',
+    'Liebevoll': '\u{1F49E}',
+    'Gelassen': '\u{1F9D8}',
+    'Zielstrebig': '\u{1F680}',
+    'Abenteuerlustig': '\u{1F9ED}',
+    'Empathisch': '\u{1F932}',
+    'Loyal': '\u{1F6E1}',
+  };
+
+  /// Chip mit Emoji + warmem Farbton statt Einheits-Icon.
+  static Widget _emojiChip(String label, String emoji, Color bg, Color border) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: border),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 15, height: 1.1)),
+          const SizedBox(width: 7),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF3A2A22),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  // ===== PROMPT CARD (echte Profilfragen) =====
   static Widget _promptCard(UserProfile profile) {
+    // Nur anzeigen, wenn das Profil wirklich Fragen beantwortet hat.
+    final answers = profile.promptAnswers
+        .where((e) => (e['a'] ?? '').trim().isNotEmpty)
+        .toList();
+    if (answers.isEmpty) return const SizedBox();
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -694,17 +743,33 @@ class DiscoverTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Drei Dinge, die mir wichtig sind:', style: TextStyle(fontSize: 11, color: HevjinTheme.textSecondary)),
-          const SizedBox(height: 10),
-          Text(
-            'Familie, Ehrlichkeit und\ngute Gespräche ❤️',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, fontStyle: FontStyle.italic, height: 1.5, color: HevjinTheme.secondary),
-          ),
-          const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Icon(Icons.favorite_border, color: HevjinTheme.textSecondary.withOpacity(0.4), size: 18),
-          ),
+          for (int i = 0; i < answers.length; i++) ...[
+            if (i > 0)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                child: Divider(height: 1, color: Colors.grey.shade200),
+              ),
+            Text(
+              (answers[i]['q'] ?? '').trim(),
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.4,
+                color: HevjinTheme.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              (answers[i]['a'] ?? '').trim(),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                fontStyle: FontStyle.italic,
+                height: 1.5,
+                color: Color(0xFF3A2A22),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -723,10 +788,9 @@ class DiscoverTab extends StatelessWidget {
         children: [
           // Dislike - animated broken heart button
           _AnimatedDislikeButton(
-            onTap: () {
-              profileService.discoveryProfiles.removeAt(0);
-              // ignore: invalid_use_of_protected_member
-              profileService.notifyListeners();
+            onTap: () async {
+              if (profiles.isEmpty) return;
+              await profileService.dislikeUser(profiles.first.id);
             },
           ),
           const SizedBox(width: 20),

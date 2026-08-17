@@ -80,8 +80,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _cityController.text = profile.city ?? '';
       _tribeController.text = profile.tribe ?? '';
       _jobController.text = profile.job ?? '';
-      _caste = profile.caste;
-      _lookingFor = profile.lookingFor;
+      // Nur gueltige Werte uebernehmen - NULL/Altdaten wuerden sonst den
+      // CHECK-Constraint (profiles_caste_check) beim Speichern verletzen.
+      _caste = const ['scheich', 'pir', 'murid'].contains(profile.caste)
+          ? profile.caste
+          : 'murid';
+      _lookingFor =
+          const ['heirat', 'dating', 'freundschaft'].contains(profile.lookingFor)
+              ? profile.lookingFor
+              : 'heirat';
       _education = profile.education;
       _jobStatus = profile.jobStatus;
       _familyStatus = profile.familyStatus;
@@ -512,8 +519,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'city': _cityController.text.trim().isNotEmpty ? _cityController.text.trim() : null,
         'tribe': _tribeController.text.trim().isNotEmpty ? _tribeController.text.trim() : null,
         'job': _jobController.text.trim().isNotEmpty ? _jobController.text.trim() : null,
-        'caste': _caste,
-        'looking_for': _lookingFor,
+        // Whitelist-Guard: nur DB-erlaubte Werte schreiben, sonst NULL
+        'caste': const ['scheich', 'pir', 'murid'].contains(_caste) ? _caste : null,
+        'looking_for':
+            const ['heirat', 'dating', 'freundschaft'].contains(_lookingFor)
+                ? _lookingFor
+                : null,
         'height': _height != 175 ? _height : null,
         'education': _education,
         'job_status': _jobStatus,

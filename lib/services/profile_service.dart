@@ -4,6 +4,8 @@ import '../models/user_profile.dart';
 
 class ProfileService extends ChangeNotifier {
   final _supabase = Supabase.instance.client;
+  /// Wie lange ein Dislike gilt, bevor das Profil wieder auftaucht.
+  static const int dislikeCooldownDays = 21;
   UserProfile? _currentProfile;
   List<UserProfile> _discoveryProfiles = [];
   bool _isDeactivated = false;
@@ -141,6 +143,20 @@ class ProfileService extends ChangeNotifier {
         excludeIds.addAll(blockedData.map<String>((b) => b['blocked_id'].toString()));
       } catch (_) {}
 
+      // Kuerzlich Disliked ausschliessen (Cooldown)
+      try {
+        final cutoff = DateTime.now()
+            .toUtc()
+            .subtract(const Duration(days: dislikeCooldownDays))
+            .toIso8601String();
+        final dislikedData = await _supabase
+            .from('dislikes')
+            .select('to_user')
+            .eq('from_user', userId)
+            .gt('created_at', cutoff);
+        excludeIds.addAll(dislikedData.map<String>((d) => d['to_user'].toString()));
+      } catch (_) {}
+
       // Determine opposite gender for filtering
       String? myGender;
       try {
@@ -185,6 +201,28 @@ class ProfileService extends ChangeNotifier {
       }
     
     _isLoading = false;
+    notifyListeners();
+  }
+
+  /// Dislike: Profil wird dislikeCooldownDays lang nicht mehr in Discover gezeigt.
+  Future<void> dislikeUser(String targetUserId) async {
+    final userId = _supabase.auth.currentUser?.id;
+    if (userId == null) return;
+    if (targetUserId.startsWith('demo-')) {
+      _discoveryProfiles.removeWhere((p) => p.id == targetUserId);
+      notifyListeners();
+      return;
+    }
+    try {
+      await _supabase.from('dislikes').upsert({
+        'from_user': userId,
+        'to_user': targetUserId,
+        'created_at': DateTime.now().toUtc().toIso8601String(),
+      }, onConflict: 'from_user,to_user');
+    } catch (_) {
+      // Ein fehlgeschlagener Dislike darf den Button nicht blockieren
+    }
+    _discoveryProfiles.removeWhere((p) => p.id == targetUserId);
     notifyListeners();
   }
 
