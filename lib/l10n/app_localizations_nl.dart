@@ -36,6 +36,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get terms => 'Voorwaarden';
 
   @override
+  String get imprint => 'Colofon';
+
+  @override
   String get privacy => 'Privacybeleid';
 
   @override

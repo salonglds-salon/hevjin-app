@@ -36,6 +36,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get terms => 'AGB';
 
   @override
+  String get imprint => 'Impressum';
+
+  @override
   String get privacy => 'Datenschutzerklärung';
 
   @override

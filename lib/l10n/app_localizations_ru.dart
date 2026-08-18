@@ -36,6 +36,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get terms => 'Uslovija';
 
   @override
+  String get imprint => 'Выходные данные';
+
+  @override
   String get privacy => 'Politika konfidencialnosti';
 
   @override

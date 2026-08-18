@@ -170,6 +170,12 @@ abstract class AppLocalizations {
   /// **'Terms'**
   String get terms;
 
+  /// No description provided for @imprint.
+  ///
+  /// In en, this message translates to:
+  /// **'Imprint'**
+  String get imprint;
+
   /// No description provided for @privacy.
   ///
   /// In en, this message translates to:

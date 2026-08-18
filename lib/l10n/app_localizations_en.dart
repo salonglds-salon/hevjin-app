@@ -36,6 +36,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get terms => 'Terms';
 
   @override
+  String get imprint => 'Imprint';
+
+  @override
   String get privacy => 'Privacy Policy';
 
   @override

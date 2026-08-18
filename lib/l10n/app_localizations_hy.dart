@@ -36,6 +36,9 @@ class AppLocalizationsHy extends AppLocalizations {
   String get terms => 'Paymanagrer';
 
   @override
+  String get imprint => 'Իրավական';
+
+  @override
   String get privacy => 'Gaxtniqutyan qaghaqakanutyun';
 
   @override

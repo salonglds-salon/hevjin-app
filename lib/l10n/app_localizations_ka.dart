@@ -36,6 +36,9 @@ class AppLocalizationsKa extends AppLocalizations {
   String get terms => 'Pirobebi';
 
   @override
+  String get imprint => 'იმპრესუმი';
+
+  @override
   String get privacy => 'Konfidentsialobis politika';
 
   @override

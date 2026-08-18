@@ -36,6 +36,9 @@ class AppLocalizationsSv extends AppLocalizations {
   String get terms => 'Villkor';
 
   @override
+  String get imprint => 'Utgivare';
+
+  @override
   String get privacy => 'Integritetspolicy';
 
   @override

@@ -36,6 +36,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get terms => 'Conditions';
 
   @override
+  String get imprint => 'Mentions légales';
+
+  @override
   String get privacy => 'Confidentialite';
 
   @override

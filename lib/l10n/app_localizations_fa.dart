@@ -36,6 +36,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get terms => 'Sharayet';
 
   @override
+  String get imprint => 'اطلاعات قانونی';
+
+  @override
   String get privacy => 'Harim-e Khosousi';
 
   @override

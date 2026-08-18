@@ -36,6 +36,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get terms => 'الشروط';
 
   @override
+  String get imprint => 'معلومات قانونية';
+
+  @override
   String get privacy => 'سياسة الخصوصية';
 
   @override

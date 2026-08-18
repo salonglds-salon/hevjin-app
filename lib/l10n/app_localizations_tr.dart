@@ -36,6 +36,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get terms => 'Kullanım Koşulları';
 
   @override
+  String get imprint => 'Künye';
+
+  @override
   String get privacy => 'Gizlilik Politikası';
 
   @override

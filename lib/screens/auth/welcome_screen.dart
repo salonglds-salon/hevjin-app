@@ -316,19 +316,19 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen())),
-                      child: const Text('AGB',
+                      child: Text(AppLocalizations.of(context)?.terms ?? 'AGB',
                           style: TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
                     ),
                     const Text('  \u00b7  ', style: TextStyle(color: Colors.white38, fontSize: 11)),
                     GestureDetector(
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
-                      child: const Text('Datenschutz',
+                      child: Text(AppLocalizations.of(context)?.privacy ?? 'Datenschutz',
                           style: TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
                     ),
                     const Text('  \u00b7  ', style: TextStyle(color: Colors.white38, fontSize: 11)),
                     GestureDetector(
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ImprintScreen())),
-                      child: const Text('Impressum',
+                      child: Text(AppLocalizations.of(context)?.imprint ?? 'Impressum',
                           style: TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
                     ),
                   ],
