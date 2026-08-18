@@ -1,6 +1,9 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/user_profile.dart';
+import '../../utils/chip_emojis.dart';
 import '../../utils/theme.dart';
 import '../../widgets/report_sheet.dart';
 
@@ -63,6 +66,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
     }
 
     final profile = _profile!;
+    final screenW = MediaQuery.of(context).size.width;
+    const maxContentW = 560.0;
+    final headerH = screenW < 600 ? (screenW * 1.05).clamp(300.0, 460.0) : 460.0;
+    final gallery = profile.photos.where((p) => p != profile.avatarUrl).toList();
 
     return Scaffold(
       backgroundColor: HevjinTheme.background,
@@ -70,7 +77,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
         slivers: [
           // App Bar mit Foto
           SliverAppBar(
-            expandedHeight: 350,
+            expandedHeight: headerH,
             pinned: true,
             backgroundColor: HevjinTheme.primary,
             leading: IconButton(
@@ -90,17 +97,17 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                     _showPhotoViewer(context, profile.photos, 0);
                   }
                 },
-                child: profile.avatarUrl != null
-                    ? Image.network(profile.avatarUrl!, fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _placeholder())
-                    : _placeholder(),
+                child: _headerImage(profile.avatarUrl),
               ),
             ),
           ),
 
           // Content
           SliverToBoxAdapter(
-            child: Padding(
+            child: Center(
+              child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: maxContentW),
+              child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,7 +162,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
 
                   // Bio
                   if (profile.bio != null)
-                    _sectionCard('UEBER MICH', [
+                    _sectionCard('\u00dcBER MICH', [
                       Text(profile.bio!, style: const TextStyle(fontSize: 15, height: 1.6, fontStyle: FontStyle.italic)),
                     ]),
                   if (profile.bio != null) const SizedBox(height: 12),
@@ -216,23 +223,23 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                     },
                   ),
 
-                  // Fotos
-                  if (profile.photos.isNotEmpty)
+                  // Fotos - Header-Bild wird rausgefiltert (keine Dublette)
+                  if (gallery.isNotEmpty)
                     _sectionCard('FOTOS', [
                       SizedBox(
                         height: 150,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          itemCount: profile.photos.length,
+                          itemCount: gallery.length,
                           itemBuilder: (ctx, i) => GestureDetector(
-                            onTap: () => _showPhotoViewer(context, profile.photos, i),
+                            onTap: () => _showPhotoViewer(context, gallery, i),
                             child: Container(
                               width: 120, height: 150,
                               margin: const EdgeInsets.only(right: 10),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
                                 image: DecorationImage(
-                                  image: NetworkImage(profile.photos[i]),
+                                  image: NetworkImage(gallery[i]),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -245,10 +252,38 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                   const SizedBox(height: 40),
                 ],
               ),
+              ),
+              ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  /// Header: scharfes, mittig begrenztes Portraet + weichgezeichneter Fill
+  /// dahinter. Verhindert das extreme Zoomen auf breiten Screens.
+  Widget _headerImage(String? url) {
+    if (url == null) return _placeholder();
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ImageFiltered(
+          imageFilter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+          child: Image.network(url, fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(color: HevjinTheme.primary)),
+        ),
+        Container(color: Colors.black.withOpacity(0.25)),
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Image.network(url,
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+                errorBuilder: (_, __, ___) => _placeholder()),
+          ),
+        ),
+      ],
     );
   }
 
@@ -306,7 +341,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
         children: [
           Icon(icon, size: 18, color: HevjinTheme.secondary),
           const SizedBox(width: 10),
-          SizedBox(width: 100, child: Text(label, style: const TextStyle(fontSize: 13, color: HevjinTheme.textSecondary))),
+          SizedBox(width: 126, child: Text(label, style: const TextStyle(fontSize: 13, color: HevjinTheme.textSecondary))),
           Expanded(child: Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600))),
         ],
       ),
@@ -320,7 +355,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
         color: HevjinTheme.secondary.withOpacity(0.08),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Text(text, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+      child: Text('${chipEmoji(text)} $text',
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
     );
   }
 }
