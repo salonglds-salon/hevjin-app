@@ -10,6 +10,7 @@ import '../../services/auth_service.dart';
 import '../../services/chat_service.dart';
 import '../../models/user_profile.dart';
 import '../../utils/theme.dart';
+import '../../utils/chip_emojis.dart';
 import '../profile/photo_upload_screen.dart';
 import '../profile/edit_profile_screen.dart';
 import '../splash_screen.dart';
@@ -2297,7 +2298,7 @@ class _InlineChipsState extends State<_InlineChips> {
             spacing: 8,
             runSpacing: 8,
             children: widget.options.map((item) {
-              final isSelected = _selected.contains(item);
+              final isSelected = chipSelected(_selected, item);
               return GestureDetector(
                 onTap: () => _toggle(item),
                 child: Container(
@@ -2310,7 +2311,7 @@ class _InlineChipsState extends State<_InlineChips> {
                       width: isSelected ? 1.5 : 1,
                     ),
                   ),
-                  child: Text(item, style: TextStyle(
+                  child: Text('${chipEmoji(item)}  $item', style: TextStyle(
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                     color: isSelected ? HevjinTheme.secondary : HevjinTheme.textSecondary,
