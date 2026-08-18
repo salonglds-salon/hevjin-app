@@ -283,19 +283,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       }
                     });
                   },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: selected ? HevjinTheme.secondary.withOpacity(0.12) : const Color(0xFFF5F5F5),
-                      border: Border.all(color: selected ? HevjinTheme.secondary : Colors.grey.shade300),
-                    ),
-                    child: Text(tag, style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-                      color: selected ? HevjinTheme.secondary : HevjinTheme.textPrimary,
-                    )),
-                  ),
+                  child: _chipBody(tag, selected),
                 );
               }).toList(),
             ),
@@ -347,7 +335,148 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _sectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
-      child: Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: HevjinTheme.textSecondary, letterSpacing: 1.5)),
+      child: Row(
+        children: [
+          Container(
+            width: 3,
+            height: 16,
+            decoration: BoxDecoration(
+              color: HevjinTheme.secondary,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(title, style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: HevjinTheme.textPrimary,
+            letterSpacing: 1.2,
+          )),
+        ],
+      ),
+    );
+  }
+
+  // ===== CHIP LOOK & EMOJIS =====
+  static const Map<String, String> _chipEmojis = {
+    // Interessen & Hobbys
+    'Sport & Fitness': '\u{1F4AA}',
+    'Zeit mit Familie': '\u{1F46A}',
+    'Kochen & Essen': '\u{1F373}',
+    'Reisen': '\u{2708}',
+    'Lesen & Lernen': '\u{1F4DA}',
+    'Gaming & Filme': '\u{1F3AE}',
+    'Musik & Tanzen': '\u{1F3B5}',
+    'Natur & Spazieren': '\u{1F33F}',
+    'Caf\u00e9 & Freunde': '\u{2615}',
+    'Cafe & Freunde': '\u{2615}',
+    'Fotografie': '\u{1F4F7}',
+    'Autos & Technik': '\u{1F697}',
+    'Kunst & Design': '\u{1F3A8}',
+    // Sport
+    'Fitness': '\u{1F3CB}',
+    'Fu\u00dfball': '\u{26BD}',
+    'Fussball': '\u{26BD}',
+    'Schwimmen': '\u{1F3CA}',
+    'Joggen': '\u{1F3C3}',
+    'Yoga': '\u{1F9D8}',
+    'Boxen': '\u{1F94A}',
+    'Basketball': '\u{1F3C0}',
+    'Tennis': '\u{1F3BE}',
+    'Kampfsport': '\u{1F94B}',
+    'Tanzen': '\u{1F483}',
+    'Radfahren': '\u{1F6B4}',
+    'Wandern': '\u{1F97E}',
+    // Reisen
+    'Strandurlaub': '\u{1F3D6}',
+    'St\u00e4dtereisen': '\u{1F3D9}',
+    'Staedtereisen': '\u{1F3D9}',
+    'Aktivurlaub': '\u{1F9D7}',
+    'Camping & Natur': '\u{26FA}',
+    'Wellness': '\u{1F486}',
+    'Backpacking': '\u{1F392}',
+    'Familienurlaub': '\u{1F46A}',
+    'Kreuzfahrt': '\u{1F6F3}',
+    // Charakter & Eigenschaften
+    'Humorvoll': '\u{1F604}',
+    'Romantisch': '\u{1F339}',
+    'Sportlich': '\u{1F3C5}',
+    'Famili\u00e4r': '\u{1F3E1}',
+    'Familiaer': '\u{1F3E1}',
+    'Zuverl\u00e4ssig': '\u{1F91D}',
+    'Zuverlaessig': '\u{1F91D}',
+    'Ehrgeizig': '\u{1F3AF}',
+    'Herzlich': '\u{1F49B}',
+    'Weltoffen': '\u{1F30D}',
+    'Traditionell': '\u{1F54A}',
+    'Spontan': '\u{26A1}',
+    'Kreativ': '\u{2728}',
+    'Spirituell': '\u{1F56F}',
+    'F\u00fcrsorglich': '\u{1F91A}',
+    'Fuersorglich': '\u{1F91A}',
+    'Liebevoll': '\u{1F970}',
+    'Gelassen': '\u{1F60C}',
+    'Sch\u00fcchtern': '\u{1F648}',
+    'Schuechtern': '\u{1F648}',
+    'Zielstrebig': '\u{1F680}',
+    'Abenteuerlustig': '\u{1F9ED}',
+    'Empathisch': '\u{1F932}',
+    'Loyal': '\u{1F6E1}',
+  };
+
+  Widget _chipBody(String label, bool sel) {
+    final emoji = _chipEmojis[label];
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOut,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        gradient: sel
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  HevjinTheme.secondary,
+                  Color.lerp(HevjinTheme.secondary, Colors.black, 0.28)!,
+                ],
+              )
+            : null,
+        color: sel ? null : Colors.white,
+        border: Border.all(
+          color: sel ? Colors.transparent : Colors.grey.shade300,
+          width: 1.2,
+        ),
+        boxShadow: sel
+            ? [BoxShadow(
+                color: HevjinTheme.secondary.withOpacity(0.30),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              )]
+            : [BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 4,
+                offset: const Offset(0, 1),
+              )],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (emoji != null) ...[
+            Text(emoji, style: const TextStyle(fontSize: 15)),
+            const SizedBox(width: 6),
+          ],
+          Text(label, style: TextStyle(
+            fontSize: 13.5,
+            fontWeight: sel ? FontWeight.w600 : FontWeight.w500,
+            color: sel ? Colors.white : HevjinTheme.textPrimary,
+          )),
+          if (sel) ...[
+            const SizedBox(width: 5),
+            const Icon(Icons.check_rounded, size: 15, color: Colors.white),
+          ],
+        ],
+      ),
     );
   }
 
@@ -458,19 +587,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             });
             _autoSaveChips();
           },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              color: isSelected ? HevjinTheme.secondary.withOpacity(0.12) : const Color(0xFFF5F5F5),
-              border: Border.all(color: isSelected ? HevjinTheme.secondary : Colors.grey.shade300),
-            ),
-            child: Text(item, style: TextStyle(
-              fontSize: 13,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              color: isSelected ? HevjinTheme.secondary : HevjinTheme.textPrimary,
-            )),
-          ),
+          child: _chipBody(item, isSelected),
         );
       }).toList(),
     );
