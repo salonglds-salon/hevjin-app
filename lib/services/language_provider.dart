@@ -41,14 +41,14 @@ class LanguageProvider extends ChangeNotifier {
 
   /// Only languages whose UI is complete enough to ship are listed here.
   ///
-  /// Temporarily disabled: ar, fa (RTL layout overflow + bidi issues in
-  /// Discover) and ru, fr, nl, sv, hy, ka (Discover/Profile strings are still
+  /// Temporarily disabled: tr, ar, fa (ar/fa also have RTL layout overflow and
+  /// bidi issues) plus ru, fr, nl, sv, hy, ka - for all of them the
   /// hardcoded German). The .arb files for all of them are kept in lib/l10n/ —
   /// re-enable a locale here once its screens are fully localized.
   static const supportedLocales = [
     Locale('de'),
     Locale('en'),
-    Locale('tr'),
+    // Locale('tr'),
     // Locale('ar'),
     // Locale('fa'),
     // Locale('ru'),
@@ -62,7 +62,7 @@ class LanguageProvider extends ChangeNotifier {
   static const localeNames = {
     'de': '\u{1F1E9}\u{1F1EA} Deutsch',
     'en': '\u{1F1EC}\u{1F1E7} English',
-    'tr': '\u{1F1F9}\u{1F1F7} T\u00fcrk\u00e7e',
+    // 'tr': '\u{1F1F9}\u{1F1F7} T\u00fcrk\u00e7e',
     // 'ar': '\u{1F1EE}\u{1F1F6} \u0627\u0644\u0639\u0631\u0628\u064a\u0629',
     // 'fa': '\u{1F1EE}\u{1F1F7} \u0641\u0627\u0631\u0633\u06cc',
     // 'ru': '\u{1F1F7}\u{1F1FA} \u0420\u0443\u0441\u0441\u043a\u0438\u0439',
