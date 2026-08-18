@@ -87,3 +87,18 @@ bool chipSelected(Iterable<String> selected, String option) {
   final target = normalizeChip(option);
   return selected.any((s) => normalizeChip(s) == target);
 }
+
+/// Kapitalisiert jedes Wort: 'schalka' -> 'Schalka', 'bani sipka' -> 'Bani Sipka'.
+/// Bindestriche werden ebenfalls beruecksichtigt ('haji-kandi' -> 'Haji-Kandi').
+String capitalizeWords(String s) {
+  final trimmed = s.trim();
+  if (trimmed.isEmpty) return trimmed;
+  return trimmed.splitMapJoin(
+    RegExp(r'[^\s\-]+'),
+    onMatch: (m) {
+      final w = m[0]!;
+      return w[0].toUpperCase() + w.substring(1).toLowerCase();
+    },
+    onNonMatch: (n) => n,
+  );
+}

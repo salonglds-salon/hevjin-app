@@ -144,7 +144,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                     if (profile.tribe != null) _infoRow(Icons.groups_outlined, 'Stamm', profile.tribe!),
                     _infoRow(Icons.favorite_outline, 'Sucht', profile.lookingForDisplay),
                     if (profile.city != null) _infoRow(Icons.location_on_outlined, 'Wohnort', profile.city!),
-                    if (profile.height != null) _infoRow(Icons.straighten, 'Groesse', '${profile.height} cm'),
+                    if (profile.height != null) _infoRow(Icons.straighten, 'Gr\u00f6\u00dfe', '${profile.height} cm'),
                     if (profile.education != null) _infoRow(Icons.school_outlined, 'Bildung', profile.educationDisplay),
                     if (profile.job != null) _infoRow(Icons.work_outline, 'Beruf', profile.job!),
                     if (profile.familyStatus != null) _infoRow(Icons.people_outline, 'Familienstand', profile.familyStatusDisplay),

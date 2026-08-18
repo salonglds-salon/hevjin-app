@@ -553,7 +553,7 @@ class DiscoverTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _factRow(Icons.stars_outlined, 'KASTE', profile.casteDisplay),
-          if (profile.tribe != null) _factRow(Icons.groups_outlined, 'STAMM', profile.tribe!),
+          if (profile.tribe != null) _factRow(Icons.groups_outlined, 'STAMM', capitalizeWords(profile.tribe!)),
           _factRow(Icons.favorite_outline, 'SUCHT', profile.lookingForDisplay),
           if (profile.city != null) _factRow(Icons.location_on_outlined, 'WOHNORT', profile.city!),
           if (profile.height != null) _factRow(Icons.straighten, 'FIGUR', '${profile.height} cm'),
@@ -683,7 +683,7 @@ class DiscoverTab extends StatelessWidget {
     'Humorvoll': '\u{1F604}',
     'Romantisch': '\u{1F339}',
     'Sportlich': '\u{1F3C3}',
-    'Zuverlaessig': '\u{1F91D}',
+    'Zuverl\u00e4ssig': '\u{1F91D}',
     'Ehrgeizig': '\u{1F3AF}',
     'Herzlich': '\u{1F49B}',
     'Weltoffen': '\u{1F30D}',
@@ -1083,17 +1083,18 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
 
   int _calculateCompleteness(UserProfile profile) {
     int score = 0;
-    int total = 10;
-    if (profile.displayName.isNotEmpty) score++;
-    if (profile.avatarUrl != null) score++;
-    if (profile.bio != null && profile.bio!.isNotEmpty) score++;
-    if (profile.city != null) score++;
-    if (profile.tribe != null) score++;
-    if (profile.photos.isNotEmpty) score++;
-    if (profile.height != null) score++;
-    if (profile.job != null) score++;
-    if (profile.education != null) score++;
-    if (profile.interests.isNotEmpty) score++;
+    const int total = 20;
+    if (profile.avatarUrl != null) score += 4;
+    if (profile.photos.isNotEmpty) score += 3;
+    if (profile.job != null) score += 3;
+    if (profile.bio != null && profile.bio!.isNotEmpty) score += 2;
+    if (profile.interests.isNotEmpty) score += 2;
+    if (profile.displayName.isNotEmpty) score += 1;
+    if (profile.city != null) score += 1;
+    if (profile.tribe != null) score += 1;
+    if (profile.height != null) score += 1;
+    if (profile.education != null) score += 1;
+    if (profile.tags.isNotEmpty) score += 1;
     return ((score / total) * 100).round();
   }
 
@@ -1276,7 +1277,9 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
-      child: isWide
+      child: Center(child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1100),
+        child: isWide
           ? Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1294,6 +1297,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                 _rightColumn(profile, completeness),
               ],
             ),
+      )),
     );
   }
 
@@ -1367,15 +1371,15 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
         const SizedBox(height: 12),
 
         // SPORT - Inline klickbar
-        _InlineChips(title: 'SPORT', field: 'sports', selected: profile.sports, options: const ['Fitness', 'Fussball', 'Schwimmen', 'Joggen', 'Yoga', 'Boxen', 'Basketball', 'Tennis', 'Kampfsport', 'Tanzen', 'Radfahren', 'Wandern']),
+        _InlineChips(title: 'SPORT', field: 'sports', selected: profile.sports, options: const ['Fitness', 'Fu\u00dfball', 'Schwimmen', 'Joggen', 'Yoga', 'Boxen', 'Basketball', 'Tennis', 'Kampfsport', 'Tanzen', 'Radfahren', 'Wandern']),
         const SizedBox(height: 12),
 
         // REISEN - Inline klickbar
-        _InlineChips(title: 'REISEN', field: 'travel', selected: profile.travel, options: const ['Strandurlaub', 'Staedtereisen', 'Aktivurlaub', 'Camping & Natur', 'Wellness', 'Backpacking', 'Familienurlaub', 'Kreuzfahrt']),
+        _InlineChips(title: 'REISEN', field: 'travel', selected: profile.travel, options: const ['Strandurlaub', 'St\u00e4dtereisen', 'Aktivurlaub', 'Camping & Natur', 'Wellness', 'Backpacking', 'Familienurlaub', 'Kreuzfahrt']),
         const SizedBox(height: 12),
 
         // CHARAKTER UND EIGENSCHAFTEN - Inline klickbar
-        _InlineChips(title: 'CHARAKTER UND EIGENSCHAFTEN', field: 'tags', selected: profile.tags, options: const ['Humorvoll', 'Romantisch', 'Sportlich', 'Zuverlaessig', 'Ehrgeizig', 'Herzlich', 'Weltoffen', 'Traditionell', 'Spontan', 'Kreativ', 'Spirituell', 'Liebevoll', 'Gelassen', 'Zielstrebig', 'Abenteuerlustig', 'Empathisch', 'Loyal']),
+        _InlineChips(title: 'CHARAKTER UND EIGENSCHAFTEN', field: 'tags', selected: profile.tags, options: const ['Humorvoll', 'Romantisch', 'Sportlich', 'Zuverl\u00e4ssig', 'Ehrgeizig', 'Herzlich', 'Weltoffen', 'Traditionell', 'Spontan', 'Kreativ', 'Spirituell', 'Liebevoll', 'Gelassen', 'Zielstrebig', 'Abenteuerlustig', 'Empathisch', 'Loyal']),
         const SizedBox(height: 30),
 
         // Logout
@@ -1420,7 +1424,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                         child: CircularProgressIndicator(
                           value: completeness / 100, strokeWidth: 4,
                           backgroundColor: const Color(0xFFF5F5F5),
-                          valueColor: AlwaysStoppedAnimation<Color>(completeness > 70 ? HevjinTheme.success : HevjinTheme.error),
+                          valueColor: AlwaysStoppedAnimation<Color>(completeness >= 90 ? HevjinTheme.success : HevjinTheme.error),
                         ),
                       ),
                       Text('$completeness%', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
@@ -1429,7 +1433,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                   const SizedBox(width: 14),
                   Expanded(
                     child: Text(
-                      completeness < 80
+                      completeness < 90
                           ? 'Achtung, du verschenkst wertvolle Chancen! Komplettiere jetzt dein Profil.'
                           : 'Super! Dein Profil ist fast vollständig.',
                       style: const TextStyle(fontSize: 12, height: 1.4, color: HevjinTheme.textSecondary),
@@ -1458,8 +1462,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
               _steckbriefRow(Icons.location_on_outlined, AppLocalizations.of(context)?.city ?? 'WOHNORT', profile.city ?? 'Keine Angabe',
                 onTap: () => showTextEditSheet(context, title: AppLocalizations.of(context)?.city ?? 'Wohnort', field: 'city', currentValue: profile.city, hint: 'z.B. Bielefeld, Oldenburg...')),
               _steckbriefRow(Icons.person_outline, 'GESCHLECHT', profile.gender == 'male' ? (AppLocalizations.of(context)?.male ?? 'Mann') : (AppLocalizations.of(context)?.female ?? 'Frau')),
-              _steckbriefRow(Icons.stars_outlined, AppLocalizations.of(context)?.caste ?? 'KASTE', profile.casteDisplay),
-              _steckbriefRow(Icons.groups_outlined, AppLocalizations.of(context)?.tribe ?? 'STAMM', profile.tribe ?? 'Keine Angabe',
+              _steckbriefRow(Icons.groups_outlined, AppLocalizations.of(context)?.tribe ?? 'STAMM', profile.tribe != null ? capitalizeWords(profile.tribe!) : 'Keine Angabe',
                 onTap: () => showTextEditSheet(context, title: AppLocalizations.of(context)?.tribe ?? 'Stamm / Ashiret', field: 'tribe', currentValue: profile.tribe, hint: 'z.B. Haskan, Sipka...')),
               _steckbriefRow(Icons.work_outline, AppLocalizations.of(context)?.job ?? 'BERUF', profile.job ?? 'Keine Angabe',
                 onTap: () => showTextEditSheet(context, title: AppLocalizations.of(context)?.job ?? 'Beruf', field: 'job', currentValue: profile.job, hint: 'z.B. Ingenieur, Lehrerin...')),

@@ -376,7 +376,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     // Sport
     'Fitness': '\u{1F3CB}',
     'Fu\u00dfball': '\u{26BD}',
-    'Fussball': '\u{26BD}',
     'Schwimmen': '\u{1F3CA}',
     'Joggen': '\u{1F3C3}',
     'Yoga': '\u{1F9D8}',
@@ -390,7 +389,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     // Reisen
     'Strandurlaub': '\u{1F3D6}',
     'St\u00e4dtereisen': '\u{1F3D9}',
-    'Staedtereisen': '\u{1F3D9}',
     'Aktivurlaub': '\u{1F9D7}',
     'Camping & Natur': '\u{26FA}',
     'Wellness': '\u{1F486}',
@@ -404,7 +402,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     'Famili\u00e4r': '\u{1F3E1}',
     'Familiaer': '\u{1F3E1}',
     'Zuverl\u00e4ssig': '\u{1F91D}',
-    'Zuverlaessig': '\u{1F91D}',
     'Ehrgeizig': '\u{1F3AF}',
     'Herzlich': '\u{1F49B}',
     'Weltoffen': '\u{1F30D}',
