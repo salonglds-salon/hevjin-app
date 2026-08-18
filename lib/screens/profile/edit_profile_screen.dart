@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/profile_service.dart';
 import '../../utils/theme.dart';
+import '../../utils/chip_emojis.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -624,8 +625,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       await Supabase.instance.client.from('profiles').update({
         'display_name': _nameController.text.trim(),
         'bio': _bioController.text.trim().isNotEmpty ? _bioController.text.trim() : null,
-        'city': _cityController.text.trim().isNotEmpty ? _cityController.text.trim() : null,
-        'tribe': _tribeController.text.trim().isNotEmpty ? _tribeController.text.trim() : null,
+        'city': _cityController.text.trim().isNotEmpty ? capitalizeWords(_cityController.text) : null,
+        'tribe': _tribeController.text.trim().isNotEmpty ? capitalizeWords(_tribeController.text) : null,
         'job': _jobController.text.trim().isNotEmpty ? _jobController.text.trim() : null,
         // Whitelist-Guard: nur DB-erlaubte Werte schreiben, sonst NULL
         'caste': const ['scheich', 'pir', 'murid'].contains(_caste) ? _caste : null,

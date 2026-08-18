@@ -3,6 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/profile_service.dart';
 import '../utils/theme.dart';
+import '../utils/chip_emojis.dart';
+
+/// Felder, die beim Speichern automatisch kapitalisiert werden.
+const _kCapitalizeFields = {'tribe', 'city'};
 
 // Speichert ein Feld und refresht das Profil
 BuildContext? _parentContext;
@@ -67,7 +71,9 @@ Future<void> showTextEditSheet(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () async {
-                final value = controller.text.trim().isNotEmpty ? controller.text.trim() : null;
+                final raw = controller.text.trim();
+                final normalized = _kCapitalizeFields.contains(field) ? capitalizeWords(raw) : raw;
+                final value = normalized.isNotEmpty ? normalized : null;
                 await _saveAndRefresh(ctx, field, value);
                 if (ctx.mounted) Navigator.pop(ctx);
               },
