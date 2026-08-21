@@ -187,6 +187,25 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                     ]),
                   if (profile.tags.isNotEmpty) const SizedBox(height: 12),
 
+                  // Sport
+                  if (profile.sports.isNotEmpty)
+                    _sectionCard('SPORT', [
+                      Wrap(
+                        spacing: 8, runSpacing: 8,
+                        children: profile.sports.map((s) => _chip(s)).toList(),
+                      ),
+                    ]),
+                  if (profile.sports.isNotEmpty) const SizedBox(height: 12),
+
+                  // Reisen
+                  if (profile.travel.isNotEmpty)
+                    _sectionCard('REISEN', [
+                      Wrap(
+                        spacing: 8, runSpacing: 8,
+                        children: profile.travel.map((t) => _chip(t)).toList(),
+                      ),
+                    ]),
+                  if (profile.travel.isNotEmpty) const SizedBox(height: 12),
                   // Lifestyle Fotos (extra laden)
                   FutureBuilder(
                     future: _loadLifestylePhotos(),

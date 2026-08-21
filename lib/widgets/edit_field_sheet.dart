@@ -6,7 +6,7 @@ import '../utils/theme.dart';
 import '../utils/chip_emojis.dart';
 
 /// Felder, die beim Speichern automatisch kapitalisiert werden.
-const _kCapitalizeFields = {'tribe', 'city'};
+const _kCapitalizeFields = {'tribe', 'city', 'job', 'display_name'};
 
 // Speichert ein Feld und refresht das Profil
 BuildContext? _parentContext;

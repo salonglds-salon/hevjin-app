@@ -1081,21 +1081,38 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
     super.dispose();
   }
 
+  // Werte wie "kein", "-", "keine angabe" zaehlen NICHT als ausgefuellt
+  bool _filled(String? v) {
+    if (v == null) return false;
+    final t = v.trim().toLowerCase();
+    if (t.length < 2) return false;
+    return !const {'kein', 'keine', 'keine angabe', 'nein', 'na', '-', '--', 'n/a'}.contains(t);
+  }
+
   int _calculateCompleteness(UserProfile profile) {
     int score = 0;
-    const int total = 20;
+    const int total = 30;
     if (profile.avatarUrl != null) score += 4;
-    if (profile.photos.isNotEmpty) score += 3;
-    if (profile.job != null) score += 3;
-    if (profile.bio != null && profile.bio!.isNotEmpty) score += 2;
+    if (profile.photos.length >= 3) {
+      score += 4;
+    } else if (profile.photos.isNotEmpty) {
+      score += 2;
+    }
+    if (profile.promptAnswers.isNotEmpty) {
+      score += profile.promptAnswers.length >= 3 ? 4 : 2;
+    }
+    if (_filled(profile.bio)) score += 3;
+    if (_filled(profile.job)) score += 2;
     if (profile.interests.isNotEmpty) score += 2;
+    if (profile.tags.isNotEmpty) score += 2;
+    if (profile.sports.isNotEmpty) score += 2;
+    if (profile.travel.isNotEmpty) score += 2;
     if (profile.displayName.isNotEmpty) score += 1;
-    if (profile.city != null) score += 1;
-    if (profile.tribe != null) score += 1;
+    if (_filled(profile.city)) score += 1;
+    if (_filled(profile.tribe)) score += 1;
     if (profile.height != null) score += 1;
-    if (profile.education != null) score += 1;
-    if (profile.tags.isNotEmpty) score += 1;
-    return ((score / total) * 100).round();
+    if (_filled(profile.education)) score += 1;
+    return ((score / total) * 100).round().clamp(0, 100);
   }
 
   @override
