@@ -137,15 +137,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 // Navigation Pills (Parship Style)
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
+                  padding: const EdgeInsets.only(left: 10, right: 10, bottom: 12),
                   child: Row(
                     children: [
                       _navPill(0, Icons.explore_outlined, AppLocalizations.of(context)?.discover ?? 'Discover'),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 4),
                       _navPill(1, Icons.favorite, AppLocalizations.of(context)?.likes ?? 'Likes', hasHighlight: true),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 4),
                     _navPill(2, Icons.chat_bubble_outline, AppLocalizations.of(context)?.chats ?? 'Chats', badge: _unreadCount),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 4),
                       _navPill(3, Icons.person_outline, AppLocalizations.of(context)?.profile ?? 'Profil'),
                     ],
                   ),
@@ -173,6 +173,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _navPill(int index, IconData icon, String label, {bool hasHighlight = false, int badge = 0}) {
     final isSelected = _currentIndex == index;
+    // Kompaktere Pills auf schmalen Handy-Screens, damit "Profil" nicht abgeschnitten wird
+    final compact = MediaQuery.of(context).size.width < 420;
     return GestureDetector(
       onTap: () {
         setState(() => _currentIndex = index);
@@ -185,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
         clipBehavior: Clip.none,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: compact ? 9 : 14, vertical: 8),
             decoration: BoxDecoration(
               color: isSelected
                   ? (hasHighlight ? HevjinTheme.secondary : HevjinTheme.primary)
@@ -196,11 +198,11 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, size: 16,
+                Icon(icon, size: compact ? 15 : 16,
                   color: isSelected ? Colors.white : HevjinTheme.textSecondary),
                 const SizedBox(width: 6),
                 Text(label, style: TextStyle(
-                  fontSize: 12,
+                  fontSize: compact ? 11 : 12,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   color: isSelected ? Colors.white : HevjinTheme.textSecondary,
                 )),
@@ -235,6 +237,83 @@ class DiscoverTab extends StatelessWidget {
 
     if (profileService.isLoading) {
       return const Center(child: CircularProgressIndicator(color: HevjinTheme.secondary));
+    }
+
+    // ===== DISCOVER-GATE (Release 108): min. 2 Fotos erforderlich =====
+    final myPhotos = profileService.currentProfile?.photos ?? const <String>[];
+    if (myPhotos.length < 2) {
+      final missing = 2 - myPhotos.length;
+      return Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 104,
+                height: 104,
+                decoration: BoxDecoration(
+                  color: HevjinTheme.secondary.withOpacity(0.10),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      color: HevjinTheme.secondary.withOpacity(0.35), width: 2),
+                ),
+                child: const Icon(Icons.add_a_photo_outlined,
+                    size: 44, color: HevjinTheme.secondary),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Noch ein Schritt',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: HevjinTheme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Hevj\u00een lebt von echten Profilen. Lade bitte '
+                '${missing >= 2 ? "zwei Fotos" : "noch ein Foto"} hoch, '
+                'um andere Mitglieder zu sehen.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 15,
+                  height: 1.5,
+                  color: HevjinTheme.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                '${myPhotos.length} von 2 Fotos',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: HevjinTheme.secondary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: 240,
+                height: 50,
+                child: ElevatedButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const PhotoUploadScreen()),
+                  ).then((_) {
+                    if (context.mounted) {
+                      context.read<ProfileService>().fetchProfile();
+                    }
+                  }),
+                  icon: const Icon(Icons.photo_library_outlined, size: 20),
+                  label: const Text('Fotos hochladen'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     if (profiles.isEmpty) {
