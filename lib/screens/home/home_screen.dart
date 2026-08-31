@@ -38,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
     // Delay to ensure auth session is ready
     Future.delayed(const Duration(milliseconds: 500), () {
       if (mounted) {
+        // Eigenes Profil laden (fuer das App-Gate / Fotocheck) ...
+        context.read<ProfileService>().fetchProfile();
         context.read<ProfileService>().fetchDiscoveryProfiles();
       }
     });
@@ -88,8 +90,142 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// Vollbild-Sperre: ohne 2 Fotos ist die App nicht nutzbar (Release 108).
+  Widget _buildPhotoGate(BuildContext context, int count) {
+    final missing = 2 - count;
+    return Scaffold(
+      backgroundColor: HevjinTheme.background,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text('Hevj\u00een',
+                          style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              color: HevjinTheme.primary)),
+                      SizedBox(width: 6),
+                      Icon(Icons.favorite,
+                          color: HevjinTheme.secondary, size: 22),
+                    ],
+                  ),
+                  const SizedBox(height: 40),
+                  Container(
+                    width: 104,
+                    height: 104,
+                    decoration: BoxDecoration(
+                      color: HevjinTheme.secondary.withOpacity(0.10),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                          color: HevjinTheme.secondary.withOpacity(0.35),
+                          width: 2),
+                    ),
+                    child: const Icon(Icons.add_a_photo_outlined,
+                        size: 44, color: HevjinTheme.secondary),
+                  ),
+                  const SizedBox(height: 26),
+                  const Text(
+                    'Noch ein Schritt',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: HevjinTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Hevj\u00een lebt von echten Profilen. Bitte lade '
+                    '${missing >= 2 ? "zwei Fotos" : "noch ein Foto"} hoch, '
+                    'um Hevj\u00een zu nutzen.',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      height: 1.5,
+                      color: HevjinTheme.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    '$count von 2 Fotos',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: HevjinTheme.secondary,
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const PhotoUploadScreen()),
+                      ).then((_) {
+                        if (context.mounted) {
+                          context.read<ProfileService>().fetchProfile();
+                        }
+                      }),
+                      icon: const Icon(Icons.photo_library_outlined, size: 20),
+                      label: const Text('Fotos hochladen',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600)),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextButton(
+                    onPressed: () async {
+                      await Supabase.instance.client.auth.signOut();
+                      if (!context.mounted) return;
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SplashScreen()),
+                        (route) => false,
+                      );
+                    },
+                    child: const Text('Abmelden',
+                        style: TextStyle(color: HevjinTheme.textSecondary)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // ===== APP-GATE (Release 108): min. 2 Fotos fuer die GESAMTE App =====
+    final gateService = context.watch<ProfileService>();
+    final me = gateService.currentProfile;
+
+    // Profil noch nicht geladen -> Spinner, damit das Gate nicht faelschlich
+    // aufblitzt, bevor die Fotos bekannt sind.
+    if (me == null) {
+      return const Scaffold(
+        backgroundColor: HevjinTheme.background,
+        body: Center(
+          child: CircularProgressIndicator(color: HevjinTheme.secondary),
+        ),
+      );
+    }
+
+    if (me.photos.length < 2) {
+      return _buildPhotoGate(context, me.photos.length);
+    }
+
     return Scaffold(
       backgroundColor: HevjinTheme.background,
       body: Column(
