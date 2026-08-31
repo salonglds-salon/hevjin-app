@@ -136,6 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Text('${l?.birthDate ?? 'Geburtsdatum'} *', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
             const SizedBox(height: 6),
             GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () async {
                 final picked = await showDatePicker(
                   context: context,
@@ -169,6 +170,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 Expanded(
                   child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: () => setState(() => _gender = 'male'),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 14),
@@ -183,6 +185,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: () => setState(() => _gender = 'female'),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 14),

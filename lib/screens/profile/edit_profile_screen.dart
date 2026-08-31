@@ -275,6 +275,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               children: _availableTags.map((tag) {
                 final selected = _selectedTags.contains(tag);
                 return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: () {
                     setState(() {
                       if (selected) {
@@ -514,6 +515,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final selected = _caste == value;
     return Expanded(
       child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: () => setState(() => _caste = value),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -532,6 +534,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final selected = _lookingFor == value;
     return Expanded(
       child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: () => setState(() => _lookingFor = value),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -575,6 +578,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       children: available.map((item) {
         final isSelected = selected.contains(item);
         return GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () {
             setState(() {
               if (isSelected) {
@@ -594,6 +598,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _boolChip(bool value, String label, bool selected) {
     return Expanded(
       child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: () => setState(() => _hasChildren = value),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),

@@ -315,18 +315,21 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen())),
                       child: Text(AppLocalizations.of(context)?.terms ?? 'AGB',
                           style: TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
                     ),
                     const Text('  \u00b7  ', style: TextStyle(color: Colors.white38, fontSize: 11)),
                     GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
                       child: Text(AppLocalizations.of(context)?.privacy ?? 'Datenschutz',
                           style: TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
                     ),
                     const Text('  \u00b7  ', style: TextStyle(color: Colors.white38, fontSize: 11)),
                     GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ImprintScreen())),
                       child: Text(AppLocalizations.of(context)?.imprint ?? 'Impressum',
                           style: TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
@@ -480,6 +483,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   Widget _genderOption(String value, String label, bool selected, VoidCallback onTap) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -656,6 +660,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     final currentCode = langProvider.locale.languageCode;
     final currentName = LanguageProvider.localeNames[currentCode] ?? 'Deutsch';
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () {
         showModalBottomSheet(
           context: context,

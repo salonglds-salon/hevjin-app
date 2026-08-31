@@ -144,6 +144,7 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
                   ),
                   const SizedBox(height: 36),
                   GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: _isUploading ? null : _pickAndUpload,
                     child: Container(
                       width: 180,

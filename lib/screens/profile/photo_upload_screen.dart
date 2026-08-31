@@ -75,10 +75,28 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
           .from('profile-photos')
           .getPublicUrl(filePath);
 
+      final wasBelowMin = _photoUrls.length < 2;
       _photoUrls.add(url);
       await _savePhotos();
 
       setState(() => _isUploading = false);
+
+      // Minimum (2 Fotos) gerade erreicht -> direkt zurueck zum HomeScreen,
+      // damit das Gate verschwindet und die Willkommensnachricht erscheint.
+      if (!widget.isOnboarding &&
+          wasBelowMin &&
+          _photoUrls.length >= 2 &&
+          mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profil freigeschaltet'),
+            backgroundColor: Color(0xFF28A745),
+            duration: Duration(milliseconds: 900),
+          ),
+        );
+        await Future.delayed(const Duration(milliseconds: 650));
+        if (mounted) Navigator.of(context).pop(true);
+      }
     } catch (e) {
       setState(() => _isUploading = false);
       if (mounted) {
@@ -256,6 +274,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
                                     Icon(Icons.drag_handle, color: HevjinTheme.textSecondary),
                                     const SizedBox(height: 8),
                                     GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
                                       onTap: () => _removePhoto(index),
                                       child: const Icon(Icons.delete_outline, color: Color(0xFFDC3545), size: 20),
                                     ),

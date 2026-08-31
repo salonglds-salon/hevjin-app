@@ -10,6 +10,7 @@ import '../../services/auth_service.dart';
 import '../../services/chat_service.dart';
 import '../../models/user_profile.dart';
 import '../../utils/theme.dart';
+import '../../services/language_provider.dart';
 import '../../utils/chip_emojis.dart';
 import '../profile/photo_upload_screen.dart';
 import '../profile/edit_profile_screen.dart';
@@ -31,6 +32,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   int _unreadCount = 0;
+  bool _gateWasActive = false;
+  bool _welcomeShown = false;
 
   @override
   void initState() {
@@ -88,6 +91,75 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (_) {
       if (mounted) setState(() => _unreadCount = 0);
     }
+  }
+
+  /// Willkommensnachricht, nachdem das Foto-Gate erfuellt wurde.
+  void _showWelcomeDialog() {
+    final name = context.read<ProfileService>().currentProfile?.displayName;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        backgroundColor: const Color(0xFF3A2A1E),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 30),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 84,
+                height: 84,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: HevjinTheme.secondary.withOpacity(0.12),
+                  border: Border.all(
+                      color: HevjinTheme.secondary.withOpacity(0.4), width: 2),
+                ),
+                child: const Icon(Icons.favorite,
+                    size: 40, color: HevjinTheme.secondary),
+              ),
+              const SizedBox(height: 22),
+              Text(
+                name != null && name.trim().isNotEmpty
+                    ? 'Willkommen, ${name.trim()}!'
+                    : 'Willkommen bei Hevj\u00een!',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.bold,
+                  color: HevjinTheme.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Dein Profil ist jetzt freigeschaltet. Entdecke Menschen '
+                'aus der Community, schicke ein Like und starte dein '
+                'erstes Gespr\u00e4ch.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  height: 1.5,
+                  color: HevjinTheme.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 26),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('Los geht\u2019s',
+                      style: TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w600)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   /// Vollbild-Sperre: ohne 2 Fotos ist die App nicht nutzbar (Release 108).
@@ -222,7 +294,16 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
+    // Gate gerade erfuellt -> einmalig Willkommensnachricht zeigen
+    if (me.photos.length >= 2 && _gateWasActive && !_welcomeShown) {
+      _welcomeShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _showWelcomeDialog();
+      });
+    }
+
     if (me.photos.length < 2) {
+      _gateWasActive = true;
       return _buildPhotoGate(context, me.photos.length);
     }
 
@@ -255,19 +336,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       const Spacer(),
-                      // Avatar
-                      GestureDetector(
-                        onTap: () => setState(() => _currentIndex = 3),
-                        child: Container(
-                          width: 36, height: 36,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: const Color(0xFFF5F5F5),
-                            border: Border.all(color: Colors.grey.shade200),
-                          ),
-                          child: const Icon(Icons.person, size: 20, color: HevjinTheme.textSecondary),
-                        ),
-                      ),
+                      // Sprachwaehler (DE/EN)
+                      _languageButton(context),
                     ],
                   ),
                 ),
@@ -307,11 +377,62 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _languageButton(BuildContext context) {
+    final langProvider = context.watch<LanguageProvider>();
+    final currentCode = langProvider.locale.languageCode;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          backgroundColor: Colors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          builder: (ctx) => Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(2))),
+                const SizedBox(height: 16),
+                ...LanguageProvider.supportedLocales.map((locale) {
+                  final code = locale.languageCode;
+                  final name = LanguageProvider.localeNames[code] ?? code;
+                  final isSelected = code == currentCode;
+                  return ListTile(
+                    title: Text(name, style: TextStyle(color: isSelected ? HevjinTheme.secondary : HevjinTheme.textPrimary, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+                    trailing: isSelected ? Icon(Icons.check, color: HevjinTheme.secondary) : null,
+                    onTap: () {
+                      langProvider.setLocale(locale);
+                      Navigator.pop(ctx);
+                    },
+                  );
+                }),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        );
+      },
+      child: Container(
+        width: 36, height: 36,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: const Color(0xFFF5F5F5),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: const Icon(Icons.language, size: 20, color: HevjinTheme.textSecondary),
+      ),
+    );
+  }
+
   Widget _navPill(int index, IconData icon, String label, {bool hasHighlight = false, int badge = 0}) {
     final isSelected = _currentIndex == index;
     // Kompaktere Pills auf schmalen Handy-Screens, damit "Profil" nicht abgeschnitten wird
     final compact = MediaQuery.of(context).size.width < 420;
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () {
         setState(() => _currentIndex = index);
         if (index == 2) {
@@ -1039,6 +1160,7 @@ class DiscoverTab extends StatelessWidget {
           const SizedBox(width: 20),
           // Next (arrow)
           GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () {
               profileService.discoveryProfiles.removeAt(0);
               // ignore: invalid_use_of_protected_member
@@ -1371,6 +1493,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                         bottom: -40,
                         left: 20,
                         child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PhotoUploadScreen())).then((_) {
                             // Refresh profile after upload
                             context.read<ProfileService>().fetchProfile();
@@ -1419,7 +1542,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                             _circleIconButton(Icons.verified_outlined, 'SMS\nVerifiziert', true),
                             const SizedBox(width: 12),
                             _circleIconButton(Icons.settings_outlined, 'Daten &\nEinstellungen', false,
-                              onTap: () {}),
+                              onTap: () => _tabController.animateTo(2)),
                           ],
                         ),
                       ),
@@ -2074,6 +2197,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
 
   Widget _addChip(String label, {VoidCallback? onTap}) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -2096,6 +2220,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
 
   Widget _steckbriefRow(IconData icon, String label, String value, {VoidCallback? onTap}) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 14),
@@ -2154,6 +2279,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                 itemBuilder: (context, index) {
                   if (index == profile.photos.length) {
                     return GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PhotoUploadScreen())),
                       child: Container(
                         decoration: BoxDecoration(
@@ -2367,6 +2493,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
 
   Widget _circleIconButton(IconData icon, String label, bool isVerified, {VoidCallback? onTap}) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Column(
         children: [
@@ -2406,6 +2533,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
 
   Widget _settingsItem(IconData icon, String title, String subtitle, {bool isDestructive = false, VoidCallback? onTap}) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
@@ -2535,6 +2663,7 @@ class _InlineChipsState extends State<_InlineChips> {
             children: widget.options.map((item) {
               final isSelected = chipSelected(_selected, item);
               return GestureDetector(
+                behavior: HitTestBehavior.opaque,
                 onTap: () => _toggle(item),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -2679,6 +2808,7 @@ class _LifestyleSectionState extends State<_LifestyleSectionWidget> {
                 // Letzter = Add Button
                 if (i == _lifestylePhotos.length) {
                   return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: _isUploading ? null : _uploadPhoto,
                     child: Container(
                       width: 120, height: 140,
@@ -2719,6 +2849,7 @@ class _LifestyleSectionState extends State<_LifestyleSectionWidget> {
                     Positioned(
                       top: 4, right: 14,
                       child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
                         onTap: () => _removePhoto(i),
                         child: Container(
                           width: 22, height: 22,

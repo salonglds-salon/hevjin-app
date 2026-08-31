@@ -906,6 +906,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   Widget _genderButton(String value, String label, IconData icon) {
     final selected = _gender == value;
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () => setState(() => _gender = value),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -1017,6 +1018,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   Widget _casteButton(String value, String emoji, String label) {
     final selected = _caste == value;
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () => setState(() => _caste = value),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -1046,6 +1048,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   Widget _lookingForButton(String value, String emoji, String label) {
     final selected = _lookingFor == value;
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () => setState(() => _lookingFor = value),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -1075,6 +1078,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   Widget _chipButton(
       String value, String label, bool selected, Function(String) onTap) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () => onTap(value),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -1097,6 +1101,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   Widget _boolButton(
       bool value, String label, bool selected, VoidCallback onTap) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),

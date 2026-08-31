@@ -534,6 +534,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   // Emoji Button
                   GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: () => setState(() => _showEmojis = !_showEmojis),
                     child: Container(
                       width: 38, height: 38,
@@ -575,6 +576,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   const SizedBox(width: 8),
                   // Image Button
                   GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: _isSending ? null : () => _sendImage(),
                     child: Container(
                       width: 38, height: 38,
@@ -588,6 +590,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   const SizedBox(width: 8),
                   // Send Button
                   GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: () => _sendMessage(),
                     child: Container(
                       width: 42, height: 42,

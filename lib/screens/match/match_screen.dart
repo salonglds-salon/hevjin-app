@@ -305,6 +305,7 @@ class _MatchScreenState extends State<MatchScreen>
       spacing: 10,
       children: _quick.map((e) {
         return GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () {
             _msg.text = _msg.text + e;
             _msg.selection = TextSelection.collapsed(offset: _msg.text.length);

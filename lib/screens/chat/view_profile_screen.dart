@@ -444,6 +444,7 @@ class _PhotoViewerScreenState extends State<_PhotoViewerScreen> {
               top: 0, bottom: 0,
               child: Center(
                 child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: () {
                     _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
                   },
@@ -465,6 +466,7 @@ class _PhotoViewerScreenState extends State<_PhotoViewerScreen> {
               top: 0, bottom: 0,
               child: Center(
                 child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: () {
                     _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
                   },
