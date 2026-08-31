@@ -1481,9 +1481,9 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              HevjinTheme.secondary.withOpacity(0.3),
-                              HevjinTheme.secondary.withOpacity(0.1),
-                              const Color(0xFFF5F5F5),
+                              const Color(0xFF8B3A0F),
+                              const Color(0xFF5C3A28),
+                              const Color(0xFF3A2A1E),
                             ],
                           ),
                         ),
@@ -1494,10 +1494,20 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                         left: 20,
                         child: GestureDetector(
                           behavior: HitTestBehavior.opaque,
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PhotoUploadScreen())).then((_) {
-                            // Refresh profile after upload
-                            context.read<ProfileService>().fetchProfile();
-                          }),
+                          onTap: () {
+                            if (profile.avatarUrl != null) {
+                              // Foto vorhanden -> Vollbild mit Zoom
+                              Navigator.push(context, MaterialPageRoute(
+                                fullscreenDialog: true,
+                                builder: (_) => _FullscreenPhoto(urls: [profile.avatarUrl!], initialIndex: 0),
+                              ));
+                            } else {
+                              // Kein Foto -> direkt zur Foto-Verwaltung
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const PhotoUploadScreen())).then((_) {
+                                context.read<ProfileService>().fetchProfile();
+                              });
+                            }
+                          },
                           child: Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
@@ -2290,11 +2300,18 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                       ),
                     );
                   }
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.network(profile.photos[index], fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(color: const Color(0xFFF5F5F5), child: const Icon(Icons.broken_image))),
-                  );
+                   return GestureDetector(
+                     behavior: HitTestBehavior.opaque,
+                     onTap: () => Navigator.push(context, MaterialPageRoute(
+                       fullscreenDialog: true,
+                       builder: (_) => _FullscreenPhoto(urls: profile.photos, initialIndex: index),
+                     )),
+                     child: ClipRRect(
+                       borderRadius: BorderRadius.circular(12),
+                       child: Image.network(profile.photos[index], fit: BoxFit.cover,
+                         errorBuilder: (_, __, ___) => Container(color: const Color(0xFFF5F5F5), child: const Icon(Icons.broken_image))),
+                     ),
+                   );
                 },
               ),
             ),
@@ -2508,7 +2525,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
           ),
           const SizedBox(height: 4),
           Text(label, textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 9, color: HevjinTheme.textSecondary)),
+            style: const TextStyle(fontSize: 9, color: Colors.white, fontWeight: FontWeight.w600)),
         ],
       ),
     );
@@ -3038,6 +3055,117 @@ class _AnimatedDislikeButtonState extends State<_AnimatedDislikeButton> with Sin
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+
+/// Vollbild-Galerie: Swipe zwischen Fotos, Pinch-Zoom, Zaehler
+class _FullscreenPhoto extends StatefulWidget {
+  final List<String> urls;
+  final int initialIndex;
+  const _FullscreenPhoto({required this.urls, this.initialIndex = 0});
+
+  @override
+  State<_FullscreenPhoto> createState() => _FullscreenPhotoState();
+}
+
+class _FullscreenPhotoState extends State<_FullscreenPhoto> {
+  late final PageController _pc;
+  late int _index;
+
+  @override
+  void initState() {
+    super.initState();
+    _index = widget.initialIndex;
+    _pc = PageController(initialPage: _index);
+  }
+
+  @override
+  void dispose() {
+    _pc.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            PageView.builder(
+              controller: _pc,
+              itemCount: widget.urls.length,
+              onPageChanged: (i) => setState(() => _index = i),
+              itemBuilder: (_, i) => Center(
+                child: InteractiveViewer(
+                  minScale: 1.0,
+                  maxScale: 4.0,
+                  child: Image.network(
+                    widget.urls[i],
+                    fit: BoxFit.contain,
+                    loadingBuilder: (c, child, prog) => prog == null
+                        ? child
+                        : const SizedBox(
+                            width: 60, height: 60,
+                            child: Center(child: CircularProgressIndicator(color: Colors.white)),
+                          ),
+                    errorBuilder: (c, e, s) => const Icon(Icons.broken_image, color: Colors.white54, size: 64),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 4,
+              left: 4,
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+            if (widget.urls.length > 1)
+              Positioned(
+                top: 14,
+                right: 16,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    "${_index + 1} / ${widget.urls.length}",
+                    style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+            Positioned(
+              bottom: 24,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: TextButton.icon(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.white24,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  ),
+                  icon: const Icon(Icons.photo_library_outlined, size: 18),
+                  label: const Text("Fotos verwalten"),
+                  onPressed: () {
+                    final svc = context.read<ProfileService>();
+                    final nav = Navigator.of(context);
+                    nav.pop();
+                    nav.push(MaterialPageRoute(builder: (_) => const PhotoUploadScreen()))
+                        .then((_) => svc.fetchProfile());
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
