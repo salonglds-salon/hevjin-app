@@ -371,60 +371,112 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom, left: 24, right: 24, top: 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(AppLocalizations.of(context)?.loginRegister ?? 'Anmelden / Registrieren', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
+        padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+            left: 24, right: 24, top: 12),
+        child: Center(child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 400),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(child: Container(width: 40, height: 4,
+                decoration: BoxDecoration(color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2)))),
+              const SizedBox(height: 22),
+              Text(AppLocalizations.of(context)?.loginRegister ?? 'Anmelden',
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 22),
 
-            Text(AppLocalizations.of(context)?.email ?? 'E-Mail', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-            const SizedBox(height: 8),
-            TextField(controller: _emailController, keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(hintText: 'deine@email.de', prefixIcon: Icon(Icons.email_outlined, size: 20))),
-            const SizedBox(height: 14),
+              TextField(controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: _sheetField(
+                  AppLocalizations.of(context)?.email ?? 'E-Mail',
+                  Icons.email_outlined)),
+              const SizedBox(height: 12),
 
-            Text(AppLocalizations.of(context)?.password ?? 'Passwort', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-            const SizedBox(height: 8),
-            TextField(controller: _passwordController, obscureText: !_passwordVisible,
-              decoration: InputDecoration(hintText: AppLocalizations.of(context)?.password ?? 'Passwort', prefixIcon: const Icon(Icons.lock_outlined, size: 20),
-                suffixIcon: IconButton(icon: Icon(_passwordVisible ? Icons.visibility : Icons.visibility_off, size: 20),
-                  onPressed: () => setModalState(() => _passwordVisible = !_passwordVisible)))),
-            const SizedBox(height: 20),
+              TextField(controller: _passwordController,
+                obscureText: !_passwordVisible,
+                decoration: _sheetField(
+                  AppLocalizations.of(context)?.password ?? 'Passwort',
+                  Icons.lock_outlined).copyWith(
+                  suffixIcon: IconButton(
+                    icon: Icon(_passwordVisible
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                      size: 20, color: Colors.grey.shade600),
+                    onPressed: () => setModalState(
+                      () => _passwordVisible = !_passwordVisible)))),
 
-            // Login Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
+              Align(alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    _showResetPasswordDialog(context);
+                  },
+                  child: Text('Passwort vergessen?',
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade700)))),
+              const SizedBox(height: 8),
+
+              ElevatedButton(
                 onPressed: _isLoading ? null : () async {
                   Navigator.pop(ctx);
                   await _loginWithEmail();
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: HevjinTheme.secondary, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                child: Text(AppLocalizations.of(context)?.login ?? 'Einloggen', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-              ),
-            ),
-            const SizedBox(height: 8),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: HevjinTheme.secondary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14))),
+                child: Text(AppLocalizations.of(context)?.login ?? 'Einloggen',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600))),
+              const SizedBox(height: 6),
 
-            // Register Button
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
+              TextButton(
                 onPressed: () {
                   Navigator.pop(ctx);
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen()));
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (_) => const RegisterScreen()));
                 },
-                style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), side: BorderSide(color: HevjinTheme.secondary)),
-                child: Text(AppLocalizations.of(context)?.register ?? 'Neues Konto erstellen', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: HevjinTheme.secondary)),
-              ),
-            ),
-            const SizedBox(height: 24),
-          ],
-        ),
+                child: Text.rich(TextSpan(
+                  style: const TextStyle(fontSize: 14, color: Colors.black54),
+                  children: [
+                    const TextSpan(text: 'Noch kein Konto?  '),
+                    TextSpan(text: 'Registrieren',
+                      style: TextStyle(color: HevjinTheme.secondary,
+                        fontWeight: FontWeight.w600)),
+                  ]))),
+            ],
+          ),
+        )),
       )),
     );
   }
+
+  // ===== SHEET FIELD STYLE =====
+  InputDecoration _sheetField(String label, IconData icon) => InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, size: 20, color: Colors.grey.shade600),
+        filled: true,
+        fillColor: Colors.grey.shade100,
+        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide.none),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide.none),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: BorderSide(color: HevjinTheme.secondary, width: 1.5)),
+        errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Colors.red, width: 1.2)),
+        labelStyle: TextStyle(color: Colors.grey.shade700, fontSize: 14),
+        floatingLabelStyle: TextStyle(color: HevjinTheme.secondary, fontSize: 13),
+      );
 
   // ===== PASSWORT VERGESSEN DIALOG =====
   void _showResetPasswordDialog(BuildContext context) {
