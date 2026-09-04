@@ -1,6 +1,6 @@
 name: hevjin
 description: "Hevjin - Partnersuche fuer Eziden"
-version: 1.0.3+108
+version: 1.0.4+109
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
