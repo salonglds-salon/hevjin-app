@@ -836,10 +836,12 @@ class DiscoverTab extends StatelessWidget {
               const Text('\u00dcbereinstimmung', style: TextStyle(fontSize: 11, color: HevjinTheme.textSecondary)),
             ],
           ),
+          const Spacer(),
           Builder(
             builder: (ctx) => GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: () => showReportSheet(ctx, userId: profile.id, userName: profile.displayName),
-              child: const Icon(Icons.more_horiz, color: HevjinTheme.textSecondary),
+              child: const Tooltip(message: 'Melden', child: Padding(padding: EdgeInsets.all(12), child: Icon(Icons.flag_outlined, size: 20, color: HevjinTheme.textSecondary))),
             ),
           ),
         ],
