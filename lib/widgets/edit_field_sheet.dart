@@ -39,51 +39,159 @@ Future<void> showTextEditSheet(
   int maxLength = 100,
 }) async {
   _parentContext = context;
-  final controller = TextEditingController(text: currentValue);
 
-  await showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.white,
-    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-    builder: (ctx) => Padding(
-      padding: EdgeInsets.only(
-        left: 24, right: 24, top: 24,
-        bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
-          const SizedBox(height: 20),
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16),
-          TextField(
-            controller: controller,
-            maxLines: maxLines,
-            maxLength: maxLength,
-            autofocus: true,
-            decoration: InputDecoration(hintText: hint),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () async {
-                final raw = controller.text.trim();
-                final normalized = _kCapitalizeFields.contains(field) ? capitalizeWords(raw) : raw;
-                final value = normalized.isNotEmpty ? normalized : null;
-                await _saveAndRefresh(ctx, field, value);
-                if (ctx.mounted) Navigator.pop(ctx);
-              },
-              child: const Text('Speichern'),
-            ),
-          ),
-        ],
+  // Fullscreen-Route statt BottomSheet: iOS Safari (Flutter Web) meldet
+  // viewInsets.bottom nicht zuverlaessig und scrollt den Canvas weg,
+  // wodurch das Eingabefeld hinter der Tastatur verschwindet.
+  await Navigator.of(context, rootNavigator: true).push(
+    MaterialPageRoute(
+      fullscreenDialog: true,
+      builder: (_) => _TextEditPage(
+        title: title,
+        field: field,
+        initialValue: currentValue,
+        hint: hint,
+        maxLines: maxLines,
+        maxLength: maxLength,
       ),
     ),
   );
+}
+
+class _TextEditPage extends StatefulWidget {
+  final String title;
+  final String field;
+  final String? initialValue;
+  final String hint;
+  final int maxLines;
+  final int maxLength;
+
+  const _TextEditPage({
+    required this.title,
+    required this.field,
+    required this.initialValue,
+    required this.hint,
+    required this.maxLines,
+    required this.maxLength,
+  });
+
+  @override
+  State<_TextEditPage> createState() => _TextEditPageState();
+}
+
+class _TextEditPageState extends State<_TextEditPage> {
+  late final TextEditingController _controller;
+  final FocusNode _focus = FocusNode();
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialValue);
+    // Fokus erst NACH der Route-Animation -> sonst scrollt Safari mitten
+    // im Uebergang und der Viewport bleibt verschoben.
+    Future.delayed(const Duration(milliseconds: 400), () {
+      if (mounted) _focus.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focus.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    if (_saving) return;
+    setState(() => _saving = true);
+    final raw = _controller.text.trim();
+    final normalized =
+        _kCapitalizeFields.contains(widget.field) ? capitalizeWords(raw) : raw;
+    final value = normalized.isNotEmpty ? normalized : null;
+    try {
+      await _saveAndRefresh(context, widget.field, value);
+    } catch (e) {
+      if (mounted) {
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Speichern fehlgeschlagen: $e')),
+        );
+      }
+      return;
+    }
+    if (mounted) Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      // Kein Layout-Sprung wenn die Tastatur aufgeht
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: HevjinTheme.textPrimary,
+        elevation: 0.5,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(widget.title,
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+        actions: [
+          if (_saving)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 18),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else
+            TextButton(
+              onPressed: _save,
+              child: Text('Speichern',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: HevjinTheme.secondary)),
+            ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: _controller,
+              focusNode: _focus,
+              maxLines: widget.maxLines,
+              maxLength: widget.maxLength,
+              keyboardType: widget.maxLines > 1
+                  ? TextInputType.multiline
+                  : TextInputType.text,
+              textInputAction: widget.maxLines > 1
+                  ? TextInputAction.newline
+                  : TextInputAction.done,
+              onSubmitted: widget.maxLines > 1 ? null : (_) => _save(),
+              scrollPadding: const EdgeInsets.only(bottom: 140),
+              decoration: InputDecoration(hintText: widget.hint),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _saving ? null : _save,
+                child: const Text('Speichern'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 /// Shows a bottom sheet to select from dropdown options
