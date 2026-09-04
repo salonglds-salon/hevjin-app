@@ -2066,6 +2066,13 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
     final ei = editIndex ?? -1;
     final isEdit = ei >= 0 && ei < existing.length;
 
+    String? selectedPrompt = isEdit ? existing[ei]['q'] : null;
+    final answerController =
+        TextEditingController(text: isEdit ? existing[ei]['a'] : '');
+    final available = prompts
+        .where((p) => !existing.any((e) => e['q'] == p))
+        .toList();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -2073,13 +2080,6 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (ctx) {
-        String? selectedPrompt = isEdit ? existing[ei]['q'] : null;
-        final answerController =
-            TextEditingController(text: isEdit ? existing[ei]['a'] : '');
-        final available = prompts
-            .where((p) => !existing.any((e) => e['q'] == p))
-            .toList();
-
         return StatefulBuilder(
           builder: (ctx, setSheetState) => Padding(
             padding: EdgeInsets.only(
