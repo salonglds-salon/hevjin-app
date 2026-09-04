@@ -1545,19 +1545,6 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                           ),
                         ),
                       ),
-                      // Settings & Verification buttons (top right)
-                      Positioned(
-                        top: 50,
-                        right: 16,
-                        child: Row(
-                          children: [
-                            _circleIconButton(Icons.verified_outlined, 'SMS\nVerifiziert', true),
-                            const SizedBox(width: 12),
-                            _circleIconButton(Icons.settings_outlined, 'Daten &\nEinstellungen', false,
-                              onTap: () => _tabController.animateTo(2)),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
 
@@ -2348,9 +2335,6 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
           _settingsItem(Icons.notifications_outlined, 'Benachrichtigungen', 'Aktiviert', onTap: () {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Push-Benachrichtigungen kommen bald!')));
           }),
-          _settingsItem(Icons.shield_outlined, 'Verifizierung', 'SMS verifiziert', onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Dein Account ist verifiziert!'), backgroundColor: Color(0xFF4CAF50), duration: Duration(seconds: 2)));
-          }),
           const SizedBox(height: 8),
           ListTile(
             leading: Container(
@@ -2505,29 +2489,6 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
               ],
             ));
           }),
-        ],
-      ),
-    );
-  }
-
-  Widget _circleIconButton(IconData icon, String label, bool isVerified, {VoidCallback? onTap}) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 44, height: 44,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
-              border: Border.all(color: isVerified ? HevjinTheme.success : Colors.grey.shade300),
-            ),
-            child: Icon(icon, size: 20, color: isVerified ? HevjinTheme.success : HevjinTheme.textSecondary),
-          ),
-          const SizedBox(height: 4),
-          Text(label, textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 9, color: Colors.white, fontWeight: FontWeight.w600)),
         ],
       ),
     );
