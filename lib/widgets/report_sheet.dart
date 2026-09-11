@@ -8,11 +8,13 @@ Future<void> showReportSheet(BuildContext context, {
   required String userName,
 }) async {
   await showModalBottomSheet(
+    isScrollControlled: true,
     context: context,
     backgroundColor: Colors.white,
+    useSafeArea: true,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
     builder: (ctx) => Padding(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.fromLTRB(24, 24, 24, 24 + MediaQuery.of(ctx).viewPadding.bottom),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,22 +65,9 @@ Future<void> showReportSheet(BuildContext context, {
               _showReportReasonSheet(context, userId: userId, userName: userName);
             },
           ),
-          const SizedBox(height: 8),
-
-          // Unmatch
-          _ActionTile(
-            icon: Icons.heart_broken_outlined,
-            color: HevjinTheme.textSecondary,
-            title: 'Match auflösen',
-            subtitle: 'Entfernt das Match und den Chat',
-            onTap: () {
-              Navigator.pop(ctx);
-              // TODO: Unmatch implementieren
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Match aufgelöst')),
-              );
-            },
-          ),
+          // Unmatch-Option entfernt 04.09.2026: war nicht implementiert
+          // (TODO-Stub zeigte Erfolgsmeldung ohne Match/Chat zu loeschen).
+          // Nachziehen via ProfileService.unmatch() + RLS-DELETE auf matches.
           const SizedBox(height: 16),
         ],
       ),
@@ -101,6 +90,7 @@ void _showReportReasonSheet(BuildContext context, {required String userId, requi
   showModalBottomSheet(
     context: context,
     backgroundColor: Colors.white,
+    useSafeArea: true,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
     builder: (ctx) {
@@ -109,7 +99,7 @@ void _showReportReasonSheet(BuildContext context, {required String userId, requi
 
       return StatefulBuilder(
         builder: (ctx, setSheetState) => Padding(
-          padding: EdgeInsets.only(left: 24, right: 24, top: 24, bottom: MediaQuery.of(ctx).viewInsets.bottom + 24),
+          padding: EdgeInsets.only(left: 24, right: 24, top: 24, bottom: MediaQuery.of(ctx).viewInsets.bottom + MediaQuery.of(ctx).viewPadding.bottom + 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,

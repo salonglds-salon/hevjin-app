@@ -47,7 +47,7 @@ class LanguageProvider extends ChangeNotifier {
   /// re-enable a locale here once its screens are fully localized.
   static const supportedLocales = [
     Locale('de'),
-    Locale('en'),
+    // Locale('en'),
     // Locale('tr'),
     // Locale('ar'),
     // Locale('fa'),
@@ -61,7 +61,7 @@ class LanguageProvider extends ChangeNotifier {
 
   static const localeNames = {
     'de': '\u{1F1E9}\u{1F1EA} Deutsch',
-    'en': '\u{1F1EC}\u{1F1E7} English',
+    // 'en': '\u{1F1EC}\u{1F1E7} English',
     // 'tr': '\u{1F1F9}\u{1F1F7} T\u00fcrk\u00e7e',
     // 'ar': '\u{1F1EE}\u{1F1F6} \u0627\u0644\u0639\u0631\u0628\u064a\u0629',
     // 'fa': '\u{1F1EE}\u{1F1F7} \u0641\u0627\u0631\u0633\u06cc',

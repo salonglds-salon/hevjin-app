@@ -5,6 +5,7 @@ import '../../utils/theme.dart';
 import 'package:provider/provider.dart';
 import '../../services/profile_service.dart';
 import '../home/home_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Mindestanzahl Fotos, die vor dem Discover-Zugang benoetigt werden.
 const int kMinPhotos = 2;
@@ -29,7 +30,7 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
     if (_isUploading) return;
     if (_photos.length >= 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Maximal 6 Fotos erlaubt')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.onbPhotoMaxPhotos)),
       );
       return;
     }
@@ -74,7 +75,7 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
       setState(() => _isUploading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Upload fehlgeschlagen: $e'),
+          content: Text(AppLocalizations.of(context)!.onbPhotoUploadFailed(e.toString())),
           backgroundColor: HevjinTheme.error,
         ),
       );
@@ -94,13 +95,14 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hasPhoto = _photos.isNotEmpty;
 
     return Scaffold(
       backgroundColor: HevjinTheme.background,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Schritt 8 / 8'),
+        title: Text(l10n.onbPhotoStep),
       ),
       body: SafeArea(
         child: Center(
@@ -122,8 +124,8 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  const Text(
-                    'Deine Fotos',
+                  Text(
+                    l10n.onbPhotoTitle,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
@@ -131,10 +133,8 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Hevj\u00een lebt von echten Profilen. Bitte lade '
-                    'mindestens zwei Fotos hoch \u2014 so wissen andere, '
-                    'mit wem sie es zu tun haben.',
+                  Text(
+                    l10n.onbPhotoSubtitle,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
@@ -181,7 +181,7 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
                                     ),
                                   ),
                                 )
-                              : const Column(
+                              : Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(
@@ -191,7 +191,7 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
                                     ),
                                     SizedBox(height: 10),
                                     Text(
-                                      'Foto ausw\u00e4hlen',
+                                      l10n.onbPhotoSelect,
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500,
@@ -204,7 +204,7 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    '${_photos.length} von $kMinPhotos Fotos',
+                    l10n.onbPhotoCount(_photos.length, kMinPhotos),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -219,9 +219,7 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
                       child: TextButton.icon(
                         onPressed: _isUploading ? null : _pickAndUpload,
                         icon: const Icon(Icons.add, size: 18),
-                        label: Text(_isComplete
-                            ? 'Weiteres Foto hinzuf\u00fcgen'
-                            : 'Zweites Foto hinzuf\u00fcgen'),
+                        label: Text(_isComplete ? l10n.onbPhotoAddMore : l10n.onbPhotoAddSecond),
                       ),
                     ),
                   const Spacer(),
@@ -233,7 +231,7 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
                           ? null
                           : (_isComplete ? _goToDiscover : _pickAndUpload),
                       child: Text(
-                        _isComplete ? 'Los geht\'s' : 'Foto hochladen',
+                        _isComplete ? l10n.onbPhotoStart : l10n.onbPhotoUpload,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

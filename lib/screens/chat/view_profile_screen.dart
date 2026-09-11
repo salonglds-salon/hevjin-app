@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../models/user_profile.dart';
 import '../../utils/chip_emojis.dart';
+import '../../l10n/app_localizations.dart';
 import '../../utils/theme.dart';
 import '../../widgets/report_sheet.dart';
 
@@ -121,6 +122,24 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                           children: [
                             Text('${profile.displayName}, ${profile.age}',
                                 style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                            if (profile.isVerified) ...[
+                              const SizedBox(height: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: HevjinTheme.secondary.withOpacity(0.12),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                                  Icon(Icons.verified, size: 14, color: HevjinTheme.secondary),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    AppLocalizations.of(context)?.emailVerified ?? String.fromCharCodes([69,45,77,97,105,108,32,118,101,114,105,102,105,122,105,101,114,116]),
+                                    style: TextStyle(color: HevjinTheme.secondary, fontSize: 11, fontWeight: FontWeight.w600),
+                                  ),
+                                ]),
+                              ),
+                            ],
                             if (profile.city != null) ...[
                               const SizedBox(height: 4),
                               Row(children: [

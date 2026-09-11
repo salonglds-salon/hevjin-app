@@ -708,6 +708,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   Widget _buildLanguageSelector(BuildContext context) {
+    if (LanguageProvider.supportedLocales.length < 2) return const SizedBox.shrink();
     final langProvider = context.watch<LanguageProvider>();
     final currentCode = langProvider.locale.languageCode;
     final currentName = LanguageProvider.localeNames[currentCode] ?? 'Deutsch';

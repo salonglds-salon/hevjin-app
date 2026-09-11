@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/profile_service.dart';
 import '../../utils/theme.dart';
 import '../../utils/chip_emojis.dart';
+import '../../utils/option_labels.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -465,7 +466,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             Text(emoji, style: const TextStyle(fontSize: 15)),
             const SizedBox(width: 6),
           ],
-          Text(label, style: TextStyle(
+          Text(optLabel(context, label), style: TextStyle(
             fontSize: 13.5,
             fontWeight: sel ? FontWeight.w600 : FontWeight.w500,
             color: sel ? Colors.white : HevjinTheme.textPrimary,

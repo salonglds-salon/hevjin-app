@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../utils/theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class SupportScreen extends StatefulWidget {
   const SupportScreen({super.key});
@@ -26,6 +27,21 @@ class _SupportScreenState extends State<SupportScreen> {
     'Sonstiges',
   ];
 
+  String _catLabel(BuildContext context, String c) {
+    final l = AppLocalizations.of(context)!;
+    switch (c) {
+      case 'Allgemein': return l.supCatGeneral;
+      case 'Technisches Problem': return l.supCatTechnical;
+      case 'Nutzer melden': return l.supCatReportUser;
+      case 'Profil / Fotos': return l.supCatProfilePhotos;
+      case 'Match / Chat Problem': return l.supCatMatchChat;
+      case 'Account loeschen': return l.supCatDeleteAccount;
+      case 'Verbesserungsvorschlag': return l.supCatSuggestion;
+      case 'Sonstiges': return l.supCatOther;
+      default: return c;
+    }
+  }
+
   Future<void> _sendReport() async {
     if (_messageController.text.trim().isEmpty) return;
 
@@ -49,7 +65,7 @@ class _SupportScreenState extends State<SupportScreen> {
       setState(() => _isSending = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Fehler: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorWithMsg(e.toString())), backgroundColor: Colors.red),
         );
       }
     }
@@ -59,7 +75,7 @@ class _SupportScreenState extends State<SupportScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: HevjinTheme.background,
-      appBar: AppBar(title: const Text('Hilfe & Support')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.supTitle)),
       body: _sent ? _successView() : _formView(),
     );
   }
@@ -80,10 +96,10 @@ class _SupportScreenState extends State<SupportScreen> {
               child: const Icon(Icons.check_circle, color: HevjinTheme.success, size: 48),
             ),
             const SizedBox(height: 24),
-            const Text('Nachricht gesendet!', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(AppLocalizations.of(context)!.supSentTitle, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Text(
-              'Wir haben deine Nachricht erhalten und melden uns so schnell wie moeglich bei dir.',
+              AppLocalizations.of(context)!.supSentBody,
               textAlign: TextAlign.center,
               style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 14, height: 1.5),
             ),
@@ -95,7 +111,7 @@ class _SupportScreenState extends State<SupportScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
               ),
-              child: const Text('Zurueck', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+              child: Text(AppLocalizations.of(context)!.back, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
             ),
           ],
         ),
@@ -121,16 +137,16 @@ class _SupportScreenState extends State<SupportScreen> {
               children: [
                 const Icon(Icons.support_agent, size: 40, color: HevjinTheme.secondary),
                 const SizedBox(height: 12),
-                const Text('Wie koennen wir helfen?', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(AppLocalizations.of(context)!.supHeadline, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text('Wir antworten innerhalb von 24 Stunden', style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
+                Text(AppLocalizations.of(context)!.supReplyTime, style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
               ],
             ),
           ),
           const SizedBox(height: 24),
 
           // Kategorie
-          const Text('Kategorie', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+          Text(AppLocalizations.of(context)!.supCategory, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
           const SizedBox(height: 8),
           Container(
             width: double.infinity,
@@ -144,7 +160,7 @@ class _SupportScreenState extends State<SupportScreen> {
               child: DropdownButton<String>(
                 value: _category,
                 isExpanded: true,
-                items: _categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                items: _categories.map((c) => DropdownMenuItem(value: c, child: Text(_catLabel(context, c)))).toList(),
                 onChanged: (val) => setState(() => _category = val!),
               ),
             ),
@@ -152,14 +168,14 @@ class _SupportScreenState extends State<SupportScreen> {
           const SizedBox(height: 20),
 
           // Nachricht
-          const Text('Deine Nachricht', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+          Text(AppLocalizations.of(context)!.supMessage, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
           const SizedBox(height: 8),
           TextField(
             controller: _messageController,
             maxLines: 6,
             maxLength: 1000,
             decoration: InputDecoration(
-              hintText: 'Beschreibe dein Anliegen...',
+              hintText: AppLocalizations.of(context)!.supHint,
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(
@@ -186,7 +202,7 @@ class _SupportScreenState extends State<SupportScreen> {
               ),
               child: _isSending
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Text('Absenden', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                  : Text(AppLocalizations.of(context)!.supSend, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
             ),
           ),
           const SizedBox(height: 24),
@@ -203,7 +219,7 @@ class _SupportScreenState extends State<SupportScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Direkter Kontakt', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                Text(AppLocalizations.of(context)!.supDirectContact, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                 const SizedBox(height: 8),
                 Row(
                   children: [

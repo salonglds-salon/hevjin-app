@@ -290,4 +290,370 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get profileCreated => 'Profil erstellt!';
+
+  @override
+  String get onbPhotoMaxPhotos => 'Maximal 6 Fotos erlaubt';
+
+  @override
+  String onbPhotoUploadFailed(String error) {
+    return 'Upload fehlgeschlagen: $error';
+  }
+
+  @override
+  String get onbPhotoStep => 'Schritt 8 / 8';
+
+  @override
+  String get onbPhotoTitle => 'Deine Fotos';
+
+  @override
+  String get onbPhotoSubtitle =>
+      'Hevjîn lebt von echten Profilen. Bitte lade mindestens zwei Fotos hoch — so wissen andere, mit wem sie es zu tun haben.';
+
+  @override
+  String get onbPhotoSelect => 'Foto auswählen';
+
+  @override
+  String onbPhotoCount(int count, int min) {
+    return '$count von $min Fotos';
+  }
+
+  @override
+  String get onbPhotoAddMore => 'Weiteres Foto hinzufügen';
+
+  @override
+  String get onbPhotoAddSecond => 'Zweites Foto hinzufügen';
+
+  @override
+  String get onbPhotoStart => 'Los geht\'s';
+
+  @override
+  String get onbPhotoUpload => 'Foto hochladen';
+
+  @override
+  String get pupProfileUnlocked => 'Profil freigeschaltet';
+
+  @override
+  String get pupAvatarUpdated => 'Profilbild aktualisiert ✓';
+
+  @override
+  String get pupTitle => 'Fotos';
+
+  @override
+  String get pupDone => 'Fertig';
+
+  @override
+  String get pupSort => 'Fotos sortieren';
+
+  @override
+  String get pupSortHint =>
+      'Halte gedrückt und verschiebe — erstes Foto = Profilbild';
+
+  @override
+  String get pupNoPhotos => 'Noch keine Fotos';
+
+  @override
+  String get pupAdd => 'Foto hinzufügen';
+
+  @override
+  String get pupAvatarBadge => '⭐ Profilbild';
+
+  @override
+  String pupPhotoN(int index) {
+    return 'Foto $index';
+  }
+
+  @override
+  String get pupShownOnSwipe => 'Wird beim Swipen angezeigt';
+
+  @override
+  String get pupHoldToMove => 'Zum Verschieben gedrückt halten';
+
+  @override
+  String get pupUploading => 'Wird hochgeladen...';
+
+  @override
+  String pupAddCount(int count, int max) {
+    return 'Foto hinzufügen ($count/$max)';
+  }
+
+  @override
+  String get snpChanged => 'Passwort geändert';
+
+  @override
+  String get snpChangedBody =>
+      'Dein neues Passwort ist aktiv. Du kannst dich ab jetzt damit anmelden.';
+
+  @override
+  String get snpContinue => 'Weiter';
+
+  @override
+  String get snpDifferent => 'Bitte wähle ein anderes Passwort als das alte.';
+
+  @override
+  String get snpExpired =>
+      'Der Link ist abgelaufen. Bitte fordere einen neuen Reset-Link an.';
+
+  @override
+  String get snpSaveFailed =>
+      'Speichern fehlgeschlagen. Prüfe deine Verbindung und versuche es erneut.';
+
+  @override
+  String get snpTitle => 'Neues Passwort setzen';
+
+  @override
+  String get snpSubtitle =>
+      'Vergib jetzt ein neues Passwort für dein Hevjîn-Konto.';
+
+  @override
+  String get snpNewPassword => 'Neues Passwort';
+
+  @override
+  String get snpRepeat => 'Passwort wiederholen';
+
+  @override
+  String get snpMin6 => 'Mindestens 6 Zeichen';
+
+  @override
+  String get snpMatch => 'Beide Eingaben stimmen überein';
+
+  @override
+  String get snpSave => 'Passwort speichern';
+
+  @override
+  String get snpCancel => 'Abbrechen';
+
+  @override
+  String get ecTitle => 'Registrierung bestätigt!';
+
+  @override
+  String get ecBody =>
+      'Dein Konto wurde erfolgreich erstellt.\nDu kannst dich jetzt einloggen und dein Profil einrichten.';
+
+  @override
+  String get ecContinue => 'Weiter zum Login';
+
+  @override
+  String get matSendFailed => 'Nachricht konnte nicht gesendet werden';
+
+  @override
+  String get matItsAMatch => 'Es ist ein Match!';
+
+  @override
+  String get matSayHint => 'Sag etwas Nettes ...';
+
+  @override
+  String get supTitle => 'Hilfe & Support';
+
+  @override
+  String get supSentTitle => 'Nachricht gesendet!';
+
+  @override
+  String get supSentBody =>
+      'Wir haben deine Nachricht erhalten und melden uns so schnell wie moeglich bei dir.';
+
+  @override
+  String get supHeadline => 'Wie koennen wir helfen?';
+
+  @override
+  String get supReplyTime => 'Wir antworten innerhalb von 24 Stunden';
+
+  @override
+  String get supCategory => 'Kategorie';
+
+  @override
+  String get supMessage => 'Deine Nachricht';
+
+  @override
+  String get supHint => 'Beschreibe dein Anliegen...';
+
+  @override
+  String get supSend => 'Absenden';
+
+  @override
+  String get supDirectContact => 'Direkter Kontakt';
+
+  @override
+  String get supCatGeneral => 'Allgemein';
+
+  @override
+  String get supCatTechnical => 'Technisches Problem';
+
+  @override
+  String get supCatReportUser => 'Nutzer melden';
+
+  @override
+  String get supCatProfilePhotos => 'Profil / Fotos';
+
+  @override
+  String get supCatMatchChat => 'Match / Chat Problem';
+
+  @override
+  String get supCatDeleteAccount => 'Account loeschen';
+
+  @override
+  String get supCatSuggestion => 'Verbesserungsvorschlag';
+
+  @override
+  String get supCatOther => 'Sonstiges';
+
+  @override
+  String errorWithMsg(String msg) {
+    return 'Fehler: $msg';
+  }
+
+  @override
+  String get optHumorvoll => 'Humorvoll';
+
+  @override
+  String get optRomantisch => 'Romantisch';
+
+  @override
+  String get optSportlich => 'Sportlich';
+
+  @override
+  String get optFamiliaer => 'Familiär';
+
+  @override
+  String get optZuverlaessig => 'Zuverlässig';
+
+  @override
+  String get optEhrgeizig => 'Ehrgeizig';
+
+  @override
+  String get optHerzlich => 'Herzlich';
+
+  @override
+  String get optWeltoffen => 'Weltoffen';
+
+  @override
+  String get optTraditionell => 'Traditionell';
+
+  @override
+  String get optSpontan => 'Spontan';
+
+  @override
+  String get optKreativ => 'Kreativ';
+
+  @override
+  String get optSpirituell => 'Spirituell';
+
+  @override
+  String get optFuersorglich => 'Fürsorglich';
+
+  @override
+  String get optLiebevoll => 'Liebevoll';
+
+  @override
+  String get optGelassen => 'Gelassen';
+
+  @override
+  String get optSchuechtern => 'Schüchtern';
+
+  @override
+  String get optZielstrebig => 'Zielstrebig';
+
+  @override
+  String get optAbenteuerlustig => 'Abenteuerlustig';
+
+  @override
+  String get optEmpathisch => 'Empathisch';
+
+  @override
+  String get optLoyal => 'Loyal';
+
+  @override
+  String get optIntSportFitness => 'Sport & Fitness';
+
+  @override
+  String get optIntFamilyTime => 'Zeit mit Familie';
+
+  @override
+  String get optIntCooking => 'Kochen & Essen';
+
+  @override
+  String get optIntTravel => 'Reisen';
+
+  @override
+  String get optIntReading => 'Lesen & Lernen';
+
+  @override
+  String get optIntGaming => 'Gaming & Filme';
+
+  @override
+  String get optIntMusic => 'Musik & Tanzen';
+
+  @override
+  String get optIntNature => 'Natur & Spazieren';
+
+  @override
+  String get optIntCafe => 'Café & Freunde';
+
+  @override
+  String get optIntPhoto => 'Fotografie';
+
+  @override
+  String get optIntCars => 'Autos & Technik';
+
+  @override
+  String get optIntArt => 'Kunst & Design';
+
+  @override
+  String get optSpFitness => 'Fitness';
+
+  @override
+  String get optSpFootball => 'Fußball';
+
+  @override
+  String get optSpSwimming => 'Schwimmen';
+
+  @override
+  String get optSpJogging => 'Joggen';
+
+  @override
+  String get optSpYoga => 'Yoga';
+
+  @override
+  String get optSpBoxing => 'Boxen';
+
+  @override
+  String get optSpBasketball => 'Basketball';
+
+  @override
+  String get optSpTennis => 'Tennis';
+
+  @override
+  String get optSpMartial => 'Kampfsport';
+
+  @override
+  String get optSpDancing => 'Tanzen';
+
+  @override
+  String get optSpCycling => 'Radfahren';
+
+  @override
+  String get optSpHiking => 'Wandern';
+
+  @override
+  String get optTrBeach => 'Strandurlaub';
+
+  @override
+  String get optTrCity => 'Städtereisen';
+
+  @override
+  String get optTrActive => 'Aktivurlaub';
+
+  @override
+  String get optTrCamping => 'Camping & Natur';
+
+  @override
+  String get optTrWellness => 'Wellness';
+
+  @override
+  String get optTrBackpacking => 'Backpacking';
+
+  @override
+  String get optTrFamily => 'Familienurlaub';
+
+  @override
+  String get optTrCruise => 'Kreuzfahrt';
 }

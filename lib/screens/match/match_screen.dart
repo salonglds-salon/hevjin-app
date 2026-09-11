@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../utils/theme.dart';
+import '../../l10n/app_localizations.dart';
 import '../chat/chat_screen.dart';
 
 class MatchScreen extends StatefulWidget {
@@ -87,8 +88,8 @@ class _MatchScreenState extends State<MatchScreen>
       if (!mounted) return;
       setState(() => _sending = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Nachricht konnte nicht gesendet werden'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.matSendFailed),
           backgroundColor: HevjinTheme.error,
         ),
       );
@@ -155,8 +156,8 @@ class _MatchScreenState extends State<MatchScreen>
                           opacity: fade,
                           child: Column(
                             children: [
-                              const Text(
-                                'Es ist ein Match!',
+                              Text(
+                                AppLocalizations.of(context)!.matItsAMatch,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 34,
@@ -345,8 +346,8 @@ class _MatchScreenState extends State<MatchScreen>
               cursorColor: HevjinTheme.secondary,
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => _send(),
-              decoration: const InputDecoration(
-                hintText: 'Sag etwas Nettes ...',
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context)!.matSayHint,
                 hintStyle: TextStyle(color: Color(0xFF8A8A8A)),
                 border: InputBorder.none,
               ),

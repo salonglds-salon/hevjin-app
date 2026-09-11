@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../splash_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Wird angezeigt, wenn der Nutzer ueber den Passwort-Reset-Link kommt.
 /// Supabase loggt den Nutzer durch den Link automatisch ein
@@ -54,13 +55,12 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
         barrierDismissible: false,
         builder: (ctx) => AlertDialog(
           backgroundColor: Colors.white,
-          title: const Text('Passwort ge\u00e4ndert'),
-          content: const Text(
-              'Dein neues Passwort ist aktiv. Du kannst dich ab jetzt damit anmelden.'),
+          title: Text(AppLocalizations.of(context)!.snpChanged),
+          content: Text(AppLocalizations.of(context)!.snpChangedBody),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Weiter', style: TextStyle(color: _accent)),
+              child: Text(AppLocalizations.of(context)!.snpContinue, style: const TextStyle(color: _accent)),
             ),
           ],
         ),
@@ -75,10 +75,10 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
       setState(() {
         _loading = false;
         _error = e.message.contains('should be different')
-            ? 'Bitte w\u00e4hle ein anderes Passwort als das alte.'
+            ? AppLocalizations.of(context)!.snpDifferent
             : (e.message.toLowerCase().contains('session') ||
                     e.message.toLowerCase().contains('expired'))
-                ? 'Der Link ist abgelaufen. Bitte fordere einen neuen Reset-Link an.'
+                ? AppLocalizations.of(context)!.snpExpired
                 : e.message;
       });
     } catch (_) {
@@ -86,7 +86,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
       setState(() {
         _loading = false;
         _error =
-            'Speichern fehlgeschlagen. Pr\u00fcfe deine Verbindung und versuche es erneut.';
+            AppLocalizations.of(context)!.snpSaveFailed;
       });
     }
   }
@@ -161,15 +161,15 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                       ),
                     ),
                     const SizedBox(height: 28),
-                    const Text('Neues Passwort setzen',
+                    Text(AppLocalizations.of(context)!.snpTitle,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 23,
                             fontWeight: FontWeight.bold,
                             color: Colors.white)),
                     const SizedBox(height: 10),
-                    const Text(
-                        'Vergib jetzt ein neues Passwort f\u00fcr dein Hevj\u00een-Konto.',
+                    Text(
+                    AppLocalizations.of(context)!.snpSubtitle,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 14, height: 1.5, color: Colors.white70)),
@@ -178,7 +178,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                       controller: _pw1,
                       obscureText: _obscure1,
                       style: const TextStyle(color: Colors.white),
-                      decoration: _dec('Neues Passwort', _obscure1,
+                      decoration: _dec(AppLocalizations.of(context)!.snpNewPassword, _obscure1,
                           () => setState(() => _obscure1 = !_obscure1)),
                     ),
                     const SizedBox(height: 14),
@@ -187,12 +187,12 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                       obscureText: _obscure2,
                       style: const TextStyle(color: Colors.white),
                       onSubmitted: (_) => _save(),
-                      decoration: _dec('Passwort wiederholen', _obscure2,
+                      decoration: _dec(AppLocalizations.of(context)!.snpRepeat, _obscure2,
                           () => setState(() => _obscure2 = !_obscure2)),
                     ),
                     const SizedBox(height: 14),
-                    _rule('Mindestens 6 Zeichen', _lengthOk),
-                    _rule('Beide Eingaben stimmen \u00fcberein', _matchOk),
+                    _rule(AppLocalizations.of(context)!.snpMin6, _lengthOk),
+                    _rule(AppLocalizations.of(context)!.snpMatch, _matchOk),
                     if (_error != null) ...[
                       const SizedBox(height: 16),
                       Container(
@@ -232,7 +232,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                                 height: 22,
                                 child: CircularProgressIndicator(
                                     strokeWidth: 2.2, color: Colors.white))
-                            : const Text('Passwort speichern',
+                            : Text(AppLocalizations.of(context)!.snpSave,
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -252,7 +252,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                                 (route) => false,
                               );
                             },
-                      child: const Text('Abbrechen',
+                      child: Text(AppLocalizations.of(context)!.snpCancel,
                           style: TextStyle(color: Colors.white54)),
                     ),
                   ],

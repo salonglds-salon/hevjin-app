@@ -93,5 +93,162 @@
   "characterTraits": "Character and Traits",
   "aboutMe": "About Me",
   "threeThings": "Three things important to me",
-  "profileCreated": "Profile created!"
+  "profileCreated": "Profile created!",
+  "onbPhotoMaxPhotos": "Maximum of 6 photos allowed",
+  "onbPhotoUploadFailed": "Upload failed: {error}",
+  "onbPhotoStep": "Step 8 / 8",
+  "onbPhotoTitle": "Your photos",
+  "onbPhotoSubtitle": "Hevjîn is built on real profiles. Please upload at least two photos — so others know who they are talking to.",
+  "onbPhotoSelect": "Choose photo",
+  "onbPhotoCount": "{count} of {min} photos",
+  "onbPhotoAddMore": "Add another photo",
+  "onbPhotoAddSecond": "Add a second photo",
+  "onbPhotoStart": "Let's go",
+  "onbPhotoUpload": "Upload photo",
+  "@onbPhotoUploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@onbPhotoCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "pupProfileUnlocked": "Profile unlocked",
+  "pupAvatarUpdated": "Profile picture updated ✓",
+  "pupTitle": "Photos",
+  "pupDone": "Done",
+  "pupSort": "Sort photos",
+  "pupSortHint": "Press and hold to move — first photo = profile picture",
+  "pupNoPhotos": "No photos yet",
+  "pupAdd": "Add photo",
+  "pupAvatarBadge": "⭐ Profile picture",
+  "pupPhotoN": "Photo {index}",
+  "pupShownOnSwipe": "Shown while swiping",
+  "pupHoldToMove": "Press and hold to move",
+  "pupUploading": "Uploading...",
+  "pupAddCount": "Add photo ({count}/{max})",
+  "snpChanged": "Password changed",
+  "snpChangedBody": "Your new password is active. You can use it to sign in from now on.",
+  "snpContinue": "Continue",
+  "snpDifferent": "Please choose a different password than the old one.",
+  "snpExpired": "This link has expired. Please request a new reset link.",
+  "snpSaveFailed": "Saving failed. Check your connection and try again.",
+  "snpTitle": "Set a new password",
+  "snpSubtitle": "Choose a new password for your Hevjîn account.",
+  "snpNewPassword": "New password",
+  "snpRepeat": "Repeat password",
+  "snpMin6": "At least 6 characters",
+  "snpMatch": "Both entries match",
+  "snpSave": "Save password",
+  "snpCancel": "Cancel",
+  "ecTitle": "Registration confirmed!",
+  "ecBody": "Your account was created successfully.\nYou can now sign in and set up your profile.",
+  "ecContinue": "Continue to login",
+  "@pupPhotoN": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "@pupAddCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "matSendFailed": "Message could not be sent",
+  "matItsAMatch": "It's a Match!",
+  "matSayHint": "Say something nice ...",
+  "supTitle": "Help & Support",
+  "supSentTitle": "Message sent!",
+  "supSentBody": "We received your message and will get back to you as soon as possible.",
+  "supHeadline": "How can we help?",
+  "supReplyTime": "We reply within 24 hours",
+  "supCategory": "Category",
+  "supMessage": "Your message",
+  "supHint": "Describe your issue...",
+  "supSend": "Submit",
+  "supDirectContact": "Direct contact",
+  "supCatGeneral": "General",
+  "supCatTechnical": "Technical problem",
+  "supCatReportUser": "Report a user",
+  "supCatProfilePhotos": "Profile / photos",
+  "supCatMatchChat": "Match / chat problem",
+  "supCatDeleteAccount": "Delete account",
+  "supCatSuggestion": "Suggestion",
+  "supCatOther": "Other",
+  "errorWithMsg": "Error: {msg}",
+  "@errorWithMsg": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "optHumorvoll": "Funny",
+  "optRomantisch": "Romantic",
+  "optSportlich": "Athletic",
+  "optFamiliaer": "Family-oriented",
+  "optZuverlaessig": "Reliable",
+  "optEhrgeizig": "Ambitious",
+  "optHerzlich": "Warm-hearted",
+  "optWeltoffen": "Open-minded",
+  "optTraditionell": "Traditional",
+  "optSpontan": "Spontaneous",
+  "optKreativ": "Creative",
+  "optSpirituell": "Spiritual",
+  "optFuersorglich": "Caring",
+  "optLiebevoll": "Loving",
+  "optGelassen": "Easy-going",
+  "optSchuechtern": "Shy",
+  "optZielstrebig": "Determined",
+  "optAbenteuerlustig": "Adventurous",
+  "optEmpathisch": "Empathetic",
+  "optLoyal": "Loyal",
+  "optIntSportFitness": "Sports & Fitness",
+  "optIntFamilyTime": "Time with family",
+  "optIntCooking": "Cooking & Food",
+  "optIntTravel": "Travelling",
+  "optIntReading": "Reading & Learning",
+  "optIntGaming": "Gaming & Movies",
+  "optIntMusic": "Music & Dancing",
+  "optIntNature": "Nature & Walks",
+  "optIntCafe": "Café & Friends",
+  "optIntPhoto": "Photography",
+  "optIntCars": "Cars & Tech",
+  "optIntArt": "Art & Design",
+  "optSpFitness": "Fitness",
+  "optSpFootball": "Football",
+  "optSpSwimming": "Swimming",
+  "optSpJogging": "Running",
+  "optSpYoga": "Yoga",
+  "optSpBoxing": "Boxing",
+  "optSpBasketball": "Basketball",
+  "optSpTennis": "Tennis",
+  "optSpMartial": "Martial arts",
+  "optSpDancing": "Dancing",
+  "optSpCycling": "Cycling",
+  "optSpHiking": "Hiking",
+  "optTrBeach": "Beach holiday",
+  "optTrCity": "City trips",
+  "optTrActive": "Active holiday",
+  "optTrCamping": "Camping & Nature",
+  "optTrWellness": "Wellness",
+  "optTrBackpacking": "Backpacking",
+  "optTrFamily": "Family holiday",
+  "optTrCruise": "Cruise"
 }

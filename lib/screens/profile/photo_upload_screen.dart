@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../utils/theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class PhotoUploadScreen extends StatefulWidget {
   final bool isOnboarding;
@@ -44,7 +45,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
   Future<void> _pickAndUploadPhoto() async {
     if (_photoUrls.length >= _maxPhotos) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Maximal 6 Fotos erlaubt')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.onbPhotoMaxPhotos)),
       );
       return;
     }
@@ -88,8 +89,8 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
           _photoUrls.length >= 2 &&
           mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profil freigeschaltet'),
+          SnackBar(
+          content: Text(AppLocalizations.of(context)!.pupProfileUnlocked),
             backgroundColor: Color(0xFF28A745),
             duration: Duration(milliseconds: 900),
           ),
@@ -101,7 +102,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
       setState(() => _isUploading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Upload fehlgeschlagen: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.onbPhotoUploadFailed(e.toString()))),
         );
       }
     }
@@ -133,8 +134,8 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
     // Feedback wenn Profilbild sich ändert
     if (newIndex == 0 || oldIndex == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Profilbild aktualisiert ✓'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.pupAvatarUpdated),
           backgroundColor: Color(0xFF28A745),
           duration: Duration(seconds: 1),
         ),
@@ -147,12 +148,12 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
     return Scaffold(
       backgroundColor: HevjinTheme.background,
       appBar: AppBar(
-        title: const Text('Fotos'),
+        title: Text(AppLocalizations.of(context)!.pupTitle),
         actions: [
           if (widget.isOnboarding)
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Fertig'),
+              child: Text(AppLocalizations.of(context)!.pupDone),
             ),
         ],
       ),
@@ -161,13 +162,13 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Fotos sortieren',
+            Text(
+              AppLocalizations.of(context)!.pupSort,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Halte gedrückt und verschiebe — erstes Foto = Profilbild',
+            Text(
+              AppLocalizations.of(context)!.pupSortHint,
               style: TextStyle(fontSize: 13, color: HevjinTheme.textSecondary),
             ),
             const SizedBox(height: 20),
@@ -181,12 +182,12 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
                         children: [
                           Icon(Icons.add_a_photo_outlined, size: 64, color: HevjinTheme.textSecondary),
                           const SizedBox(height: 16),
-                          const Text('Noch keine Fotos'),
+                          Text(AppLocalizations.of(context)!.pupNoPhotos),
                           const SizedBox(height: 8),
                           ElevatedButton.icon(
                             onPressed: _pickAndUploadPhoto,
                             icon: const Icon(Icons.add),
-                            label: const Text('Foto hinzufügen'),
+                            label: Text(AppLocalizations.of(context)!.pupAdd),
                           ),
                         ],
                       ),
@@ -248,19 +249,19 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
                                             color: HevjinTheme.secondary,
                                             borderRadius: BorderRadius.circular(8),
                                           ),
-                                          child: const Text(
-                                            '⭐ Profilbild',
+                                          child: Text(
+              AppLocalizations.of(context)!.pupAvatarBadge,
                                             style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
                                           ),
                                         )
                                       else
                                         Text(
-                                          'Foto ${index + 1}',
+                                          AppLocalizations.of(context)!.pupPhotoN(index + 1),
                                           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                                         ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        index == 0 ? 'Wird beim Swipen angezeigt' : 'Zum Verschieben gedrückt halten',
+                                        index == 0 ? AppLocalizations.of(context)!.pupShownOnSwipe : AppLocalizations.of(context)!.pupHoldToMove,
                                         style: TextStyle(fontSize: 11, color: HevjinTheme.textSecondary),
                                       ),
                                     ],
@@ -300,7 +301,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
                     icon: _isUploading
                         ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                         : const Icon(Icons.add_a_photo),
-                    label: Text(_isUploading ? 'Wird hochgeladen...' : 'Foto hinzufügen (${_photoUrls.length}/$_maxPhotos)'),
+                    label: Text(_isUploading ? AppLocalizations.of(context)!.pupUploading : AppLocalizations.of(context)!.pupAddCount(_photoUrls.length, _maxPhotos)),
                   ),
                 ),
               ),

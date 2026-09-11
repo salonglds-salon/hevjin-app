@@ -5,7 +5,7 @@
   "loginWithEmail": "Mit E-Mail einloggen",
   "continueWithGoogle": "Weiter mit Google",
   "loginProblems": "Probleme bei der Anmeldung?",
-  "anonymous": "100% Daten verschl\u00fcsselt",
+  "anonymous": "100% Daten verschlüsselt",
   "emailVerified": "E-Mail verifiziert",
   "onlyEzidi": "Nur Êziden",
   "terms": "AGB",
@@ -93,5 +93,162 @@
   "characterTraits": "Charakter und Eigenschaften",
   "aboutMe": "Über mich",
   "threeThings": "Drei Dinge die mir wichtig sind",
-  "profileCreated": "Profil erstellt!"
+  "profileCreated": "Profil erstellt!",
+  "onbPhotoMaxPhotos": "Maximal 6 Fotos erlaubt",
+  "onbPhotoUploadFailed": "Upload fehlgeschlagen: {error}",
+  "onbPhotoStep": "Schritt 8 / 8",
+  "onbPhotoTitle": "Deine Fotos",
+  "onbPhotoSubtitle": "Hevjîn lebt von echten Profilen. Bitte lade mindestens zwei Fotos hoch — so wissen andere, mit wem sie es zu tun haben.",
+  "onbPhotoSelect": "Foto auswählen",
+  "onbPhotoCount": "{count} von {min} Fotos",
+  "onbPhotoAddMore": "Weiteres Foto hinzufügen",
+  "onbPhotoAddSecond": "Zweites Foto hinzufügen",
+  "onbPhotoStart": "Los geht's",
+  "onbPhotoUpload": "Foto hochladen",
+  "@onbPhotoUploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@onbPhotoCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "pupProfileUnlocked": "Profil freigeschaltet",
+  "pupAvatarUpdated": "Profilbild aktualisiert ✓",
+  "pupTitle": "Fotos",
+  "pupDone": "Fertig",
+  "pupSort": "Fotos sortieren",
+  "pupSortHint": "Halte gedrückt und verschiebe — erstes Foto = Profilbild",
+  "pupNoPhotos": "Noch keine Fotos",
+  "pupAdd": "Foto hinzufügen",
+  "pupAvatarBadge": "⭐ Profilbild",
+  "pupPhotoN": "Foto {index}",
+  "pupShownOnSwipe": "Wird beim Swipen angezeigt",
+  "pupHoldToMove": "Zum Verschieben gedrückt halten",
+  "pupUploading": "Wird hochgeladen...",
+  "pupAddCount": "Foto hinzufügen ({count}/{max})",
+  "snpChanged": "Passwort geändert",
+  "snpChangedBody": "Dein neues Passwort ist aktiv. Du kannst dich ab jetzt damit anmelden.",
+  "snpContinue": "Weiter",
+  "snpDifferent": "Bitte wähle ein anderes Passwort als das alte.",
+  "snpExpired": "Der Link ist abgelaufen. Bitte fordere einen neuen Reset-Link an.",
+  "snpSaveFailed": "Speichern fehlgeschlagen. Prüfe deine Verbindung und versuche es erneut.",
+  "snpTitle": "Neues Passwort setzen",
+  "snpSubtitle": "Vergib jetzt ein neues Passwort für dein Hevjîn-Konto.",
+  "snpNewPassword": "Neues Passwort",
+  "snpRepeat": "Passwort wiederholen",
+  "snpMin6": "Mindestens 6 Zeichen",
+  "snpMatch": "Beide Eingaben stimmen überein",
+  "snpSave": "Passwort speichern",
+  "snpCancel": "Abbrechen",
+  "ecTitle": "Registrierung bestätigt!",
+  "ecBody": "Dein Konto wurde erfolgreich erstellt.\nDu kannst dich jetzt einloggen und dein Profil einrichten.",
+  "ecContinue": "Weiter zum Login",
+  "@pupPhotoN": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "@pupAddCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "matSendFailed": "Nachricht konnte nicht gesendet werden",
+  "matItsAMatch": "Es ist ein Match!",
+  "matSayHint": "Sag etwas Nettes ...",
+  "supTitle": "Hilfe & Support",
+  "supSentTitle": "Nachricht gesendet!",
+  "supSentBody": "Wir haben deine Nachricht erhalten und melden uns so schnell wie moeglich bei dir.",
+  "supHeadline": "Wie koennen wir helfen?",
+  "supReplyTime": "Wir antworten innerhalb von 24 Stunden",
+  "supCategory": "Kategorie",
+  "supMessage": "Deine Nachricht",
+  "supHint": "Beschreibe dein Anliegen...",
+  "supSend": "Absenden",
+  "supDirectContact": "Direkter Kontakt",
+  "supCatGeneral": "Allgemein",
+  "supCatTechnical": "Technisches Problem",
+  "supCatReportUser": "Nutzer melden",
+  "supCatProfilePhotos": "Profil / Fotos",
+  "supCatMatchChat": "Match / Chat Problem",
+  "supCatDeleteAccount": "Account loeschen",
+  "supCatSuggestion": "Verbesserungsvorschlag",
+  "supCatOther": "Sonstiges",
+  "errorWithMsg": "Fehler: {msg}",
+  "@errorWithMsg": {
+    "placeholders": {
+      "msg": {
+        "type": "String"
+      }
+    }
+  },
+  "optHumorvoll": "Humorvoll",
+  "optRomantisch": "Romantisch",
+  "optSportlich": "Sportlich",
+  "optFamiliaer": "Familiär",
+  "optZuverlaessig": "Zuverlässig",
+  "optEhrgeizig": "Ehrgeizig",
+  "optHerzlich": "Herzlich",
+  "optWeltoffen": "Weltoffen",
+  "optTraditionell": "Traditionell",
+  "optSpontan": "Spontan",
+  "optKreativ": "Kreativ",
+  "optSpirituell": "Spirituell",
+  "optFuersorglich": "Fürsorglich",
+  "optLiebevoll": "Liebevoll",
+  "optGelassen": "Gelassen",
+  "optSchuechtern": "Schüchtern",
+  "optZielstrebig": "Zielstrebig",
+  "optAbenteuerlustig": "Abenteuerlustig",
+  "optEmpathisch": "Empathisch",
+  "optLoyal": "Loyal",
+  "optIntSportFitness": "Sport & Fitness",
+  "optIntFamilyTime": "Zeit mit Familie",
+  "optIntCooking": "Kochen & Essen",
+  "optIntTravel": "Reisen",
+  "optIntReading": "Lesen & Lernen",
+  "optIntGaming": "Gaming & Filme",
+  "optIntMusic": "Musik & Tanzen",
+  "optIntNature": "Natur & Spazieren",
+  "optIntCafe": "Café & Freunde",
+  "optIntPhoto": "Fotografie",
+  "optIntCars": "Autos & Technik",
+  "optIntArt": "Kunst & Design",
+  "optSpFitness": "Fitness",
+  "optSpFootball": "Fußball",
+  "optSpSwimming": "Schwimmen",
+  "optSpJogging": "Joggen",
+  "optSpYoga": "Yoga",
+  "optSpBoxing": "Boxen",
+  "optSpBasketball": "Basketball",
+  "optSpTennis": "Tennis",
+  "optSpMartial": "Kampfsport",
+  "optSpDancing": "Tanzen",
+  "optSpCycling": "Radfahren",
+  "optSpHiking": "Wandern",
+  "optTrBeach": "Strandurlaub",
+  "optTrCity": "Städtereisen",
+  "optTrActive": "Aktivurlaub",
+  "optTrCamping": "Camping & Natur",
+  "optTrWellness": "Wellness",
+  "optTrBackpacking": "Backpacking",
+  "optTrFamily": "Familienurlaub",
+  "optTrCruise": "Kreuzfahrt"
 }

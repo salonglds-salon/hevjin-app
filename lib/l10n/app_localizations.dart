@@ -679,6 +679,702 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile created!'**
   String get profileCreated;
+
+  /// No description provided for @onbPhotoMaxPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum of 6 photos allowed'**
+  String get onbPhotoMaxPhotos;
+
+  /// No description provided for @onbPhotoUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload failed: {error}'**
+  String onbPhotoUploadFailed(String error);
+
+  /// No description provided for @onbPhotoStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 8 / 8'**
+  String get onbPhotoStep;
+
+  /// No description provided for @onbPhotoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your photos'**
+  String get onbPhotoTitle;
+
+  /// No description provided for @onbPhotoSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hevjîn is built on real profiles. Please upload at least two photos — so others know who they are talking to.'**
+  String get onbPhotoSubtitle;
+
+  /// No description provided for @onbPhotoSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose photo'**
+  String get onbPhotoSelect;
+
+  /// No description provided for @onbPhotoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {min} photos'**
+  String onbPhotoCount(int count, int min);
+
+  /// No description provided for @onbPhotoAddMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Add another photo'**
+  String get onbPhotoAddMore;
+
+  /// No description provided for @onbPhotoAddSecond.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a second photo'**
+  String get onbPhotoAddSecond;
+
+  /// No description provided for @onbPhotoStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s go'**
+  String get onbPhotoStart;
+
+  /// No description provided for @onbPhotoUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload photo'**
+  String get onbPhotoUpload;
+
+  /// No description provided for @pupProfileUnlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile unlocked'**
+  String get pupProfileUnlocked;
+
+  /// No description provided for @pupAvatarUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile picture updated ✓'**
+  String get pupAvatarUpdated;
+
+  /// No description provided for @pupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get pupTitle;
+
+  /// No description provided for @pupDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get pupDone;
+
+  /// No description provided for @pupSort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort photos'**
+  String get pupSort;
+
+  /// No description provided for @pupSortHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Press and hold to move — first photo = profile picture'**
+  String get pupSortHint;
+
+  /// No description provided for @pupNoPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'No photos yet'**
+  String get pupNoPhotos;
+
+  /// No description provided for @pupAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get pupAdd;
+
+  /// No description provided for @pupAvatarBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'⭐ Profile picture'**
+  String get pupAvatarBadge;
+
+  /// No description provided for @pupPhotoN.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo {index}'**
+  String pupPhotoN(int index);
+
+  /// No description provided for @pupShownOnSwipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown while swiping'**
+  String get pupShownOnSwipe;
+
+  /// No description provided for @pupHoldToMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Press and hold to move'**
+  String get pupHoldToMove;
+
+  /// No description provided for @pupUploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading...'**
+  String get pupUploading;
+
+  /// No description provided for @pupAddCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo ({count}/{max})'**
+  String pupAddCount(int count, int max);
+
+  /// No description provided for @snpChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed'**
+  String get snpChanged;
+
+  /// No description provided for @snpChangedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your new password is active. You can use it to sign in from now on.'**
+  String get snpChangedBody;
+
+  /// No description provided for @snpContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get snpContinue;
+
+  /// No description provided for @snpDifferent.
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose a different password than the old one.'**
+  String get snpDifferent;
+
+  /// No description provided for @snpExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This link has expired. Please request a new reset link.'**
+  String get snpExpired;
+
+  /// No description provided for @snpSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving failed. Check your connection and try again.'**
+  String get snpSaveFailed;
+
+  /// No description provided for @snpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a new password'**
+  String get snpTitle;
+
+  /// No description provided for @snpSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a new password for your Hevjîn account.'**
+  String get snpSubtitle;
+
+  /// No description provided for @snpNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get snpNewPassword;
+
+  /// No description provided for @snpRepeat.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat password'**
+  String get snpRepeat;
+
+  /// No description provided for @snpMin6.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 6 characters'**
+  String get snpMin6;
+
+  /// No description provided for @snpMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Both entries match'**
+  String get snpMatch;
+
+  /// No description provided for @snpSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save password'**
+  String get snpSave;
+
+  /// No description provided for @snpCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get snpCancel;
+
+  /// No description provided for @ecTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration confirmed!'**
+  String get ecTitle;
+
+  /// No description provided for @ecBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account was created successfully.\nYou can now sign in and set up your profile.'**
+  String get ecBody;
+
+  /// No description provided for @ecContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to login'**
+  String get ecContinue;
+
+  /// No description provided for @matSendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Message could not be sent'**
+  String get matSendFailed;
+
+  /// No description provided for @matItsAMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s a Match!'**
+  String get matItsAMatch;
+
+  /// No description provided for @matSayHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Say something nice ...'**
+  String get matSayHint;
+
+  /// No description provided for @supTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get supTitle;
+
+  /// No description provided for @supSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Message sent!'**
+  String get supSentTitle;
+
+  /// No description provided for @supSentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We received your message and will get back to you as soon as possible.'**
+  String get supSentBody;
+
+  /// No description provided for @supHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'How can we help?'**
+  String get supHeadline;
+
+  /// No description provided for @supReplyTime.
+  ///
+  /// In en, this message translates to:
+  /// **'We reply within 24 hours'**
+  String get supReplyTime;
+
+  /// No description provided for @supCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get supCategory;
+
+  /// No description provided for @supMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your message'**
+  String get supMessage;
+
+  /// No description provided for @supHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your issue...'**
+  String get supHint;
+
+  /// No description provided for @supSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get supSend;
+
+  /// No description provided for @supDirectContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct contact'**
+  String get supDirectContact;
+
+  /// No description provided for @supCatGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get supCatGeneral;
+
+  /// No description provided for @supCatTechnical.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical problem'**
+  String get supCatTechnical;
+
+  /// No description provided for @supCatReportUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a user'**
+  String get supCatReportUser;
+
+  /// No description provided for @supCatProfilePhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile / photos'**
+  String get supCatProfilePhotos;
+
+  /// No description provided for @supCatMatchChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Match / chat problem'**
+  String get supCatMatchChat;
+
+  /// No description provided for @supCatDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get supCatDeleteAccount;
+
+  /// No description provided for @supCatSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion'**
+  String get supCatSuggestion;
+
+  /// No description provided for @supCatOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get supCatOther;
+
+  /// No description provided for @errorWithMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {msg}'**
+  String errorWithMsg(String msg);
+
+  /// No description provided for @optHumorvoll.
+  ///
+  /// In en, this message translates to:
+  /// **'Funny'**
+  String get optHumorvoll;
+
+  /// No description provided for @optRomantisch.
+  ///
+  /// In en, this message translates to:
+  /// **'Romantic'**
+  String get optRomantisch;
+
+  /// No description provided for @optSportlich.
+  ///
+  /// In en, this message translates to:
+  /// **'Athletic'**
+  String get optSportlich;
+
+  /// No description provided for @optFamiliaer.
+  ///
+  /// In en, this message translates to:
+  /// **'Family-oriented'**
+  String get optFamiliaer;
+
+  /// No description provided for @optZuverlaessig.
+  ///
+  /// In en, this message translates to:
+  /// **'Reliable'**
+  String get optZuverlaessig;
+
+  /// No description provided for @optEhrgeizig.
+  ///
+  /// In en, this message translates to:
+  /// **'Ambitious'**
+  String get optEhrgeizig;
+
+  /// No description provided for @optHerzlich.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm-hearted'**
+  String get optHerzlich;
+
+  /// No description provided for @optWeltoffen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open-minded'**
+  String get optWeltoffen;
+
+  /// No description provided for @optTraditionell.
+  ///
+  /// In en, this message translates to:
+  /// **'Traditional'**
+  String get optTraditionell;
+
+  /// No description provided for @optSpontan.
+  ///
+  /// In en, this message translates to:
+  /// **'Spontaneous'**
+  String get optSpontan;
+
+  /// No description provided for @optKreativ.
+  ///
+  /// In en, this message translates to:
+  /// **'Creative'**
+  String get optKreativ;
+
+  /// No description provided for @optSpirituell.
+  ///
+  /// In en, this message translates to:
+  /// **'Spiritual'**
+  String get optSpirituell;
+
+  /// No description provided for @optFuersorglich.
+  ///
+  /// In en, this message translates to:
+  /// **'Caring'**
+  String get optFuersorglich;
+
+  /// No description provided for @optLiebevoll.
+  ///
+  /// In en, this message translates to:
+  /// **'Loving'**
+  String get optLiebevoll;
+
+  /// No description provided for @optGelassen.
+  ///
+  /// In en, this message translates to:
+  /// **'Easy-going'**
+  String get optGelassen;
+
+  /// No description provided for @optSchuechtern.
+  ///
+  /// In en, this message translates to:
+  /// **'Shy'**
+  String get optSchuechtern;
+
+  /// No description provided for @optZielstrebig.
+  ///
+  /// In en, this message translates to:
+  /// **'Determined'**
+  String get optZielstrebig;
+
+  /// No description provided for @optAbenteuerlustig.
+  ///
+  /// In en, this message translates to:
+  /// **'Adventurous'**
+  String get optAbenteuerlustig;
+
+  /// No description provided for @optEmpathisch.
+  ///
+  /// In en, this message translates to:
+  /// **'Empathetic'**
+  String get optEmpathisch;
+
+  /// No description provided for @optLoyal.
+  ///
+  /// In en, this message translates to:
+  /// **'Loyal'**
+  String get optLoyal;
+
+  /// No description provided for @optIntSportFitness.
+  ///
+  /// In en, this message translates to:
+  /// **'Sports & Fitness'**
+  String get optIntSportFitness;
+
+  /// No description provided for @optIntFamilyTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time with family'**
+  String get optIntFamilyTime;
+
+  /// No description provided for @optIntCooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Cooking & Food'**
+  String get optIntCooking;
+
+  /// No description provided for @optIntTravel.
+  ///
+  /// In en, this message translates to:
+  /// **'Travelling'**
+  String get optIntTravel;
+
+  /// No description provided for @optIntReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading & Learning'**
+  String get optIntReading;
+
+  /// No description provided for @optIntGaming.
+  ///
+  /// In en, this message translates to:
+  /// **'Gaming & Movies'**
+  String get optIntGaming;
+
+  /// No description provided for @optIntMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Music & Dancing'**
+  String get optIntMusic;
+
+  /// No description provided for @optIntNature.
+  ///
+  /// In en, this message translates to:
+  /// **'Nature & Walks'**
+  String get optIntNature;
+
+  /// No description provided for @optIntCafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Café & Friends'**
+  String get optIntCafe;
+
+  /// No description provided for @optIntPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Photography'**
+  String get optIntPhoto;
+
+  /// No description provided for @optIntCars.
+  ///
+  /// In en, this message translates to:
+  /// **'Cars & Tech'**
+  String get optIntCars;
+
+  /// No description provided for @optIntArt.
+  ///
+  /// In en, this message translates to:
+  /// **'Art & Design'**
+  String get optIntArt;
+
+  /// No description provided for @optSpFitness.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness'**
+  String get optSpFitness;
+
+  /// No description provided for @optSpFootball.
+  ///
+  /// In en, this message translates to:
+  /// **'Football'**
+  String get optSpFootball;
+
+  /// No description provided for @optSpSwimming.
+  ///
+  /// In en, this message translates to:
+  /// **'Swimming'**
+  String get optSpSwimming;
+
+  /// No description provided for @optSpJogging.
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get optSpJogging;
+
+  /// No description provided for @optSpYoga.
+  ///
+  /// In en, this message translates to:
+  /// **'Yoga'**
+  String get optSpYoga;
+
+  /// No description provided for @optSpBoxing.
+  ///
+  /// In en, this message translates to:
+  /// **'Boxing'**
+  String get optSpBoxing;
+
+  /// No description provided for @optSpBasketball.
+  ///
+  /// In en, this message translates to:
+  /// **'Basketball'**
+  String get optSpBasketball;
+
+  /// No description provided for @optSpTennis.
+  ///
+  /// In en, this message translates to:
+  /// **'Tennis'**
+  String get optSpTennis;
+
+  /// No description provided for @optSpMartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Martial arts'**
+  String get optSpMartial;
+
+  /// No description provided for @optSpDancing.
+  ///
+  /// In en, this message translates to:
+  /// **'Dancing'**
+  String get optSpDancing;
+
+  /// No description provided for @optSpCycling.
+  ///
+  /// In en, this message translates to:
+  /// **'Cycling'**
+  String get optSpCycling;
+
+  /// No description provided for @optSpHiking.
+  ///
+  /// In en, this message translates to:
+  /// **'Hiking'**
+  String get optSpHiking;
+
+  /// No description provided for @optTrBeach.
+  ///
+  /// In en, this message translates to:
+  /// **'Beach holiday'**
+  String get optTrBeach;
+
+  /// No description provided for @optTrCity.
+  ///
+  /// In en, this message translates to:
+  /// **'City trips'**
+  String get optTrCity;
+
+  /// No description provided for @optTrActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active holiday'**
+  String get optTrActive;
+
+  /// No description provided for @optTrCamping.
+  ///
+  /// In en, this message translates to:
+  /// **'Camping & Nature'**
+  String get optTrCamping;
+
+  /// No description provided for @optTrWellness.
+  ///
+  /// In en, this message translates to:
+  /// **'Wellness'**
+  String get optTrWellness;
+
+  /// No description provided for @optTrBackpacking.
+  ///
+  /// In en, this message translates to:
+  /// **'Backpacking'**
+  String get optTrBackpacking;
+
+  /// No description provided for @optTrFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Family holiday'**
+  String get optTrFamily;
+
+  /// No description provided for @optTrCruise.
+  ///
+  /// In en, this message translates to:
+  /// **'Cruise'**
+  String get optTrCruise;
 }
 
 class _AppLocalizationsDelegate

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../utils/theme.dart';
 import '../splash_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class EmailConfirmedScreen extends StatelessWidget {
   const EmailConfirmedScreen({super.key});
@@ -29,8 +30,8 @@ class EmailConfirmedScreen extends StatelessWidget {
                 const SizedBox(height: 28),
 
                 // Title
-                const Text(
-                  'Registrierung bestätigt!',
+                Text(
+              AppLocalizations.of(context)!.ecTitle,
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
@@ -38,7 +39,7 @@ class EmailConfirmedScreen extends StatelessWidget {
 
                 // Subtitle
                 Text(
-                  'Dein Konto wurde erfolgreich erstellt.\nDu kannst dich jetzt einloggen und dein Profil einrichten.',
+                  AppLocalizations.of(context)!.ecBody,
                   textAlign: TextAlign.center,
                   style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 14, height: 1.5),
                 ),
@@ -60,7 +61,7 @@ class EmailConfirmedScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: const Text('Weiter zum Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    child: Text(AppLocalizations.of(context)!.ecContinue, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                   ),
                 ),
               ],
