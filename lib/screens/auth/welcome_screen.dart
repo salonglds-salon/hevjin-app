@@ -783,7 +783,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     try {
       await Supabase.instance.client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: 'https://hevjin.app',
+        // Web: zurueck auf die Website. Android: Deep Link in die App
+        // (Intent-Filter dafuer liegt in AndroidManifest.xml, Zeile 21-26).
+        redirectTo: kIsWeb ? 'https://hevjin.app' : 'app.hevjin://login-callback',
       );
     } catch (e) {
       _oauthTimeout?.cancel();
