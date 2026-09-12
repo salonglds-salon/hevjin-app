@@ -3,7 +3,7 @@
     "short_name": "Hevj\u00een",
     "start_url": "/",
     "scope": "/",
-    "display": "browser",
+    "display": "standalone",
     "background_color": "#2D2016",
     "theme_color": "#2D2016",
     "description": "Hevj\u00een - Partnersuche f\u00fcr \u00cazid\u00een",
