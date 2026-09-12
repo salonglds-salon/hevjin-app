@@ -655,4 +655,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get optTrCruise => 'Cruise';
+
+  @override
+  String get forgotPassword => 'Forgot password?';
+
+  @override
+  String get noAccountYet => 'No account yet?  ';
+
+  @override
+  String get registerShort => 'Sign up';
+
+  @override
+  String get errEmailPasswordRequired => 'Please enter e-mail and password';
+
+  @override
+  String get errPasswordMin6 => 'Password must be at least 6 characters';
 }

@@ -414,7 +414,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     Navigator.pop(ctx);
                     _showResetPasswordDialog(context);
                   },
-                  child: Text('Passwort vergessen?',
+                  child: Text(AppLocalizations.of(context)?.forgotPassword ?? 'Passwort vergessen?',
                     style: TextStyle(fontSize: 13, color: Colors.grey.shade700)))),
               const SizedBox(height: 8),
 
@@ -443,8 +443,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 child: Text.rich(TextSpan(
                   style: const TextStyle(fontSize: 14, color: Colors.black54),
                   children: [
-                    const TextSpan(text: 'Noch kein Konto?  '),
-                    TextSpan(text: 'Registrieren',
+                    TextSpan(text: AppLocalizations.of(context)?.noAccountYet ?? 'Noch kein Konto?  '),
+                    TextSpan(text: AppLocalizations.of(context)?.registerShort ?? 'Registrieren',
                       style: TextStyle(color: HevjinTheme.secondary,
                         fontWeight: FontWeight.w600)),
                   ]))),
@@ -576,7 +576,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   Future<void> _loginWithEmail() async {
     if (_emailController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
-      setState(() => _error = 'Bitte E-Mail und Passwort eingeben');
+      setState(() => _error = AppLocalizations.of(context)?.errEmailPasswordRequired ?? 'Bitte E-Mail und Passwort eingeben');
       return;
     }
     setState(() { _isLoading = true; _error = null; });
@@ -592,11 +592,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
   Future<void> _registerWithEmail() async {
     if (_emailController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
-      setState(() => _error = 'Bitte E-Mail und Passwort eingeben');
+      setState(() => _error = AppLocalizations.of(context)?.errEmailPasswordRequired ?? 'Bitte E-Mail und Passwort eingeben');
       return;
     }
     if (_passwordController.text.length < 6) {
-      setState(() => _error = 'Passwort muss mindestens 6 Zeichen haben');
+      setState(() => _error = AppLocalizations.of(context)?.errPasswordMin6 ?? 'Passwort muss mindestens 6 Zeichen haben');
       return;
     }
 

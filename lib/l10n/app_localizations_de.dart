@@ -656,4 +656,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get optTrCruise => 'Kreuzfahrt';
+
+  @override
+  String get forgotPassword => 'Passwort vergessen?';
+
+  @override
+  String get noAccountYet => 'Noch kein Konto?  ';
+
+  @override
+  String get registerShort => 'Registrieren';
+
+  @override
+  String get errEmailPasswordRequired => 'Bitte E-Mail und Passwort eingeben';
+
+  @override
+  String get errPasswordMin6 => 'Passwort muss mindestens 6 Zeichen haben';
 }

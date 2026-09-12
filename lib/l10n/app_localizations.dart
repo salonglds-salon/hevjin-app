@@ -1375,6 +1375,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cruise'**
   String get optTrCruise;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPassword;
+
+  /// No description provided for @noAccountYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No account yet?  '**
+  String get noAccountYet;
+
+  /// No description provided for @registerShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get registerShort;
+
+  /// No description provided for @errEmailPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter e-mail and password'**
+  String get errEmailPasswordRequired;
+
+  /// No description provided for @errPasswordMin6.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get errPasswordMin6;
 }
 
 class _AppLocalizationsDelegate

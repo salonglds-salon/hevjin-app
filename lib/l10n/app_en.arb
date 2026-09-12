@@ -250,5 +250,10 @@
   "optTrWellness": "Wellness",
   "optTrBackpacking": "Backpacking",
   "optTrFamily": "Family holiday",
-  "optTrCruise": "Cruise"
+  "optTrCruise": "Cruise",
+  "forgotPassword": "Forgot password?",
+  "noAccountYet": "No account yet?  ",
+  "registerShort": "Sign up",
+  "errEmailPasswordRequired": "Please enter e-mail and password",
+  "errPasswordMin6": "Password must be at least 6 characters"
 }
