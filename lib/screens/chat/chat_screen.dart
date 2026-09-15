@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -7,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../services/chat_service.dart';
 import '../../utils/theme.dart';
 import '../../widgets/report_sheet.dart';
+import '../splash_screen.dart';
 import 'view_profile_screen.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -51,7 +51,12 @@ class _ChatScreenState extends State<ChatScreen> {
     _chatService.addListener(_onMessagesChanged);
     _loadMessages();
     _chatService.subscribeToMessages(widget.matchId);
-    // Online-Status deactivated for now
+    // Online-Status ist bewusst DEAKTIVIERT.
+    // Folge: profiles.last_seen wird nirgends in der App geschrieben
+    // (_checkOnlineStatus ist die einzige Stelle) - der Online-Punkt und
+    // "Vor X Min. aktiv" im Chat-Header bleiben damit ohne Datenbasis.
+    // Zum Reaktivieren die beiden Zeilen einkommentieren. Achtung: das feuert
+    // pro offenem Chat alle 10 s ein UPDATE auf profiles.
     // _checkOnlineStatus();
     // _presenceTimer = Timer.periodic(const Duration(seconds: 10), (_) => _checkOnlineStatus());
     _checkBlocked();
@@ -142,6 +147,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  // ignore: unused_element  -- absichtlich vorgehalten, siehe initState()
   Future<void> _checkOnlineStatus() async {
     try {
       // Update own last_seen
@@ -193,6 +199,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _presenceTimer?.cancel();
     _chatService.removeListener(_onMessagesChanged);
     _chatService.unsubscribeFromMessages(widget.matchId);
+    _chatService.dispose(); // fehlte: ChangeNotifier blieb undisposed
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -290,11 +297,9 @@ class _ChatScreenState extends State<ChatScreen> {
         await Supabase.instance.client.from('messages').delete().eq('id', messageId);
       }
       
-      // Remove from local list immediately (for both options)
-      setState(() {
-        _chatService.messages.removeWhere((m) => m.id == messageId);
-        _chatService.notifyListeners();
-      });
+      // Sofort lokal ausblenden (bei beiden Optionen). Der Service ruft
+      // notifyListeners() selbst; _onMessagesChanged loest das setState aus.
+      _chatService.hideMessageLocally(messageId);
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -315,7 +320,25 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userId = Supabase.instance.client.auth.currentUser!.id;
+    // Vorher stand hier currentUser!.id - der einzige Force-Unwrap in einer
+    // build()-Methode. Laeuft die Session ab, waehrend der Chat offen ist
+    // (Token-Refresh scheitert, Offline-Phase), wirft JEDER Rebuild. Und jede
+    // eingehende Realtime-Nachricht loest einen aus -> ErrorWidget blockiert
+    // den Chat, raus kam man nur per App-Neustart.
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    if (userId == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const SplashScreen()),
+          (route) => false,
+        );
+      });
+      return const Scaffold(
+        backgroundColor: HevjinTheme.background,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     final messages = _chatService.messages;
 
     return Scaffold(
@@ -408,11 +431,11 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.chat_bubble_outline, size: 48, color: HevjinTheme.textSecondary.withOpacity(0.5)),
+                        Icon(Icons.chat_bubble_outline, size: 48, color: HevjinTheme.textSecondary.withValues(alpha: 0.5)),
                         const SizedBox(height: 12),
                         const Text('Sag Hallo! 👋', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                         const SizedBox(height: 4),
-                        Text('Schreibe die erste Nachricht', style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
+                        const Text('Schreibe die erste Nachricht', style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
                       ],
                     ),
                   )
@@ -425,7 +448,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       final isMe = msg.senderId == userId;
                       final showDate = index == 0 ||
                           messages[index].createdAt.toLocal().day != messages[index - 1].createdAt.toLocal().day;
-                      final isLast = index == messages.length - 1;
                       final isMessageRead = msg.isRead;
 
                       return Column(
@@ -462,7 +484,7 @@ class _ChatScreenState extends State<ChatScreen> {
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: Colors.white,
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, -2))],
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, -2))],
               ),
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -526,7 +548,7 @@ class _ChatScreenState extends State<ChatScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, -2)),
+                BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, -2)),
               ],
             ),
             child: SafeArea(
@@ -539,7 +561,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: Container(
                       width: 38, height: 38,
                       decoration: BoxDecoration(
-                        color: _showEmojis ? HevjinTheme.secondary.withOpacity(0.1) : Colors.transparent,
+                        color: _showEmojis ? HevjinTheme.secondary.withValues(alpha: 0.1) : Colors.transparent,
                         borderRadius: BorderRadius.circular(19),
                       ),
                       child: Icon(
@@ -584,7 +606,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         color: Colors.grey.shade200,
                         borderRadius: BorderRadius.circular(19),
                       ),
-                      child: Icon(Icons.image_outlined, color: HevjinTheme.textSecondary, size: 20),
+                      child: const Icon(Icons.image_outlined, color: HevjinTheme.textSecondary, size: 20),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -597,7 +619,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       decoration: BoxDecoration(
                         color: HevjinTheme.secondary,
                         borderRadius: BorderRadius.circular(21),
-                        boxShadow: [BoxShadow(color: HevjinTheme.secondary.withOpacity(0.3), blurRadius: 6, offset: const Offset(0, 2))],
+                        boxShadow: [BoxShadow(color: HevjinTheme.secondary.withValues(alpha: 0.3), blurRadius: 6, offset: const Offset(0, 2))],
                       ),
                       child: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
                     ),
@@ -667,7 +689,7 @@ class _MessageBubble extends StatelessWidget {
           constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.65),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4)],
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 4)],
           ),
           child: Column(
             crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -695,7 +717,7 @@ class _MessageBubble extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(time, style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 10)),
+                    Text(time, style: const TextStyle(color: HevjinTheme.textSecondary, fontSize: 10)),
                     if (isMe && isRead) ...[
                       const SizedBox(width: 4),
                       Icon(Icons.done_all, size: 14, color: Colors.blue.shade300),
@@ -722,7 +744,7 @@ class _MessageBubble extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(time, style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 10)),
+                  Text(time, style: const TextStyle(color: HevjinTheme.textSecondary, fontSize: 10)),
                   if (isMe && isRead) ...[
                     const SizedBox(width: 4),
                     Icon(Icons.done_all, size: 14, color: Colors.blue.shade300),
@@ -752,7 +774,7 @@ class _MessageBubble extends StatelessWidget {
             bottomRight: Radius.circular(isMe ? 4 : 16),
           ),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 4, offset: const Offset(0, 2)),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4, offset: const Offset(0, 2)),
           ],
         ),
         child: Column(

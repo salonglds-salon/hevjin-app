@@ -20,6 +20,10 @@ dependencies:
   go_router: ^13.0.0
   flutter_animate: ^4.5.0
   shared_preferences: ^2.5.5
+  # SDK-Package (kein pub.dev-Paket) - wird nur ueber den conditional import
+  # in lib/utils/url_strategy_web.dart auf Web benutzt.
+  flutter_web_plugins:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

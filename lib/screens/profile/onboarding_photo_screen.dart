@@ -126,7 +126,7 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
                   const SizedBox(height: 32),
                   Text(
                     l10n.onbPhotoTitle,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
                       color: HevjinTheme.textPrimary,
@@ -136,7 +136,7 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
                   Text(
                     l10n.onbPhotoSubtitle,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       height: 1.4,
                       color: HevjinTheme.textSecondary,
@@ -156,7 +156,7 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
                           color: _isComplete
                               ? HevjinTheme.secondary
                               : (hasPhoto
-                                  ? HevjinTheme.secondary.withOpacity(0.6)
+                                  ? HevjinTheme.secondary.withValues(alpha: 0.6)
                                   : Colors.grey.shade300),
                           width: _isComplete ? 3 : 2,
                         ),
@@ -184,15 +184,15 @@ class _OnboardingPhotoScreenState extends State<OnboardingPhotoScreen> {
                               : Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.add_a_photo_outlined,
                                       size: 48,
                                       color: HevjinTheme.secondary,
                                     ),
-                                    SizedBox(height: 10),
+                                    const SizedBox(height: 10),
                                     Text(
                                       l10n.onbPhotoSelect,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500,
                                         color: HevjinTheme.textSecondary,

@@ -9,6 +9,7 @@ import '../../services/profile_service.dart';
 import '../../services/auth_service.dart';
 import '../../services/chat_service.dart';
 import '../../models/user_profile.dart';
+import '../../utils/app_logger.dart';
 import '../../utils/theme.dart';
 import '../../services/language_provider.dart';
 import '../../utils/chip_emojis.dart';
@@ -113,9 +114,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 84,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: HevjinTheme.secondary.withOpacity(0.12),
+                  color: HevjinTheme.secondary.withValues(alpha: 0.12),
                   border: Border.all(
-                      color: HevjinTheme.secondary.withOpacity(0.4), width: 2),
+                      color: HevjinTheme.secondary.withValues(alpha: 0.4), width: 2),
                 ),
                 child: const Icon(Icons.favorite,
                     size: 40, color: HevjinTheme.secondary),
@@ -176,9 +177,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Text('Hevj\u00een',
                           style: TextStyle(
                               fontSize: 26,
@@ -194,10 +195,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 104,
                     height: 104,
                     decoration: BoxDecoration(
-                      color: HevjinTheme.secondary.withOpacity(0.10),
+                      color: HevjinTheme.secondary.withValues(alpha: 0.10),
                       shape: BoxShape.circle,
                       border: Border.all(
-                          color: HevjinTheme.secondary.withOpacity(0.35),
+                          color: HevjinTheme.secondary.withValues(alpha: 0.35),
                           width: 2),
                     ),
                     child: const Icon(Icons.add_a_photo_outlined,
@@ -317,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 2)),
+                BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
               ],
             ),
             child: Column(
@@ -328,10 +329,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     children: [
                       // Logo
-                      Row(
+                      const Row(
                         children: [
-                          const Text('Hevjîn', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: HevjinTheme.primary)),
-                          const SizedBox(width: 4),
+                          Text('Hevjîn', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: HevjinTheme.primary)),
+                          SizedBox(width: 4),
                           Icon(Icons.favorite, color: HevjinTheme.secondary, size: 20),
                         ],
                       ),
@@ -403,7 +404,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   final isSelected = code == currentCode;
                   return ListTile(
                     title: Text(name, style: TextStyle(color: isSelected ? HevjinTheme.secondary : HevjinTheme.textPrimary, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
-                    trailing: isSelected ? Icon(Icons.check, color: HevjinTheme.secondary) : null,
+                    trailing: isSelected ? const Icon(Icons.check, color: HevjinTheme.secondary) : null,
                     onTap: () {
                       langProvider.setLocale(locale);
                       Navigator.pop(ctx);
@@ -511,10 +512,10 @@ class DiscoverTab extends StatelessWidget {
                 width: 104,
                 height: 104,
                 decoration: BoxDecoration(
-                  color: HevjinTheme.secondary.withOpacity(0.10),
+                  color: HevjinTheme.secondary.withValues(alpha: 0.10),
                   shape: BoxShape.circle,
                   border: Border.all(
-                      color: HevjinTheme.secondary.withOpacity(0.35), width: 2),
+                      color: HevjinTheme.secondary.withValues(alpha: 0.35), width: 2),
                 ),
                 child: const Icon(Icons.add_a_photo_outlined,
                     size: 44, color: HevjinTheme.secondary),
@@ -585,10 +586,10 @@ class DiscoverTab extends StatelessWidget {
                 width: 104,
                 height: 104,
                 decoration: BoxDecoration(
-                  color: HevjinTheme.secondary.withOpacity(0.10),
+                  color: HevjinTheme.secondary.withValues(alpha: 0.10),
                   shape: BoxShape.circle,
                   border: Border.all(
-                      color: HevjinTheme.secondary.withOpacity(0.35), width: 2),
+                      color: HevjinTheme.secondary.withValues(alpha: 0.35), width: 2),
                 ),
                 child: const Icon(Icons.favorite_border,
                     size: 48, color: HevjinTheme.secondary),
@@ -633,7 +634,7 @@ class DiscoverTab extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13,
-                  color: HevjinTheme.textSecondary.withOpacity(0.8),
+                  color: HevjinTheme.textSecondary.withValues(alpha: 0.8),
                 ),
               ),
             ],
@@ -733,7 +734,7 @@ class DiscoverTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)],
       ),
       child: Column(
         children: [
@@ -742,13 +743,34 @@ class DiscoverTab extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 320,
-                  child: profile.avatarUrl != null
-                      ? Image.network(profile.avatarUrl!, fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => _genderPlaceholder(profile.gender))
-                      : _genderPlaceholder(profile.gender),
+                // Hoehe war fest 320: am Handy (~390 breit) ergab das fast ein
+                // Quadrat, am Desktop (~615 breit) aber 1,9:1 - BoxFit.cover
+                // skaliert auf die Breite und schnitt die Hoehe MITTIG weg,
+                // also genau den Kopf. Jetzt waechst die Hoehe mit der Breite
+                // (Portrait 4:5, gedeckelt) und cover schneidet von unten.
+                child: Builder(
+                  builder: (context) {
+                    // Hoehe an die BILDSCHIRMHOEHE koppeln, nicht an die Breite:
+                    // ein Portrait-Verhaeltnis (maxWidth * 5/4) wurde auf dem
+                    // Handy ~460px hoch und verdraengte Name, Bio und Chips aus
+                    // der Karte. 38% der Screenhoehe laesst darunter Platz.
+                    final h = (MediaQuery.of(context).size.height * 0.38)
+                        .clamp(240.0, 340.0);
+                    return SizedBox(
+                      width: double.infinity,
+                      height: h,
+                      child: profile.avatarUrl != null
+                          ? Image.network(profile.avatarUrl!,
+                              fit: BoxFit.cover,
+                              // -0.2: leicht oberhalb der Mitte. -1.0 wirkte zu
+                              // hoch (viel Hintergrund ueber dem Kopf), 0 waere
+                              // mittig und schnitt Koepfe ab.
+                              alignment: const Alignment(0, -0.2),
+                              errorBuilder: (_, __, ___) =>
+                                  _genderPlaceholder(profile.gender))
+                          : _genderPlaceholder(profile.gender),
+                    );
+                  },
                 ),
               ),
               // Fotos ansehen badge
@@ -770,7 +792,7 @@ class DiscoverTab extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text('${profile.displayName}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                    Text(profile.displayName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                     Text(', ${profile.age}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w300, color: HevjinTheme.textSecondary)),
                   ],
                 ),
@@ -784,7 +806,7 @@ class DiscoverTab extends StatelessWidget {
                       const SizedBox(width: 12),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(color: HevjinTheme.success.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                        decoration: BoxDecoration(color: HevjinTheme.success.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -797,7 +819,7 @@ class DiscoverTab extends StatelessWidget {
                       const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(color: Colors.blue.withOpacity(0.08), borderRadius: BorderRadius.circular(10)),
+                        decoration: BoxDecoration(color: Colors.blue.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(10)),
                         child: const Text('Jetzt aktiv', style: TextStyle(fontSize: 10, color: Colors.blue, fontWeight: FontWeight.w600)),
                       ),
                     ],
@@ -818,15 +840,15 @@ class DiscoverTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)],
       ),
       child: Row(
         children: [
           Container(
             width: 48, height: 48,
-            decoration: BoxDecoration(color: HevjinTheme.secondary.withOpacity(0.1), shape: BoxShape.circle),
-            child: Center(
-              child: Text('❤️', style: const TextStyle(fontSize: 20)),
+            decoration: BoxDecoration(color: HevjinTheme.secondary.withValues(alpha: 0.1), shape: BoxShape.circle),
+            child: const Center(
+              child: Text('❤️', style: TextStyle(fontSize: 20)),
             ),
           ),
           const SizedBox(width: 12),
@@ -859,7 +881,7 @@ class DiscoverTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -871,7 +893,7 @@ class DiscoverTab extends StatelessWidget {
           const SizedBox(height: 12),
           Align(
             alignment: Alignment.bottomRight,
-            child: Icon(Icons.favorite_border, color: HevjinTheme.textSecondary.withOpacity(0.4), size: 20),
+            child: Icon(Icons.favorite_border, color: HevjinTheme.textSecondary.withValues(alpha: 0.4), size: 20),
           ),
         ],
       ),
@@ -886,7 +908,7 @@ class DiscoverTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -938,7 +960,7 @@ class DiscoverTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -947,7 +969,7 @@ class DiscoverTab extends StatelessWidget {
             children: [
               const Text('INTERESSEN UND HOBBYS', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: HevjinTheme.textSecondary, letterSpacing: 1.2)),
               const Spacer(),
-              Icon(Icons.favorite_border, color: HevjinTheme.textSecondary.withOpacity(0.4), size: 18),
+              Icon(Icons.favorite_border, color: HevjinTheme.textSecondary.withValues(alpha: 0.4), size: 18),
             ],
           ),
           const SizedBox(height: 14),
@@ -975,7 +997,7 @@ class DiscoverTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -984,7 +1006,7 @@ class DiscoverTab extends StatelessWidget {
             children: [
               const Text('CHARAKTER UND EIGENSCHAFTEN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: HevjinTheme.textSecondary, letterSpacing: 1.2)),
               const Spacer(),
-              Icon(Icons.favorite_border, color: HevjinTheme.textSecondary.withOpacity(0.4), size: 18),
+              Icon(Icons.favorite_border, color: HevjinTheme.textSecondary.withValues(alpha: 0.4), size: 18),
             ],
           ),
           const SizedBox(height: 14),
@@ -1078,7 +1100,7 @@ class DiscoverTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1121,7 +1143,7 @@ class DiscoverTab extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10, offset: const Offset(0, -3))],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 10, offset: const Offset(0, -3))],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -1141,9 +1163,7 @@ class DiscoverTab extends StatelessWidget {
               final liked = profiles.first;
               final isDemo = liked.id.startsWith('demo-');
               final matchId = isDemo ? 'demo' : await profileService.likeUser(liked.id);
-              profileService.discoveryProfiles.removeAt(0);
-              // ignore: invalid_use_of_protected_member
-              profileService.notifyListeners();
+              profileService.skipTopDiscoveryProfile();
               if (matchId != null && context.mounted) {
                 Navigator.of(context).push(MaterialPageRoute(
                   fullscreenDialog: true,
@@ -1164,11 +1184,7 @@ class DiscoverTab extends StatelessWidget {
           // Next (arrow)
           GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: () {
-              profileService.discoveryProfiles.removeAt(0);
-              // ignore: invalid_use_of_protected_member
-              profileService.notifyListeners();
-            },
+            onTap: profileService.skipTopDiscoveryProfile,
             child: Container(
               width: 44, height: 44,
               decoration: BoxDecoration(
@@ -1203,7 +1219,7 @@ class DiscoverTab extends StatelessWidget {
             Icon(
               isFemale ? Icons.face_3 : Icons.face,
               size: 90,
-              color: isFemale ? const Color(0xFFE91E63).withOpacity(0.4) : const Color(0xFF1976D2).withOpacity(0.4),
+              color: isFemale ? const Color(0xFFE91E63).withValues(alpha: 0.4) : const Color(0xFF1976D2).withValues(alpha: 0.4),
             ),
             const SizedBox(height: 8),
             Text(
@@ -1211,7 +1227,7 @@ class DiscoverTab extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: isFemale ? const Color(0xFFE91E63).withOpacity(0.5) : const Color(0xFF1976D2).withOpacity(0.5),
+                color: isFemale ? const Color(0xFFE91E63).withValues(alpha: 0.5) : const Color(0xFF1976D2).withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -1226,16 +1242,16 @@ class MatchesTab extends StatelessWidget {
   const MatchesTab({super.key});
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return const SafeArea(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Likes', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
+            Text('Likes', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            SizedBox(height: 4),
             Text('Personen die dich mögen', style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
-            const Expanded(
+            Expanded(
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -1268,14 +1284,20 @@ class ChatsTab extends StatefulWidget {
 class _ChatsTabState extends State<ChatsTab> {
   final _chatService = ChatService();
   late final _refreshTimer = Stream.periodic(const Duration(seconds: 15));
-  late final _refreshSub;
+  late final StreamSubscription<void> _refreshSub;
+
+  void _onChatChanged() {
+    if (mounted) setState(() {});
+  }
 
   @override
   void initState() {
     super.initState();
-    _chatService.addListener(() { if (mounted) setState(() {}); });
+    // Benannte Methode statt anonymer Closure: nur so laesst sich der Listener
+    // in dispose() wieder abmelden.
+    _chatService.addListener(_onChatChanged);
     _chatService.fetchMatches();
-    // Refresh chat previews every 10 seconds (soft update, no flicker)
+    // Chat-Vorschauen alle 15 Sekunden nachladen (soft update, kein Flackern)
     _refreshSub = _refreshTimer.listen((_) {
       if (mounted) _chatService.fetchMatches();
     });
@@ -1284,6 +1306,10 @@ class _ChatsTabState extends State<ChatsTab> {
   @override
   void dispose() {
     _refreshSub.cancel();
+    // Vorher fehlten beide Zeilen: der Listener blieb auf einem ChangeNotifier
+    // registriert, der nie disposed wurde -> Leak bei jedem Tab-Wechsel.
+    _chatService.removeListener(_onChatChanged);
+    _chatService.dispose();
     super.dispose();
   }
   @override
@@ -1301,7 +1327,7 @@ class _ChatsTabState extends State<ChatsTab> {
               children: [
                 const Text('Chats', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 2),
-                Text(AppLocalizations.of(context)?.yourConversations ?? 'Deine Unterhaltungen', style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
+                Text(AppLocalizations.of(context)?.yourConversations ?? 'Deine Unterhaltungen', style: const TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
               ],
             ),
           ),
@@ -1316,10 +1342,10 @@ class _ChatsTabState extends State<ChatsTab> {
                     Container(
                       width: 70, height: 70,
                       decoration: BoxDecoration(
-                        color: HevjinTheme.secondary.withOpacity(0.1),
+                        color: HevjinTheme.secondary.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(Icons.chat_bubble_outline, size: 32, color: HevjinTheme.secondary.withOpacity(0.5)),
+                      child: Icon(Icons.chat_bubble_outline, size: 32, color: HevjinTheme.secondary.withValues(alpha: 0.5)),
                     ),
                     const SizedBox(height: 16),
                     const Text('Noch keine Chats', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
@@ -1479,14 +1505,14 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                       Container(
                         height: 140,
                         width: double.infinity,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              const Color(0xFF8B3A0F),
-                              const Color(0xFF5C3A28),
-                              const Color(0xFF3A2A1E),
+                              Color(0xFF8B3A0F),
+                              Color(0xFF5C3A28),
+                              Color(0xFF3A2A1E),
                             ],
                           ),
                         ),
@@ -1505,9 +1531,13 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                                 builder: (_) => _FullscreenPhoto(urls: [profile.avatarUrl!], initialIndex: 0),
                               ));
                             } else {
-                              // Kein Foto -> direkt zur Foto-Verwaltung
+                              // Kein Foto -> direkt zur Foto-Verwaltung.
+                              // Service vor der Navigation greifen: der
+                              // .then()-Callback laeuft erst nach dem Pop,
+                              // dann kann dieser context schon weg sein.
+                              final profileSvc = context.read<ProfileService>();
                               Navigator.push(context, MaterialPageRoute(builder: (_) => const PhotoUploadScreen())).then((_) {
-                                context.read<ProfileService>().fetchProfile();
+                                profileSvc.fetchProfile();
                               });
                             }
                           },
@@ -1515,7 +1545,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white, width: 4),
-                              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10)],
+                              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10)],
                             ),
                             child: Stack(
                               children: [
@@ -1576,7 +1606,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: HevjinTheme.secondary.withOpacity(0.1),
+                            color: HevjinTheme.secondary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(profile.casteDisplay,
@@ -1686,7 +1716,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (profile.promptAnswers.isEmpty)
-                Text(
+                const Text(
                   'Noch keine Frage beantwortet. Beantworte Fragen, damit andere dich besser kennenlernen.',
                   style: TextStyle(
                       fontSize: 13,
@@ -1718,7 +1748,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
         const SizedBox(height: 12),
 
         // LIFESTYLE - Was ich besonders mag (separate Lifestyle-Fotos)
-        _LifestyleSection(profile: profile),
+        _LifestyleSectionWidget(profile: profile),
         const SizedBox(height: 12),
 
         // INTERESSEN UND HOBBYS - Inline klickbar
@@ -1740,15 +1770,18 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
         // Logout
         TextButton.icon(
           onPressed: () async {
+            // Navigator vor dem await greifen - danach ist dieser context
+            // nach dem signOut-Rebuild nicht mehr zuverlaessig gueltig.
+            final navigator = Navigator.of(context);
             context.read<ProfileService>().reset();
             await context.read<AuthService>().signOut();
-            if (context.mounted) {
-              Navigator.pushAndRemoveUntil(context,
-                MaterialPageRoute(builder: (_) => const SplashScreen()), (route) => false);
-            }
+            navigator.pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const SplashScreen()),
+              (route) => false,
+            );
           },
-          icon: Icon(Icons.logout, color: HevjinTheme.error, size: 16),
-          label: Text('Ausloggen', style: TextStyle(color: HevjinTheme.error, fontSize: 13)),
+          icon: const Icon(Icons.logout, color: HevjinTheme.error, size: 16),
+          label: const Text('Ausloggen', style: TextStyle(color: HevjinTheme.error, fontSize: 13)),
         ),
         const SizedBox(height: 20),
       ],
@@ -1764,7 +1797,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(16),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)],
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)],
           ),
           child: Column(
             children: [
@@ -1807,7 +1840,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(16),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)],
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1853,7 +1886,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(16),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)],
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1881,7 +1914,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white, borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1904,11 +1937,11 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                 TextButton(
                   onPressed: onEdit,
                   style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(0, 0)),
-                  child: Row(
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text('Bearbeiten', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: HevjinTheme.secondary)),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Icon(Icons.arrow_forward_ios, size: 12, color: HevjinTheme.secondary),
                     ],
                   ),
@@ -1946,7 +1979,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
       children: [
         Text(item['q'] ?? '',
             style:
-                TextStyle(fontSize: 12, color: HevjinTheme.textSecondary)),
+                const TextStyle(fontSize: 12, color: HevjinTheme.textSecondary)),
         const SizedBox(height: 6),
         Text(item['a'] ?? '',
             style:
@@ -1965,7 +1998,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
               child: Icon(Icons.arrow_upward,
                   size: 16,
                   color: HevjinTheme.textSecondary
-                      .withOpacity(isFirst ? 0.25 : 0.75)),
+                      .withValues(alpha: isFirst ? 0.25 : 0.75)),
             ),
             const SizedBox(width: 12),
             InkWell(
@@ -1979,7 +2012,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
               child: Icon(Icons.arrow_downward,
                   size: 16,
                   color: HevjinTheme.textSecondary
-                      .withOpacity(isLast ? 0.25 : 0.75)),
+                      .withValues(alpha: isLast ? 0.25 : 0.75)),
             ),
             const Spacer(),
             InkWell(
@@ -1995,22 +2028,25 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                           child: const Text('Abbrechen')),
                       TextButton(
                         onPressed: () => Navigator.pop(d, true),
-                        child: Text('L\u00f6schen',
+                        child: const Text('L\u00f6schen',
                             style: TextStyle(color: HevjinTheme.error)),
                       ),
                     ],
                   ),
                 );
                 if (ok == true) {
+                  // context ist hier ein Parameter (nicht State.context),
+                  // daher context.mounted pruefen.
+                  if (!context.mounted) return;
                   list.removeAt(index);
                   await _savePrompts(context, list);
                 }
               },
-              child: Row(children: [
+              child: const Row(children: [
                 Text('L\u00f6schen',
                     style: TextStyle(
                         fontSize: 11, color: HevjinTheme.textSecondary)),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Icon(Icons.delete_outline,
                     size: 15, color: HevjinTheme.textSecondary),
               ]),
@@ -2019,11 +2055,11 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
             InkWell(
               onTap: () =>
                   _showPromptSheet(context, profile, editIndex: index),
-              child: Row(children: [
+              child: const Row(children: [
                 Text('Bearbeiten',
                     style: TextStyle(
                         fontSize: 11, color: HevjinTheme.textSecondary)),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Icon(Icons.arrow_forward_ios,
                     size: 12, color: HevjinTheme.textSecondary),
               ]),
@@ -2032,10 +2068,6 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
         ),
       ],
     );
-  }
-
-  Widget _LifestyleSection({required UserProfile profile}) {
-    return _LifestyleSectionWidget(profile: profile);
   }
 
   void _showPromptSheet(BuildContext context, UserProfile profile,
@@ -2094,13 +2126,13 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                         fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
                 if (selectedPrompt == null) ...[
-                  Text('W\u00e4hle eine Frage:',
+                  const Text('W\u00e4hle eine Frage:',
                       style: TextStyle(
                           fontSize: 13, color: HevjinTheme.textSecondary)),
                   const SizedBox(height: 12),
                   if (available.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
                       child: Text('Du hast schon alle Fragen beantwortet.',
                           style: TextStyle(
                               fontSize: 13, color: HevjinTheme.textSecondary)),
@@ -2124,7 +2156,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                   ),
                 ] else ...[
                   Text(selectedPrompt!,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 14, color: HevjinTheme.textSecondary)),
                   const SizedBox(height: 12),
                   TextField(
@@ -2177,47 +2209,6 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
     );
   }
 
-  Widget _chipWithIcon(IconData icon, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: HevjinTheme.textSecondary),
-          const SizedBox(width: 6),
-          Text(label, style: const TextStyle(fontSize: 13)),
-        ],
-      ),
-    );
-  }
-
-  Widget _addChip(String label, {VoidCallback? onTap}) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: HevjinTheme.secondary.withOpacity(0.4)),
-          color: HevjinTheme.secondary.withOpacity(0.05),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.add_circle, size: 16, color: HevjinTheme.secondary),
-            const SizedBox(width: 6),
-            Text(label, style: TextStyle(fontSize: 13, color: HevjinTheme.secondary, fontWeight: FontWeight.w500)),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _steckbriefRow(IconData icon, String label, String value, {VoidCallback? onTap}) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -2238,7 +2229,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                 ],
               ),
             ),
-            if (onTap != null) Icon(Icons.arrow_forward_ios, size: 14, color: HevjinTheme.textSecondary.withOpacity(0.4)),
+            if (onTap != null) Icon(Icons.arrow_forward_ios, size: 14, color: HevjinTheme.textSecondary.withValues(alpha: 0.4)),
           ],
         ),
       ),
@@ -2256,7 +2247,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.add_a_photo_outlined, size: 48, color: HevjinTheme.textSecondary.withOpacity(0.5)),
+                    Icon(Icons.add_a_photo_outlined, size: 48, color: HevjinTheme.textSecondary.withValues(alpha: 0.5)),
                     const SizedBox(height: 12),
                     const Text('Noch keine Fotos', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 16),
@@ -2327,10 +2318,11 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
             if (confirm == true) {
               final newVal = !profile.photosPrivate;
               await Supabase.instance.client.from('profiles').update({'photos_private': newVal}).eq('id', profile.id);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fotos jetzt ${newVal ? "privat" : "\u00d6ffentlich"}'), backgroundColor: HevjinTheme.success));
-                setState(() {});
-              }
+              // State.mounted pruefen (nicht context.mounted): setState und
+              // ScaffoldMessenger.of(context) haengen beide an diesem State.
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fotos jetzt ${newVal ? "privat" : "\u00d6ffentlich"}'), backgroundColor: HevjinTheme.success));
+              setState(() {});
             }
           }),
           _settingsItem(Icons.notifications_outlined, 'Benachrichtigungen', 'Aktiviert', onTap: () {
@@ -2340,7 +2332,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
           ListTile(
             leading: Container(
               width: 40, height: 40,
-              decoration: BoxDecoration(color: HevjinTheme.secondary.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+              decoration: BoxDecoration(color: HevjinTheme.secondary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
               child: const Icon(Icons.help_outline, color: HevjinTheme.secondary),
             ),
             title: const Text('Hilfe & Support', style: TextStyle(fontWeight: FontWeight.w500)),
@@ -2352,7 +2344,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
           ListTile(
             leading: Container(
               width: 40, height: 40,
-              decoration: BoxDecoration(color: HevjinTheme.secondary.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+              decoration: BoxDecoration(color: HevjinTheme.secondary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
               child: const Icon(Icons.description_outlined, color: HevjinTheme.secondary),
             ),
             title: const Text('Rechtliches', style: TextStyle(fontWeight: FontWeight.w500)),
@@ -2424,13 +2416,14 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
           _settingsItem(Icons.email_outlined, 'E-Mail', Supabase.instance.client.auth.currentUser?.email ?? '-'),
           const SizedBox(height: 8),
           _settingsItem(Icons.logout, 'Abmelden', 'Ausloggen', onTap: () async {
+            // Navigator vor dem signOut greifen: danach baut der Auth-Listener
+            // den Tree um und dieser context ist nicht mehr verlaesslich.
+            final navigator = Navigator.of(context);
             await Supabase.instance.client.auth.signOut();
-            if (context.mounted) {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const SplashScreen()),
-                (route) => false,
-              );
-            }
+            navigator.pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const SplashScreen()),
+              (route) => false,
+            );
           }),
           _settingsItem(Icons.delete_outline, 'Account l\u00f6schen', 'Unwiderruflich', isDestructive: true, onTap: () {
             // Step 1: Info dialog
@@ -2450,6 +2443,14 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                         TextButton(onPressed: () => Navigator.pop(ctx2), child: const Text('Abbrechen')),
                         TextButton(
                           onPressed: () async {
+                            // Messenger + Navigator VOR den awaits greifen.
+                            // signOut(global) laesst den Auth-Listener den Tree
+                            // umbauen - danach war context.mounted oft false und
+                            // der Nutzer blieb mit geloeschtem Account auf dem
+                            // Settings-Screen stehen: keine Meldung, keine
+                            // Navigation. Beide Handles ueberleben den Rebuild.
+                            final messenger = ScaffoldMessenger.of(context);
+                            final navigator = Navigator.of(context, rootNavigator: true);
                             Navigator.pop(ctx2);
                             try {
                               // Soft-delete: mark as deleted (can be reactivated within 14 days)
@@ -2461,24 +2462,25 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                               }
                               // Sign out
                               await Supabase.instance.client.auth.signOut(scope: SignOutScope.global);
-                            } catch (e) {
+                            } catch (e, s) {
+                              AppLog.e('account-loeschen', e, s);
                               try {
                                 await Supabase.instance.client.auth.signOut(scope: SignOutScope.global);
-                              } catch (_) {}
+                              } catch (e2, s2) {
+                                AppLog.e('account-loeschen-signout', e2, s2);
+                              }
                             }
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('\u2705 Account gel\u00f6scht. Innerhalb von 14 Tagen kannst du dich an hevjinsupport@gmail.com wenden.'),
-                                  duration: Duration(seconds: 5),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
-                              Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(builder: (_) => const SplashScreen()),
-                                (route) => false,
-                              );
-                            }
+                            messenger.showSnackBar(
+                              const SnackBar(
+                                content: Text('\u2705 Account gel\u00f6scht. Innerhalb von 14 Tagen kannst du dich an hevjinsupport@gmail.com wenden.'),
+                                duration: Duration(seconds: 5),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                            navigator.pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (_) => const SplashScreen()),
+                              (route) => false,
+                            );
                           },
                           child: const Text('Endg\u00fcltig l\u00f6schen', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
                         ),
@@ -2495,23 +2497,6 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
     );
   }
 
-  Widget _infoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 110,
-            child: Text(label, style: const TextStyle(fontSize: 13, color: HevjinTheme.textSecondary)),
-          ),
-          Expanded(
-            child: Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _settingsItem(IconData icon, String title, String subtitle, {bool isDestructive = false, VoidCallback? onTap}) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -2522,7 +2507,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 6)],
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 6)],
         ),
         child: Row(
           children: [
@@ -2538,7 +2523,7 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 14, color: HevjinTheme.textSecondary.withOpacity(0.4)),
+            Icon(Icons.arrow_forward_ios, size: 14, color: HevjinTheme.textSecondary.withValues(alpha: 0.4)),
           ],
         ),
       ),
@@ -2631,7 +2616,7 @@ class _InlineChipsState extends State<_InlineChips> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -2650,7 +2635,7 @@ class _InlineChipsState extends State<_InlineChips> {
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: isSelected ? HevjinTheme.secondary.withOpacity(0.12) : Colors.white,
+                    color: isSelected ? HevjinTheme.secondary.withValues(alpha: 0.12) : Colors.white,
                     border: Border.all(
                       color: isSelected ? HevjinTheme.secondary : Colors.grey.shade300,
                       width: isSelected ? 1.5 : 1,
@@ -2771,7 +2756,7 @@ class _LifestyleSectionState extends State<_LifestyleSectionWidget> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -2804,9 +2789,9 @@ class _LifestyleSectionState extends State<_LifestyleSectionWidget> {
                           : Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.add_a_photo, color: HevjinTheme.secondary.withOpacity(0.6), size: 28),
+                                Icon(Icons.add_a_photo, color: HevjinTheme.secondary.withValues(alpha: 0.6), size: 28),
                                 const SizedBox(height: 6),
-                                Text('Foto\nhinzufügen', textAlign: TextAlign.center,
+                                const Text('Foto\nhinzufügen', textAlign: TextAlign.center,
                                     style: TextStyle(fontSize: 10, color: HevjinTheme.textSecondary)),
                               ],
                             ),
@@ -2920,7 +2905,7 @@ class _AnimatedLikeButtonState extends State<_AnimatedLikeButton> with SingleTic
                     ? []
                     : [
                         BoxShadow(
-                          color: HevjinTheme.secondary.withOpacity(0.5),
+                          color: HevjinTheme.secondary.withValues(alpha: 0.5),
                           blurRadius: 18,
                           offset: const Offset(0, 6),
                           spreadRadius: 2,
@@ -3009,7 +2994,7 @@ class _AnimatedDislikeButtonState extends State<_AnimatedDislikeButton> with Sin
                 ),
                 boxShadow: _isPressed
                     ? []
-                    : [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 8, offset: const Offset(0, 3))],
+                    : [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 8, offset: const Offset(0, 3))],
               ),
               child: Center(
                 child: _showBrokenHeart

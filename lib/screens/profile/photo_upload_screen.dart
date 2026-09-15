@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -91,8 +90,8 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
           content: Text(AppLocalizations.of(context)!.pupProfileUnlocked),
-            backgroundColor: Color(0xFF28A745),
-            duration: Duration(milliseconds: 900),
+            backgroundColor: const Color(0xFF28A745),
+            duration: const Duration(milliseconds: 900),
           ),
         );
         await Future.delayed(const Duration(milliseconds: 650));
@@ -123,9 +122,13 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
     }).eq('id', userId);
   }
 
+  /// Wird von [ReorderableListView.onReorderItem] aufgerufen.
+  ///
+  /// Anders als beim alten `onReorder` ist [newIndex] hier bereits um das
+  /// entfernte Element korrigiert - das frueher noetige
+  /// `if (newIndex > oldIndex) newIndex--;` entfaellt deshalb.
   void _onReorder(int oldIndex, int newIndex) {
     setState(() {
-      if (newIndex > oldIndex) newIndex--;
       final item = _photoUrls.removeAt(oldIndex);
       _photoUrls.insert(newIndex, item);
     });
@@ -136,8 +139,8 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.pupAvatarUpdated),
-          backgroundColor: Color(0xFF28A745),
-          duration: Duration(seconds: 1),
+          backgroundColor: const Color(0xFF28A745),
+          duration: const Duration(seconds: 1),
         ),
       );
     }
@@ -164,12 +167,12 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
           children: [
             Text(
               AppLocalizations.of(context)!.pupSort,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 4),
             Text(
               AppLocalizations.of(context)!.pupSortHint,
-              style: TextStyle(fontSize: 13, color: HevjinTheme.textSecondary),
+              style: const TextStyle(fontSize: 13, color: HevjinTheme.textSecondary),
             ),
             const SizedBox(height: 20),
 
@@ -180,7 +183,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.add_a_photo_outlined, size: 64, color: HevjinTheme.textSecondary),
+                          const Icon(Icons.add_a_photo_outlined, size: 64, color: HevjinTheme.textSecondary),
                           const SizedBox(height: 16),
                           Text(AppLocalizations.of(context)!.pupNoPhotos),
                           const SizedBox(height: 8),
@@ -195,7 +198,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
                   : ReorderableListView.builder(
                       buildDefaultDragHandles: false,
                       itemCount: _photoUrls.length,
-                      onReorder: _onReorder,
+                      onReorderItem: _onReorder,
                       proxyDecorator: (child, index, animation) {
                         return Material(
                           elevation: 4,
@@ -251,7 +254,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
                                           ),
                                           child: Text(
               AppLocalizations.of(context)!.pupAvatarBadge,
-                                            style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
+                                            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
                                           ),
                                         )
                                       else
@@ -262,7 +265,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
                                       const SizedBox(height: 4),
                                       Text(
                                         index == 0 ? AppLocalizations.of(context)!.pupShownOnSwipe : AppLocalizations.of(context)!.pupHoldToMove,
-                                        style: TextStyle(fontSize: 11, color: HevjinTheme.textSecondary),
+                                        style: const TextStyle(fontSize: 11, color: HevjinTheme.textSecondary),
                                       ),
                                     ],
                                   ),
@@ -272,7 +275,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.drag_handle, color: HevjinTheme.textSecondary),
+                                    const Icon(Icons.drag_handle, color: HevjinTheme.textSecondary),
                                     const SizedBox(height: 8),
                                     GestureDetector(
                                       behavior: HitTestBehavior.opaque,

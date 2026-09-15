@@ -1,30 +1,37 @@
-// This is a basic Flutter widget test.
+// Smoke-Tests fuer Hevjin.
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// Vorher stand hier der unveraenderte Flutter-Boilerplate-Test
+// ("Counter increments smoke test"), der `MyApp` erwartete. Die App-Klasse
+// heisst aber `HevjinApp` - der Test war daher nicht kompilierbar und
+// `flutter test` schlug schon vor jeder Aenderung fehl.
+//
+// Ein Widget-Test auf HevjinApp braucht ein initialisiertes Supabase und ist
+// hier nicht sinnvoll. Getestet wird deshalb, was ohne Backend laeuft.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:hevjin/main.dart';
+import 'package:hevjin/services/language_provider.dart';
+import 'package:hevjin/utils/app_logger.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('Lokalisierung', () {
+    test('App ist DE-only', () {
+      // Bewusste Produktentscheidung (11.09.2026): EN wurde deaktiviert, weil
+      // gemischte DE/EN-Screens schlechter sind als durchgehend Deutsch.
+      // Der Sprachumschalter blendet sich bei length < 2 selbst aus - kommt
+      // hier je eine Sprache dazu, erscheint er wieder in der UI.
+      expect(LanguageProvider.supportedLocales.length, 1);
+      expect(LanguageProvider.supportedLocales.first.languageCode, 'de');
+    });
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  group('AppLog', () {
+    test('kuerzt lange Fehlertexte und wirft nicht', () {
+      // AppLog.e darf unter keinen Umstaenden selbst werfen - es laeuft in
+      // den globalen Error-Handlern aus main.dart.
+      expect(() => AppLog.e('test', Exception('x' * 1000)), returnsNormally);
+      expect(() => AppLog.e('test', null), returnsNormally);
+      expect(() => AppLog.d('test', 'nachricht'), returnsNormally);
+    });
   });
 }

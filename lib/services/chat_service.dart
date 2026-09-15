@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../utils/app_logger.dart';
 
 class ChatMessage {
   final String id;
@@ -244,10 +245,23 @@ class ChatService extends ChangeNotifier {
         notifyListeners();
       }
       return true;
-    } catch (e) {
-      print('Send message error: $e');
+    } catch (e, s) {
+      AppLog.e('send-message', e, s);
       return false;
     }
+  }
+
+  /// Blendet eine Nachricht nur lokal aus ("Fuer mich loeschen").
+  ///
+  /// Ersetzt `chatService.messages.removeWhere(...)` + externes
+  /// `notifyListeners()` aus chat_screen.dart - notifyListeners() ist
+  /// `@protected` und darf nur aus der Klasse selbst aufgerufen werden.
+  /// Die DB bleibt unberuehrt; "Fuer alle loeschen" laeuft separat ueber
+  /// den DELETE auf der messages-Tabelle.
+  void hideMessageLocally(String messageId) {
+    final before = _messages.length;
+    _messages.removeWhere((m) => m.id == messageId);
+    if (_messages.length != before) notifyListeners();
   }
 
   /// Subscribe to realtime messages

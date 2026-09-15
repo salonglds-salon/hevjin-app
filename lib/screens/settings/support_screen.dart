@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../utils/theme.dart';
 import '../../l10n/app_localizations.dart';
@@ -90,7 +90,7 @@ class _SupportScreenState extends State<SupportScreen> {
             Container(
               width: 80, height: 80,
               decoration: BoxDecoration(
-                color: HevjinTheme.success.withOpacity(0.1),
+                color: HevjinTheme.success.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.check_circle, color: HevjinTheme.success, size: 48),
@@ -101,7 +101,7 @@ class _SupportScreenState extends State<SupportScreen> {
             Text(
               AppLocalizations.of(context)!.supSentBody,
               textAlign: TextAlign.center,
-              style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 14, height: 1.5),
+              style: const TextStyle(color: HevjinTheme.textSecondary, fontSize: 14, height: 1.5),
             ),
             const SizedBox(height: 32),
             ElevatedButton(
@@ -130,7 +130,7 @@ class _SupportScreenState extends State<SupportScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: HevjinTheme.secondary.withOpacity(0.05),
+              color: HevjinTheme.secondary.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -139,7 +139,7 @@ class _SupportScreenState extends State<SupportScreen> {
                 const SizedBox(height: 12),
                 Text(AppLocalizations.of(context)!.supHeadline, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text(AppLocalizations.of(context)!.supReplyTime, style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
+                Text(AppLocalizations.of(context)!.supReplyTime, style: const TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
               ],
             ),
           ),
@@ -221,10 +221,10 @@ class _SupportScreenState extends State<SupportScreen> {
               children: [
                 Text(AppLocalizations.of(context)!.supDirectContact, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
                 const SizedBox(height: 8),
-                Row(
+                const Row(
                   children: [
                     Icon(Icons.email_outlined, size: 16, color: HevjinTheme.textSecondary),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text('hevjinsupport@gmail.com', style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
                   ],
                 ),

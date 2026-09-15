@@ -1,12 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:provider/provider.dart';
 import '../../utils/theme.dart';
 import '../../l10n/app_localizations.dart';
-import '../../services/profile_service.dart';
-import '../profile/create_profile_screen.dart';
-import '../home/home_screen.dart';
 import 'welcome_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -26,14 +22,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _error;
   bool _passwordVisible = false;
   bool _password2Visible = false;
-
-  int _calculateAge() {
-    if (_birthDate == null) return 0;
-    final now = DateTime.now();
-    int age = now.year - _birthDate!.year;
-    if (now.month < _birthDate!.month || (now.month == _birthDate!.month && now.day < _birthDate!.day)) age--;
-    return age;
-  }
 
   Future<void> _register() async {
     final name = _nameController.text.trim();
@@ -106,7 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             // Title
             Text(l?.register ?? 'Neues Konto erstellen', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 4),
-            Text(l?.welcome ?? 'Partnersuche f\u00fcr \u00caziden', style: TextStyle(color: HevjinTheme.textSecondary)),
+            Text(l?.welcome ?? 'Partnersuche f\u00fcr \u00caziden', style: const TextStyle(color: HevjinTheme.textSecondary)),
             const SizedBox(height: 24),
 
             // Error
@@ -207,7 +195,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             TextField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(hintText: 'deine@email.de', prefixIcon: const Icon(Icons.email_outlined)),
+              decoration: const InputDecoration(hintText: 'deine@email.de', prefixIcon: Icon(Icons.email_outlined)),
             ),
             const SizedBox(height: 16),
 
@@ -285,7 +273,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Center(
               child: TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text(l?.login ?? 'Ich habe schon ein Konto', style: TextStyle(color: HevjinTheme.secondary)),
+                child: Text(l?.login ?? 'Ich habe schon ein Konto', style: const TextStyle(color: HevjinTheme.secondary)),
               ),
             ),
             const SizedBox(height: 24),
@@ -417,9 +405,9 @@ class _EmailConfirmationScreenState extends State<_EmailConfirmationScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: const Color(0xFFE0A020)),
                 ),
-                child: Row(
+                child: const Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Icon(Icons.warning_amber_rounded,
                         size: 20, color: Color(0xFFE08A20)),
                     SizedBox(width: 10),

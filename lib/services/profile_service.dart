@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_profile.dart';
+import '../utils/app_logger.dart';
 
 class ProfileService extends ChangeNotifier {
   final _supabase = Supabase.instance.client;
@@ -66,9 +67,10 @@ class ProfileService extends ChangeNotifier {
       if (userId == null) throw Exception('Kein User eingeloggt');
       profileData['id'] = userId;
 
-      print('=== SAVING PROFILE ===');
-      print('UserID: $userId');
-      print('Data: $profileData');
+      // Nur Feldnamen loggen, NIE die Werte: profileData enthaelt Kaste, Stamm
+      // und Bio - das sind Art.-9-DSGVO-Daten und duerfen nicht ins Log.
+      AppLog.d('profile',
+          'upsert fuer $userId, Felder: ${profileData.keys.join(", ")}');
 
       await _supabase.from('profiles').upsert(profileData);
       await fetchProfile();
@@ -76,9 +78,8 @@ class ProfileService extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return true;
-    } catch (e) {
-      print('=== PROFILE SAVE ERROR ===');
-      print('Error: $e');
+    } catch (e, s) {
+      AppLog.e('profile-save', e, s);
       _errorMessage = e.toString();
       _isLoading = false;
       notifyListeners();
@@ -162,14 +163,13 @@ class ProfileService extends ChangeNotifier {
       try {
         final myProfile = await _supabase.from('profiles').select('gender').eq('id', userId).maybeSingle();
         myGender = myProfile?['gender']?.toString();
-        print('My gender: $myGender, userId: $userId');
-      } catch (e) {
-        print('Gender fetch error: $e');
+      } catch (e, s) {
+        AppLog.e('discover-gender', e, s);
       }
-      
+
       // If user is male -> show female, if female -> show male
       final oppositeGender = myGender == 'male' ? 'female' : myGender == 'female' ? 'male' : null;
-      print('Showing profiles with gender: $oppositeGender');
+      AppLog.d('discover', 'Filter auf gender=$oppositeGender');
 
       // Fetch profiles excluding already liked/matched, filtered by gender
       var query = _supabase
@@ -192,8 +192,8 @@ class ProfileService extends ChangeNotifier {
       final data = await query.limit(20);
 
       _discoveryProfiles = data.map((json) => UserProfile.fromJson(json)).toList();
-    } catch (e) {
-      print('Discover error: $e');
+    } catch (e, s) {
+      AppLog.e('discover', e, s);
       _discoveryProfiles = [];
     }
       if (const bool.fromEnvironment('MATCH_PREVIEW')) {
@@ -223,6 +223,20 @@ class ProfileService extends ChangeNotifier {
       // Ein fehlgeschlagener Dislike darf den Button nicht blockieren
     }
     _discoveryProfiles.removeWhere((p) => p.id == targetUserId);
+    notifyListeners();
+  }
+
+  /// Entfernt das oberste Discover-Profil aus der Liste.
+  ///
+  /// Ersetzt das frueher genutzte Muster
+  /// `profileService.discoveryProfiles.removeAt(0); profileService.notifyListeners();`
+  /// aus home_screen.dart. notifyListeners() ist `@protected` - der Aufruf von
+  /// aussen war ein API-Verstoss und musste mit `// ignore:` stillgelegt werden.
+  /// Nebeneffekt: der Guard gegen die leere Liste steckt jetzt hier, statt an
+  /// jeder Aufrufstelle wiederholt zu werden.
+  void skipTopDiscoveryProfile() {
+    if (_discoveryProfiles.isEmpty) return;
+    _discoveryProfiles.removeAt(0);
     notifyListeners();
   }
 
@@ -269,8 +283,8 @@ class ProfileService extends ChangeNotifier {
       }).select('id').maybeSingle();
 
       return match?['id']?.toString();
-    } catch (e) {
-      print('likeUser error: $e');
+    } catch (e, s) {
+      AppLog.e('likeUser', e, s);
       return null;
     }
   }

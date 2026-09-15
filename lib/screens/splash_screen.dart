@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../utils/theme.dart';
 import 'auth/welcome_screen.dart';
@@ -183,7 +182,7 @@ class _SplashScreenState extends State<SplashScreen>
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
-                      color: HevjinTheme.secondary.withOpacity(0.3),
+                      color: HevjinTheme.secondary.withValues(alpha: 0.3),
                       blurRadius: 30,
                       spreadRadius: 5,
                     ),
@@ -209,7 +208,7 @@ class _SplashScreenState extends State<SplashScreen>
                 'Dein Weg zur Liebe',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   letterSpacing: 1,
                 ),
               ),
@@ -223,7 +222,7 @@ class _SplashScreenState extends State<SplashScreen>
 
 // ===== REACTIVATION SCREEN =====
 class ReactivationScreen extends StatelessWidget {
-  const ReactivationScreen();
+  const ReactivationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

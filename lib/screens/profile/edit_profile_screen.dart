@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/profile_service.dart';
+import '../../utils/app_logger.dart';
 import '../../utils/theme.dart';
 import '../../utils/chip_emojis.dart';
 import '../../utils/option_labels.dart';
@@ -134,7 +135,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         actions: [
           TextButton(
             onPressed: _isSaving ? null : _saveProfile,
-            child: Text('Speichern', style: TextStyle(color: HevjinTheme.secondary, fontWeight: FontWeight.w600)),
+            child: const Text('Speichern', style: TextStyle(color: HevjinTheme.secondary, fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -449,12 +450,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         boxShadow: sel
             ? [BoxShadow(
-                color: HevjinTheme.secondary.withOpacity(0.30),
+                color: HevjinTheme.secondary.withValues(alpha: 0.30),
                 blurRadius: 10,
                 offset: const Offset(0, 3),
               )]
             : [BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 4,
                 offset: const Offset(0, 1),
               )],
@@ -496,7 +497,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _dropdown(String hint, String? value, List<MapEntry<String, String>> options) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       decoration: InputDecoration(hintText: hint),
       items: options.map((o) => DropdownMenuItem(value: o.key, child: Text(o.value))).toList(),
       onChanged: (v) {},
@@ -505,7 +506,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _dropdownField(String label, String? value, List<MapEntry<String, String>> options, Function(String?) onChanged) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       decoration: InputDecoration(labelText: label),
       items: options.map((o) => DropdownMenuItem(value: o.key, child: Text(o.value))).toList(),
       onChanged: onChanged,
@@ -522,7 +523,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: selected ? HevjinTheme.secondary.withOpacity(0.1) : const Color(0xFFF5F5F5),
+            color: selected ? HevjinTheme.secondary.withValues(alpha: 0.1) : const Color(0xFFF5F5F5),
             border: Border.all(color: selected ? HevjinTheme.secondary : Colors.grey.shade300),
           ),
           child: Center(child: Text(label, style: TextStyle(fontSize: 13, fontWeight: selected ? FontWeight.w600 : FontWeight.normal))),
@@ -541,7 +542,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: selected ? HevjinTheme.secondary.withOpacity(0.1) : const Color(0xFFF5F5F5),
+            color: selected ? HevjinTheme.secondary.withValues(alpha: 0.1) : const Color(0xFFF5F5F5),
             border: Border.all(color: selected ? HevjinTheme.secondary : Colors.grey.shade300),
           ),
           child: Center(child: Text(label, style: TextStyle(fontSize: 12, fontWeight: selected ? FontWeight.w600 : FontWeight.normal))),
@@ -605,7 +606,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: selected ? HevjinTheme.secondary.withOpacity(0.1) : const Color(0xFFF5F5F5),
+            color: selected ? HevjinTheme.secondary.withValues(alpha: 0.1) : const Color(0xFFF5F5F5),
             border: Border.all(color: selected ? HevjinTheme.secondary : Colors.grey.shade300),
           ),
           child: Center(child: Text(label, style: TextStyle(fontSize: 14, fontWeight: selected ? FontWeight.w600 : FontWeight.normal))),
@@ -660,21 +661,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }).eq('id', userId);
 
       // Refresh profile
-      if (mounted) {
-        await context.read<ProfileService>().fetchProfile();
-        setState(() => _isSaving = false);
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profil gespeichert ✓'), backgroundColor: HevjinTheme.success),
-        );
-      }
-    } catch (e) {
+      if (!mounted) return;
+      // Messenger + Navigator VOR dem await greifen: nach Navigator.pop() ist
+      // dieser context deregistriert, ScaffoldMessenger.of(context) wuerde dann
+      // den SnackBar verschlucken (bzw. werfen).
+      final messenger = ScaffoldMessenger.of(context);
+      final navigator = Navigator.of(context);
+      await context.read<ProfileService>().fetchProfile();
+      if (!mounted) return;
       setState(() => _isSaving = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Fehler: $e'), backgroundColor: HevjinTheme.error),
-        );
-      }
+      navigator.pop();
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Profil gespeichert ✓'), backgroundColor: HevjinTheme.success),
+      );
+    } catch (e, s) {
+      AppLog.e('profil-speichern', e, s);
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fehler: $e'), backgroundColor: HevjinTheme.error),
+      );
     }
   }
 }

@@ -5,18 +5,16 @@ import 'dart:math' as math;
 // wurde nicht mehr verwendet und haette den Android-Build zerstoert.
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../utils/app_logger.dart';
 import '../../utils/theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/language_provider.dart';
 import '../splash_screen.dart';
-import '../home/home_screen.dart';
-import '../profile/create_profile_screen.dart';
 import 'register_screen.dart';
 import '../legal/privacy_policy_screen.dart';
 import '../legal/terms_screen.dart';
 import '../legal/imprint_screen.dart';
 import 'package:provider/provider.dart';
-import '../../services/profile_service.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -33,9 +31,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   final List<_Petal> _petals = [];
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  String _iAmGender = 'male'; // Ich bin
-  String _searchGender = 'female'; // Ich suche
   bool _isLoading = false;
+
+  /// Nur waehrend des manuellen E-Mail-Logins true. Der Auth-Listener muss
+  /// dann pausieren, weil _loginWithEmail() die Navigation selbst uebernimmt
+  /// (inkl. deleted_at-Pruefung fuer die Reaktivierung).
+  bool _emailLoginInProgress = false;
   bool _passwordVisible = false;
   String? _error;
   StreamSubscription<AuthState>? _authSub;
@@ -70,7 +71,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     }
     // Listen for OAuth redirect (Google Login only)
     _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      if (!mounted || _isLoading) return; // Don't trigger if manual login is in progress
+      // Guard prueft _emailLoginInProgress, NICHT _isLoading: _isLoading wird
+      // auch von _signInWithGoogle() gesetzt und bleibt bis zum
+      // Lifecycle-Callback bzw. 8s-Timeout stehen. Kommt das signedIn-Event
+      // vorher rein (Android-Deep-Link ist schneller), wurde es verworfen und
+      // es gab keinen zweiten Versuch: eingeloggt, aber Welcome-Screen blieb.
+      if (!mounted || _emailLoginInProgress) return;
       if (data.event == AuthChangeEvent.signedIn) {
         _handleLoginSuccess();
       }
@@ -176,7 +182,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           borderRadius: BorderRadius.circular(24),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFE02020).withOpacity(0.15 + p * 0.40),
+                              color: const Color(0xFFE02020).withValues(alpha: 0.15 + p * 0.40),
                               blurRadius: 20 + p * 30,
                               spreadRadius: 2 + p * 8,
                             ),
@@ -214,9 +220,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     decoration: BoxDecoration(
-                      color: HevjinTheme.error.withOpacity(0.18),
+                      color: HevjinTheme.error.withValues(alpha: 0.18),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: HevjinTheme.error.withOpacity(0.35)),
+                      border: Border.all(color: HevjinTheme.error.withValues(alpha: 0.35)),
                     ),
                     child: Text(_error!,
                         textAlign: TextAlign.center,
@@ -235,7 +241,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     label: Text(AppLocalizations.of(context)?.loginWithEmail ?? 'Mit E-Mail einloggen'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: Colors.white.withOpacity(0.06),
+                      backgroundColor: Colors.white.withValues(alpha: 0.06),
                       side: const BorderSide(color: Colors.white70, width: 1.3),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
                       textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
@@ -294,7 +300,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 const SizedBox(height: 26),
 
                 // ---- Vertrauens-Block, visuell abgesetzt ----
-                Container(height: 1, color: Colors.white.withOpacity(0.10)),
+                Container(height: 1, color: Colors.white.withValues(alpha: 0.10)),
                 const SizedBox(height: 18),
 
                 Wrap(
@@ -318,21 +324,21 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       behavior: HitTestBehavior.opaque,
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen())),
                       child: Text(AppLocalizations.of(context)?.terms ?? 'AGB',
-                          style: TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
+                          style: const TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
                     ),
                     const Text('  \u00b7  ', style: TextStyle(color: Colors.white38, fontSize: 11)),
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
                       child: Text(AppLocalizations.of(context)?.privacy ?? 'Datenschutz',
-                          style: TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
+                          style: const TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
                     ),
                     const Text('  \u00b7  ', style: TextStyle(color: Colors.white38, fontSize: 11)),
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ImprintScreen())),
                       child: Text(AppLocalizations.of(context)?.imprint ?? 'Impressum',
-                          style: TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
+                          style: const TextStyle(color: Colors.white54, fontSize: 11, decoration: TextDecoration.underline)),
                     ),
                   ],
                 ),
@@ -445,7 +451,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   children: [
                     TextSpan(text: AppLocalizations.of(context)?.noAccountYet ?? 'Noch kein Konto?  '),
                     TextSpan(text: AppLocalizations.of(context)?.registerShort ?? 'Registrieren',
-                      style: TextStyle(color: HevjinTheme.secondary,
+                      style: const TextStyle(color: HevjinTheme.secondary,
                         fontWeight: FontWeight.w600)),
                   ]))),
             ],
@@ -470,12 +476,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             borderSide: BorderSide.none),
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: HevjinTheme.secondary, width: 1.5)),
+            borderSide: const BorderSide(color: HevjinTheme.secondary, width: 1.5)),
         errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: const BorderSide(color: Colors.red, width: 1.2)),
         labelStyle: TextStyle(color: Colors.grey.shade700, fontSize: 14),
-        floatingLabelStyle: TextStyle(color: HevjinTheme.secondary, fontSize: 13),
+        floatingLabelStyle: const TextStyle(color: HevjinTheme.secondary, fontSize: 13),
       );
 
   // ===== PASSWORT VERGESSEN DIALOG =====
@@ -494,7 +500,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           children: [
             Text(AppLocalizations.of(context)?.resetPassword ?? 'Passwort zurücksetzen', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text(AppLocalizations.of(context)?.resetPasswordDesc ?? 'Gib deine E-Mail ein und wir senden dir einen Link.', style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
+            Text(AppLocalizations.of(context)?.resetPasswordDesc ?? 'Gib deine E-Mail ein und wir senden dir einen Link.', style: const TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
             const SizedBox(height: 20),
             TextField(controller: resetController, keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(hintText: 'deine@email.de', prefixIcon: Icon(Icons.email_outlined, size: 20))),
@@ -505,18 +511,24 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 onPressed: () async {
                   final email = resetController.text.trim();
                   if (email.isEmpty) return;
+                  // Beide vor dem await greifen - nach Navigator.pop(ctx) ist der
+                  // Sheet-Context weg und ScaffoldMessenger.of(context) laeuft
+                  // ueber einen bereits deaktivierten Element-Baum.
+                  final messenger = ScaffoldMessenger.of(context);
+                  final sheetNavigator = Navigator.of(ctx);
                   try {
                     await Supabase.instance.client.auth.resetPasswordForEmail(
                       email,
                       redirectTo: kIsWeb ? Uri.base.origin : 'app.hevjin://login-callback',
                     );
-                    Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    sheetNavigator.pop();
+                    messenger.showSnackBar(
                       SnackBar(content: Text('Reset-Link an $email gesendet!'), backgroundColor: HevjinTheme.success),
                     );
-                  } catch (e) {
-                    Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
+                  } catch (e, s) {
+                    AppLog.e('passwort-reset', e, s);
+                    sheetNavigator.pop();
+                    messenger.showSnackBar(
                       const SnackBar(content: Text('Fehler beim Senden'), backgroundColor: Colors.red),
                     );
                   }
@@ -526,37 +538,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               ),
             ),
             const SizedBox(height: 24),
-          ],
-        ),
-      ),
-    );
-  }
-
-
-  Widget _genderOption(String value, String label, bool selected, VoidCallback onTap) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: selected ? HevjinTheme.secondary : Colors.grey.shade300),
-          color: selected ? HevjinTheme.secondary.withOpacity(0.05) : Colors.white,
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 20, height: 20,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: selected ? HevjinTheme.secondary : Colors.grey.shade400, width: 2),
-                color: selected ? HevjinTheme.secondary : Colors.transparent,
-              ),
-              child: selected ? const Icon(Icons.check, size: 12, color: Colors.white) : null,
-            ),
-            const SizedBox(width: 8),
-            Text(label, style: TextStyle(fontSize: 13, fontWeight: selected ? FontWeight.w600 : FontWeight.normal)),
           ],
         ),
       ),
@@ -579,6 +560,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       setState(() => _error = AppLocalizations.of(context)?.errEmailPasswordRequired ?? 'Bitte E-Mail und Passwort eingeben');
       return;
     }
+    _emailLoginInProgress = true;
     setState(() { _isLoading = true; _error = null; });
     try {
       await Supabase.instance.client.auth.signInWithPassword(
@@ -587,123 +569,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       );
       _handleLoginSuccess();
     } catch (e) {
+      _emailLoginInProgress = false;
+      if (!mounted) return;
       setState(() { _isLoading = false; _error = 'Login fehlgeschlagen: ${e.toString()}'; });
-    }
-  }
-  Future<void> _registerWithEmail() async {
-    if (_emailController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
-      setState(() => _error = AppLocalizations.of(context)?.errEmailPasswordRequired ?? 'Bitte E-Mail und Passwort eingeben');
-      return;
-    }
-    if (_passwordController.text.length < 6) {
-      setState(() => _error = AppLocalizations.of(context)?.errPasswordMin6 ?? 'Passwort muss mindestens 6 Zeichen haben');
-      return;
-    }
-
-    setState(() { _isLoading = true; _error = null; });
-
-    try {
-      // Versuche IMMER erst Login
-      try {
-        await Supabase.instance.client.auth.signInWithPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
-        // Login erfolgreich - check if deactivated
-        setState(() => _isLoading = false);
-        if (mounted) {
-          // Check deleted_at before navigating
-          final uid = Supabase.instance.client.auth.currentUser?.id;
-          if (uid != null) {
-            final profileData = await Supabase.instance.client
-                .from('profiles').select('deleted_at').eq('id', uid).maybeSingle();
-            if (profileData != null && profileData['deleted_at'] != null) {
-              // Account is deactivated - go directly to reactivation screen
-              Navigator.pushAndRemoveUntil(context,
-                MaterialPageRoute(builder: (_) => const ReactivationScreen()), (route) => false);
-              return;
-            }
-          }
-          // Normal login - go to splash (which goes to home)
-          Navigator.pushAndRemoveUntil(context,
-            MaterialPageRoute(builder: (_) => const SplashScreen()), (route) => false);
-        }
-        return;
-      } on AuthException catch (e) {
-        if (e.message.contains('not confirmed')) {
-          setState(() { _isLoading = false; _error = 'Bitte bestï¿½tige erst deine E-Mail (Check dein Postfach)'; });
-          return;
-        }
-        if (e.message.contains('Invalid login')) {
-          // Prï¿½fe ob Email schon registriert ist
-          // Supabase hat leider kein "check if exists" ï¿½ wir versuchen signUp
-          final response = await Supabase.instance.client.auth.signUp(
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-          );
-
-          // Wenn identities leer ? Account existiert schon (falsches Passwort)
-          if (response.user?.identities == null || response.user!.identities!.isEmpty) {
-            setState(() { _isLoading = false; _error = 'Diese E-Mail ist bereits registriert. Falsches Passwort? Nutze "Mitglieder-Login" ? "Passwort vergessen"'; });
-            return;
-          }
-
-          // Neuer Account erstellt ? Email-Dialog zeigen
-          setState(() => _isLoading = false);
-        }
-      }
-
-      setState(() => _isLoading = false);
-
-      if (mounted) {
-        // Zeige Bestï¿½tigungs-Dialog
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (ctx) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 12),
-                Container(
-                  width: 70, height: 70,
-                  decoration: BoxDecoration(
-                    color: HevjinTheme.success.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.mark_email_read, size: 36, color: HevjinTheme.success),
-                ),
-                const SizedBox(height: 20),
-                const Text('E-Mail gesendet!', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                const SizedBox(height: 12),
-                Text(
-                  'Wir haben dir eine Bestï¿½tigungs-E-Mail an\n${_emailController.text.trim()}\ngesendet.\n\nBitte klicke auf den Link in der E-Mail um dein Konto zu aktivieren.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 13, height: 1.5),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: HevjinTheme.secondary,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    child: const Text('Verstanden'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      setState(() { _isLoading = false; _error = 'Registrierung fehlgeschlagen: ${e.toString()}'; });
     }
   }
 
@@ -734,7 +602,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   final isSelected = code == currentCode;
                   return ListTile(
                     title: Text(name, style: TextStyle(color: isSelected ? HevjinTheme.secondary : HevjinTheme.textPrimary, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
-                    trailing: isSelected ? Icon(Icons.check, color: HevjinTheme.secondary) : null,
+                    trailing: isSelected ? const Icon(Icons.check, color: HevjinTheme.secondary) : null,
                     onTap: () {
                       langProvider.setLocale(locale);
                       Navigator.pop(ctx);
@@ -749,7 +617,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: Colors.white24),
         ),
@@ -850,7 +718,7 @@ class _PetalPainter extends CustomPainter {
       if (prog > 0.85) opacity *= (1.0 - prog) / 0.15;
 
       final paint = Paint()
-        ..color = _colors[p.colorIndex].withOpacity(opacity.clamp(0.0, 0.55))
+        ..color = _colors[p.colorIndex].withValues(alpha: opacity.clamp(0.0, 0.55))
         ..style = PaintingStyle.fill;
 
       canvas.save();

@@ -103,10 +103,10 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
       labelText: label,
       labelStyle: const TextStyle(color: Colors.white70),
       filled: true,
-      fillColor: Colors.white.withOpacity(0.08),
+      fillColor: Colors.white.withValues(alpha: 0.08),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.white.withOpacity(0.25)),
+        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.25)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -163,7 +163,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                     const SizedBox(height: 28),
                     Text(AppLocalizations.of(context)!.snpTitle,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 23,
                             fontWeight: FontWeight.bold,
                             color: Colors.white)),
@@ -171,7 +171,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                     Text(
                     AppLocalizations.of(context)!.snpSubtitle,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 14, height: 1.5, color: Colors.white70)),
                     const SizedBox(height: 30),
                     TextField(
@@ -198,10 +198,10 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: _accent.withOpacity(0.15),
+                          color: _accent.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(10),
                           border:
-                              Border.all(color: _accentSoft.withOpacity(0.5)),
+                              Border.all(color: _accentSoft.withValues(alpha: 0.5)),
                         ),
                         child: Row(children: [
                           const Icon(Icons.error_outline,
@@ -233,7 +233,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                                 child: CircularProgressIndicator(
                                     strokeWidth: 2.2, color: Colors.white))
                             : Text(AppLocalizations.of(context)!.snpSave,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white)),
@@ -253,7 +253,7 @@ class _SetNewPasswordScreenState extends State<SetNewPasswordScreen> {
                               );
                             },
                       child: Text(AppLocalizations.of(context)!.snpCancel,
-                          style: TextStyle(color: Colors.white54)),
+                          style: const TextStyle(color: Colors.white54)),
                     ),
                   ],
                 ),

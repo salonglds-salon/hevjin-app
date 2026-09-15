@@ -60,7 +60,7 @@ class HevjinTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          side: BorderSide(color: secondary.withOpacity(0.4)),
+          side: BorderSide(color: secondary.withValues(alpha: 0.4)),
         ),
       ),
       cardTheme: const CardThemeData(
@@ -82,18 +82,18 @@ class HevjinTheme {
           borderSide: const BorderSide(color: secondary, width: 1.5),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        hintStyle: TextStyle(color: textSecondary.withOpacity(0.6)),
+        hintStyle: TextStyle(color: textSecondary.withValues(alpha: 0.6)),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surface,
-        indicatorColor: secondary.withOpacity(0.15),
+        indicatorColor: secondary.withValues(alpha: 0.15),
         labelTextStyle: WidgetStateProperty.all(
           GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w500),
         ),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: const Color(0xFFF5F5F5),
-        selectedColor: secondary.withOpacity(0.15),
+        selectedColor: secondary.withValues(alpha: 0.15),
         labelStyle: GoogleFonts.poppins(fontSize: 13),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         side: BorderSide.none,

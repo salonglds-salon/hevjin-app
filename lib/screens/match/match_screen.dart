@@ -159,7 +159,7 @@ class _MatchScreenState extends State<MatchScreen>
                               Text(
                                 AppLocalizations.of(context)!.matItsAMatch,
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 34,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
@@ -238,7 +238,7 @@ class _MatchScreenState extends State<MatchScreen>
                 child: Icon(
                   Icons.favorite,
                   size: 200,
-                  color: HevjinTheme.secondary.withOpacity(0.16 + t * 0.10),
+                  color: HevjinTheme.secondary.withValues(alpha: 0.16 + t * 0.10),
                 ),
               );
             },
@@ -276,7 +276,7 @@ class _MatchScreenState extends State<MatchScreen>
         border: Border.all(color: Colors.white, width: 3.5),
         boxShadow: [
           BoxShadow(
-            color: HevjinTheme.secondary.withOpacity(0.45),
+            color: HevjinTheme.secondary.withValues(alpha: 0.45),
             blurRadius: 22,
             spreadRadius: 1,
           ),
@@ -318,7 +318,7 @@ class _MatchScreenState extends State<MatchScreen>
             alignment: Alignment.center,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.12),
+              color: Colors.white.withValues(alpha: 0.12),
               border: Border.all(color: Colors.white24),
             ),
             child: Text(e, style: const TextStyle(fontSize: 22)),
@@ -348,7 +348,7 @@ class _MatchScreenState extends State<MatchScreen>
               onSubmitted: (_) => _send(),
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.matSayHint,
-                hintStyle: TextStyle(color: Color(0xFF8A8A8A)),
+                hintStyle: const TextStyle(color: Color(0xFF8A8A8A)),
                 border: InputBorder.none,
               ),
             ),
@@ -393,7 +393,7 @@ class _FloatingHeartsPainter extends CustomPainter {
       final sway = math.sin((prog * 2 * math.pi) + i) * 22;
       final s = 6.0 + rnd.nextDouble() * 9.0;
       final op = (math.sin(prog * math.pi) * 0.30).clamp(0.0, 0.30);
-      paint.color = HevjinTheme.secondary.withOpacity(op);
+      paint.color = HevjinTheme.secondary.withValues(alpha: op);
       _heart(canvas, Offset(baseX + sway, y), s, paint);
     }
   }

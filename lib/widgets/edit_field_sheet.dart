@@ -152,7 +152,7 @@ class _TextEditPageState extends State<_TextEditPage> {
           else
             TextButton(
               onPressed: _save,
-              child: Text('Speichern',
+              child: const Text('Speichern',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: HevjinTheme.secondary)),
@@ -221,7 +221,7 @@ Future<void> showDropdownEditSheet(
             contentPadding: EdgeInsets.zero,
             title: Text(opt.value),
             trailing: currentValue == opt.key
-                ? Icon(Icons.check_circle, color: HevjinTheme.secondary)
+                ? const Icon(Icons.check_circle, color: HevjinTheme.secondary)
                 : null,
             onTap: () async {
               await _saveAndRefresh(ctx, field, opt.key);
@@ -261,7 +261,7 @@ Future<void> showChipsEditSheet(
             Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
             const SizedBox(height: 20),
             Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Text('Wähle bis zu $maxSelection (${selected.length}/$maxSelection)', style: TextStyle(fontSize: 13, color: HevjinTheme.textSecondary)),
+            Text('Wähle bis zu $maxSelection (${selected.length}/$maxSelection)', style: const TextStyle(fontSize: 13, color: HevjinTheme.textSecondary)),
             const SizedBox(height: 16),
             Wrap(
               spacing: 8,
@@ -285,14 +285,14 @@ Future<void> showChipsEditSheet(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: isSelected ? HevjinTheme.secondary.withOpacity(0.12) : const Color(0xFFF5F5F5),
+                        color: isSelected ? HevjinTheme.secondary.withValues(alpha: 0.12) : const Color(0xFFF5F5F5),
                         border: Border.all(color: isSelected ? HevjinTheme.secondary : Colors.grey.shade300),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (isSelected) ...[
-                            Icon(Icons.check, size: 14, color: HevjinTheme.secondary),
+                            const Icon(Icons.check, size: 14, color: HevjinTheme.secondary),
                             const SizedBox(width: 4),
                           ],
                           Text(opt, style: TextStyle(
@@ -406,7 +406,7 @@ Future<void> showBoolEditSheet(
           ListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(trueLabel),
-            trailing: currentValue == true ? Icon(Icons.check_circle, color: HevjinTheme.secondary) : null,
+            trailing: currentValue == true ? const Icon(Icons.check_circle, color: HevjinTheme.secondary) : null,
             onTap: () async {
               await _saveAndRefresh(ctx, field, true);
               if (ctx.mounted) Navigator.pop(ctx);
@@ -415,7 +415,7 @@ Future<void> showBoolEditSheet(
           ListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(falseLabel),
-            trailing: currentValue == false ? Icon(Icons.check_circle, color: HevjinTheme.secondary) : null,
+            trailing: currentValue == false ? const Icon(Icons.check_circle, color: HevjinTheme.secondary) : null,
             onTap: () async {
               await _saveAndRefresh(ctx, field, false);
               if (ctx.mounted) Navigator.pop(ctx);

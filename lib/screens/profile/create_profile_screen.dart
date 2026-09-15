@@ -84,8 +84,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   }
 
   // Tags & Interests
-  List<String> _selectedTags = [];
-  List<String> _selectedInterests = [];
+  final List<String> _selectedTags = [];
+  final List<String> _selectedInterests = [];
 
   final List<String> _availableTags = [
     'Humorvoll',
@@ -150,8 +150,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     'Familienurlaub',
     'Kreuzfahrt'
   ];
-  List<String> _selectedSports = [];
-  List<String> _selectedTravel = [];
+  final List<String> _selectedSports = [];
+  final List<String> _selectedTravel = [];
 
   final int _totalPages = 8;
 
@@ -168,8 +168,15 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Tastaturhoehe. Mit resizeToAvoidBottomInset: false schrumpft der Body
+    // NICHT mehr - wir legen das Inset stattdessen selbst als Bottom-Padding
+    // in den Scrollview. Vorher fraß die Buttons-Row den Restplatz und das
+    // fokussierte Feld war auf iOS Safari nur noch als Spalt sichtbar.
+    final keyboard = MediaQuery.of(context).viewInsets.bottom;
+
     return Scaffold(
       backgroundColor: HevjinTheme.background,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(
             '${AppLocalizations.of(context)?.step ?? 'Schritt'} ${_currentPage - _effStart + 1} / ${_totalPages - _effStart}'),
@@ -190,49 +197,63 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           LinearProgressIndicator(
             value: (_currentPage - _effStart + 1) / (_totalPages - _effStart),
             backgroundColor: Colors.grey.shade200,
-            valueColor: AlwaysStoppedAnimation<Color>(HevjinTheme.secondary),
+            valueColor: const AlwaysStoppedAnimation<Color>(HevjinTheme.secondary),
             minHeight: 3,
           ),
 
           // Content
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              // Tastaturhoehe unten drauflegen: so laesst sich das fokussierte
+              // Feld ueber die Tastatur nach oben scrollen.
+              padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 24,
+                bottom: 24 + keyboard,
+              ),
               child: _buildPage(),
             ),
           ),
 
-          // Bottom Buttons
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Row(
-              children: [
-                if (_currentPage > _effStart)
-                  Expanded(
-                    child: OutlinedButton(
+          // Bottom Buttons - bei offener Tastatur ausgeblendet, sonst kleben
+          // sie unter der Tastatur und blockieren nur Platz.
+          if (keyboard == 0)
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Row(
+                children: [
+                  if (_currentPage > _effStart)
+                    // Kein Expanded: "Zur\u00fcck" bekam bei flex 1 gegen flex 2
+                    // auf schmalen iPhones zu wenig Breite und brach zu
+                    // "Zur\u00fc / ck" um. Jetzt so breit wie der Text braucht.
+                    OutlinedButton(
                       onPressed: () => setState(() => _currentPage--),
                       child: Text(
-                          AppLocalizations.of(context)?.back ?? 'Zur\u00fcck'),
+                        AppLocalizations.of(context)?.back ?? 'Zur\u00fcck',
+                        maxLines: 1,
+                        softWrap: false,
+                      ),
+                    ),
+                  if (_currentPage > _effStart) const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _currentPage == _totalPages - 1
+                          ? _saveProfile
+                          : _nextPage,
+                      child: Text(
+                        _currentPage == _totalPages - 1
+                            ? (AppLocalizations.of(context)?.createProfile ??
+                                'Profil erstellen')
+                            : (AppLocalizations.of(context)?.next ?? 'Weiter'),
+                        maxLines: 1,
+                        softWrap: false,
+                      ),
                     ),
                   ),
-                if (_currentPage > _effStart) const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton(
-                    onPressed: _currentPage == _totalPages - 1
-                        ? _saveProfile
-                        : _nextPage,
-                    child: Text(
-                      _currentPage == _totalPages - 1
-                          ? (AppLocalizations.of(context)?.createProfile ??
-                              'Profil erstellen')
-                          : (AppLocalizations.of(context)?.next ?? 'Weiter'),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -334,8 +355,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           },
         ),
         if (_birthDate != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 6),
+          const Padding(
+            padding: EdgeInsets.only(top: 6),
             child: Text('Andere sehen nur dein Alter',
                 style:
                     TextStyle(fontSize: 11, color: HevjinTheme.textSecondary)),
@@ -453,7 +474,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: HevjinTheme.secondary.withOpacity(0.1),
+                color: HevjinTheme.secondary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text('$_height cm',
@@ -467,9 +488,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         const SizedBox(height: 6),
         TextField(
           controller: _cityController,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: 'z.B. Bielefeld, Oldenburg...',
-            prefixIcon: const Icon(Icons.location_city),
+            prefixIcon: Icon(Icons.location_city),
           ),
         ),
       ],
@@ -501,7 +522,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
-          value: _jobStatus,
+          initialValue: _jobStatus,
           decoration:
               const InputDecoration(prefixIcon: Icon(Icons.badge_outlined)),
           hint: const Text('Wählen...'),
@@ -521,7 +542,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
-          value: _education,
+          initialValue: _education,
           decoration:
               const InputDecoration(prefixIcon: Icon(Icons.school_outlined)),
           hint: const Text('Wählen...'),
@@ -637,11 +658,11 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 'Interessen & Hobbys',
             style: const TextStyle(color: HevjinTheme.textSecondary)),
         const SizedBox(height: 8),
-        Row(
+        const Row(
           children: [
             Icon(Icons.swipe_vertical_outlined,
                 size: 15, color: HevjinTheme.secondary),
-            const SizedBox(width: 6),
+            SizedBox(width: 6),
             Expanded(
               child: Text(
                 'Zwei Bereiche - scrolle nach unten f\u00fcr die Interessen',
@@ -670,7 +691,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 label: Text(tag),
                 selected: selected,
                 backgroundColor: Colors.white,
-                selectedColor: HevjinTheme.secondary.withOpacity(0.2),
+                selectedColor: HevjinTheme.secondary.withValues(alpha: 0.2),
                 checkmarkColor: HevjinTheme.secondary,
                 onSelected: (v) {
                   setState(() {
@@ -705,7 +726,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 label: Text(item['label']!),
                 selected: selected,
                 backgroundColor: Colors.white,
-                selectedColor: HevjinTheme.secondary.withOpacity(0.2),
+                selectedColor: HevjinTheme.secondary.withValues(alpha: 0.2),
                 checkmarkColor: HevjinTheme.secondary,
                 onSelected: (v) {
                   setState(() {
@@ -742,7 +763,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: active
-              ? HevjinTheme.secondary.withOpacity(0.45)
+              ? HevjinTheme.secondary.withValues(alpha: 0.45)
               : Colors.grey.shade300,
           width: active ? 1.5 : 1,
         ),
@@ -837,7 +858,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           label: Text(label),
           selected: selected,
           backgroundColor: Colors.white,
-          selectedColor: HevjinTheme.secondary.withOpacity(0.2),
+          selectedColor: HevjinTheme.secondary.withValues(alpha: 0.2),
           checkmarkColor: HevjinTheme.secondary,
           onSelected: (v) {
             setState(() {
@@ -880,7 +901,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: HevjinTheme.secondary.withOpacity(0.08),
+            color: HevjinTheme.secondary.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(12),
           ),
           child: const Row(
@@ -916,7 +937,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               color: selected ? HevjinTheme.secondary : Colors.grey.shade200,
               width: 2),
           color:
-              selected ? HevjinTheme.secondary.withOpacity(0.05) : Colors.white,
+              selected ? HevjinTheme.secondary.withValues(alpha: 0.05) : Colors.white,
         ),
         child: Column(
           children: [
@@ -952,8 +973,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: const [
+          const Row(
+            children: [
               Icon(Icons.shield_outlined, size: 18, color: Color(0xFFFF8A80)),
               SizedBox(width: 8),
               Expanded(
@@ -1028,7 +1049,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               color: selected ? HevjinTheme.secondary : Colors.grey.shade200,
               width: 2),
           color:
-              selected ? HevjinTheme.secondary.withOpacity(0.05) : Colors.white,
+              selected ? HevjinTheme.secondary.withValues(alpha: 0.05) : Colors.white,
         ),
         child: Column(
           children: [
@@ -1058,7 +1079,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               color: selected ? HevjinTheme.secondary : Colors.grey.shade200,
               width: 2),
           color:
-              selected ? HevjinTheme.secondary.withOpacity(0.05) : Colors.white,
+              selected ? HevjinTheme.secondary.withValues(alpha: 0.05) : Colors.white,
         ),
         child: Column(
           children: [
@@ -1087,7 +1108,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           border: Border.all(
               color: selected ? HevjinTheme.secondary : Colors.grey.shade300),
           color:
-              selected ? HevjinTheme.secondary.withOpacity(0.1) : Colors.white,
+              selected ? HevjinTheme.secondary.withValues(alpha: 0.1) : Colors.white,
         ),
         child: Text(label,
             style: TextStyle(
@@ -1111,7 +1132,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               color: selected ? HevjinTheme.secondary : Colors.grey.shade200,
               width: 2),
           color:
-              selected ? HevjinTheme.secondary.withOpacity(0.05) : Colors.white,
+              selected ? HevjinTheme.secondary.withValues(alpha: 0.05) : Colors.white,
         ),
         child: Center(
             child: Text(label,
@@ -1187,30 +1208,40 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     // Always save optional fields
     profileData['caste'] = _caste;
     profileData['art9_consent_at'] = DateTime.now().toUtc().toIso8601String();
-    if (_tribeController.text.trim().isNotEmpty)
+    if (_tribeController.text.trim().isNotEmpty) {
       profileData['tribe'] = _tribeController.text.trim();
+    }
     profileData['looking_for'] = _lookingFor;
-    if (_bioController.text.trim().isNotEmpty)
+    if (_bioController.text.trim().isNotEmpty) {
       profileData['bio'] = _bioController.text.trim();
-    if (_cityController.text.trim().isNotEmpty)
+    }
+    if (_cityController.text.trim().isNotEmpty) {
       profileData['city'] = _cityController.text.trim();
-    if (_zipController.text.trim().isNotEmpty)
+    }
+    if (_zipController.text.trim().isNotEmpty) {
       profileData['zip_code'] = _zipController.text.trim();
+    }
     if (_height != 175) profileData['height'] = _height;
-    if (_education != null && _education!.isNotEmpty)
+    if (_education != null && _education!.isNotEmpty) {
       profileData['education'] = _education;
-    if (_jobController.text.trim().isNotEmpty)
+    }
+    if (_jobController.text.trim().isNotEmpty) {
       profileData['job'] = _jobController.text.trim();
-    if (_jobStatus != null && _jobStatus!.isNotEmpty)
+    }
+    if (_jobStatus != null && _jobStatus!.isNotEmpty) {
       profileData['job_status'] = _jobStatus;
-    if (_familyStatus != null && _familyStatus!.isNotEmpty)
+    }
+    if (_familyStatus != null && _familyStatus!.isNotEmpty) {
       profileData['family_status'] = _familyStatus;
+    }
     profileData['has_children'] = _hasChildren;
-    if (_childWish != null && _childWish!.isNotEmpty)
+    if (_childWish != null && _childWish!.isNotEmpty) {
       profileData['child_wish'] = _childWish;
+    }
     if (_selectedTags.isNotEmpty) profileData['tags'] = _selectedTags;
-    if (_selectedInterests.isNotEmpty)
+    if (_selectedInterests.isNotEmpty) {
       profileData['interests'] = _selectedInterests;
+    }
     if (_selectedSports.isNotEmpty) profileData['sports'] = _selectedSports;
     if (_selectedTravel.isNotEmpty) profileData['travel'] = _selectedTravel;
 

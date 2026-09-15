@@ -127,15 +127,15 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                 decoration: BoxDecoration(
-                                  color: HevjinTheme.secondary.withOpacity(0.12),
+                                  color: HevjinTheme.secondary.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Row(mainAxisSize: MainAxisSize.min, children: [
-                                  Icon(Icons.verified, size: 14, color: HevjinTheme.secondary),
+                                  const Icon(Icons.verified, size: 14, color: HevjinTheme.secondary),
                                   const SizedBox(width: 4),
                                   Text(
                                     AppLocalizations.of(context)?.emailVerified ?? String.fromCharCodes([69,45,77,97,105,108,32,118,101,114,105,102,105,122,105,101,114,116]),
-                                    style: TextStyle(color: HevjinTheme.secondary, fontSize: 11, fontWeight: FontWeight.w600),
+                                    style: const TextStyle(color: HevjinTheme.secondary, fontSize: 11, fontWeight: FontWeight.w600),
                                   ),
                                 ]),
                               ),
@@ -143,9 +143,9 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                             if (profile.city != null) ...[
                               const SizedBox(height: 4),
                               Row(children: [
-                                Icon(Icons.location_on, size: 14, color: HevjinTheme.textSecondary),
+                                const Icon(Icons.location_on, size: 14, color: HevjinTheme.textSecondary),
                                 const SizedBox(width: 4),
-                                Text(profile.city!, style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 14)),
+                                Text(profile.city!, style: const TextStyle(color: HevjinTheme.textSecondary, fontSize: 14)),
                               ]),
                             ],
                           ],
@@ -154,7 +154,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: HevjinTheme.secondary.withOpacity(0.1),
+                          color: HevjinTheme.secondary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(profile.casteDisplay,
@@ -311,7 +311,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
           child: Image.network(url, fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(color: HevjinTheme.primary)),
         ),
-        Container(color: Colors.black.withOpacity(0.25)),
+        Container(color: Colors.black.withValues(alpha: 0.25)),
         Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 420),
@@ -348,7 +348,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
   Widget _placeholder() {
     return Container(
       color: const Color(0xFFF5F5F5),
-      child: Center(child: Icon(Icons.person, size: 80, color: HevjinTheme.textSecondary.withOpacity(0.3))),
+      child: Center(child: Icon(Icons.person, size: 80, color: HevjinTheme.textSecondary.withValues(alpha: 0.3))),
     );
   }
 
@@ -359,7 +359,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -390,7 +390,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: HevjinTheme.secondary.withOpacity(0.08),
+        color: HevjinTheme.secondary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text('${chipEmoji(text)} $text',
@@ -469,7 +469,7 @@ class _PhotoViewerScreenState extends State<_PhotoViewerScreen> {
                   },
                   child: Container(
                     width: 44, height: 44,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.black54,
                       shape: BoxShape.circle,
                     ),
@@ -491,7 +491,7 @@ class _PhotoViewerScreenState extends State<_PhotoViewerScreen> {
                   },
                   child: Container(
                     width: 44, height: 44,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.black54,
                       shape: BoxShape.circle,
                     ),

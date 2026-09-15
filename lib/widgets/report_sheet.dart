@@ -21,9 +21,9 @@ Future<void> showReportSheet(BuildContext context, {
         children: [
           Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
           const SizedBox(height: 20),
-          Text('$userName', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(userName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text('Was möchtest du tun?', style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
+          const Text('Was möchtest du tun?', style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
           const SizedBox(height: 20),
 
           // Block
@@ -108,17 +108,28 @@ void _showReportReasonSheet(BuildContext context, {required String userId, requi
               const SizedBox(height: 20),
               const Text('Grund der Meldung', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
-              Text('Warum möchtest du $userName melden?', style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
+              Text('Warum möchtest du $userName melden?', style: const TextStyle(color: HevjinTheme.textSecondary, fontSize: 13)),
               const SizedBox(height: 16),
 
-              ...reasons.map((reason) => RadioListTile<String>(
-                contentPadding: EdgeInsets.zero,
-                title: Text(reason, style: const TextStyle(fontSize: 14)),
-                value: reason,
+              // RadioGroup statt groupValue/onChanged pro Tile: beide Parameter
+              // sind seit Flutter 3.32 deprecated. Die Gruppe verwaltet den
+              // Wert jetzt zentral.
+              RadioGroup<String>(
                 groupValue: selectedReason,
-                activeColor: HevjinTheme.secondary,
                 onChanged: (v) => setSheetState(() => selectedReason = v),
-              )),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: reasons
+                      .map((reason) => RadioListTile<String>(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(reason,
+                                style: const TextStyle(fontSize: 14)),
+                            value: reason,
+                            activeColor: HevjinTheme.secondary,
+                          ))
+                      .toList(),
+                ),
+              ),
 
               const SizedBox(height: 12),
               TextField(
@@ -209,8 +220,8 @@ class _ActionTile extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: color.withOpacity(0.05),
-          border: Border.all(color: color.withOpacity(0.15)),
+          color: color.withValues(alpha: 0.05),
+          border: Border.all(color: color.withValues(alpha: 0.15)),
         ),
         child: Row(
           children: [
@@ -221,11 +232,11 @@ class _ActionTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: TextStyle(fontWeight: FontWeight.w600, color: color, fontSize: 14)),
-                  Text(subtitle, style: TextStyle(fontSize: 11, color: HevjinTheme.textSecondary)),
+                  Text(subtitle, style: const TextStyle(fontSize: 11, color: HevjinTheme.textSecondary)),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 14, color: color.withOpacity(0.5)),
+            Icon(Icons.arrow_forward_ios, size: 14, color: color.withValues(alpha: 0.5)),
           ],
         ),
       ),

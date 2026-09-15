@@ -22,7 +22,7 @@ class EmailConfirmedScreen extends StatelessWidget {
                   width: 100,
                   height: 100,
                   decoration: BoxDecoration(
-                    color: HevjinTheme.success.withOpacity(0.1),
+                    color: HevjinTheme.success.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.check_circle, size: 60, color: HevjinTheme.success),
@@ -32,7 +32,7 @@ class EmailConfirmedScreen extends StatelessWidget {
                 // Title
                 Text(
               AppLocalizations.of(context)!.ecTitle,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
@@ -41,7 +41,7 @@ class EmailConfirmedScreen extends StatelessWidget {
                 Text(
                   AppLocalizations.of(context)!.ecBody,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: HevjinTheme.textSecondary, fontSize: 14, height: 1.5),
+                  style: const TextStyle(color: HevjinTheme.textSecondary, fontSize: 14, height: 1.5),
                 ),
                 const SizedBox(height: 36),
 
