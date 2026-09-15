@@ -23,6 +23,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _passwordVisible = false;
   bool _password2Visible = false;
 
+  /// Spaetestes Geburtsdatum, mit dem man heute 18 ist.
+  DateTime _achtzehnJahreZurueck() {
+    final heute = DateTime.now();
+    return DateTime(heute.year - 18, heute.month, heute.day);
+  }
+
   Future<void> _register() async {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
@@ -30,6 +36,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (name.isEmpty || email.isEmpty || password.isEmpty || _birthDate == null || _gender == null) {
       setState(() => _error = 'Bitte alle Pflichtfelder ausf\u00fcllen');
+      return;
+    }
+    // Zweite Absicherung neben dem Picker-Limit: die App ist USK 18, ein
+    // Registrieren unter 18 darf auch bei manipuliertem State nicht durchgehen.
+    if (_birthDate!.isAfter(_achtzehnJahreZurueck())) {
+      setState(() => _error =
+          'Du musst mindestens 18 Jahre alt sein, um Hevj\u00een zu nutzen');
       return;
     }
     if (password != _password2Controller.text.trim()) {
@@ -126,11 +139,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
             GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () async {
+                // USK 18: lastDate war DateTime.now() und erlaubte damit ein
+                // Geburtsdatum von heute. Der Picker gibt jetzt nur noch
+                // Daten frei, die mindestens 18 Jahre zurueckliegen.
+                final volljaehrigAb = _achtzehnJahreZurueck();
                 final picked = await showDatePicker(
                   context: context,
                   initialDate: DateTime(2000),
                   firstDate: DateTime(1950),
-                  lastDate: DateTime.now(),
+                  lastDate: volljaehrigAb,
                 );
                 if (picked != null) setState(() => _birthDate = picked);
               },
