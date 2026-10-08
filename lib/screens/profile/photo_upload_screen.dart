@@ -34,7 +34,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
         .eq('id', userId)
         .maybeSingle();
 
-    if (data != null && data['photos'] != null) {
+    if (data != null && data['photos'] != null && mounted) {
       setState(() {
         _photoUrls = List<String>.from(data['photos']);
       });
@@ -79,6 +79,7 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
       _photoUrls.add(url);
       await _savePhotos();
 
+      if (!mounted) return;
       setState(() => _isUploading = false);
 
       // Minimum (2 Fotos) gerade erreicht -> direkt zurueck zum HomeScreen,
@@ -98,12 +99,11 @@ class _PhotoUploadScreenState extends State<PhotoUploadScreen> {
         if (mounted) Navigator.of(context).pop(true);
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isUploading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.onbPhotoUploadFailed(e.toString()))),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.onbPhotoUploadFailed(e.toString()))),
+      );
     }
   }
 

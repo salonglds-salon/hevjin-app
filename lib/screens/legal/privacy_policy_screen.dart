@@ -88,8 +88,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               'Dar\u00fcber hinaus geben wir Daten nur weiter, wenn Sie ausdr\u00fccklich '
               'einwilligen oder wir gesetzlich dazu verpflichtet sind.\n\n'
               'Ihr Profil ist innerhalb der App f\u00fcr andere angemeldete Nutzerinnen und Nutzer '
-              'sichtbar, soweit Sie es nicht auf privat gestellt oder die betreffende Person '
-              'blockiert haben.\n'),
+              'sichtbar, soweit Sie die betreffende Person nicht blockiert haben.\n'),
 
             _Section(title: '7. Speicherdauer', content:
               'Ihre Daten werden gespeichert, solange Ihr Konto besteht.\n\n'
@@ -134,9 +133,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
             _Section(title: '11. Fotos und Medien', content:
               'Hochgeladene Fotos werden bei unserem Auftragsverarbeiter Supabase gespeichert. '
-              'Sie k\u00f6nnen Fotos jederzeit l\u00f6schen oder als privat markieren. '
-              'Profilfotos sind f\u00fcr andere angemeldete Nutzerinnen und Nutzer sichtbar, '
-              'sofern Sie die Privatsph\u00e4re-Einstellung nicht aktivieren.\n\n'
+              'Sie k\u00f6nnen Fotos jederzeit l\u00f6schen. Profilfotos sind innerhalb der App '
+              'f\u00fcr andere angemeldete Nutzerinnen und Nutzer sichtbar.\n\n'
               'Bilder, die Sie in einem Chat versenden, sind f\u00fcr die jeweilige '
               'Chat-Partnerin oder den Chat-Partner sichtbar.\n'),
 

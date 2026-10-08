@@ -23,36 +23,48 @@ class ProfileService extends ChangeNotifier {
     _currentProfile = null;
     _discoveryProfiles = [];
     _isLoading = false;
+    _errorMessage = null;
     notifyListeners();
   }
 
   Future<void> fetchProfile() async {
     final userId = _supabase.auth.currentUser?.id;
-    if (userId == null) return;
-
-    final data = await _supabase
-        .from('profiles')
-        .select()
-        .eq('id', userId)
-        .maybeSingle();
-
-    if (data != null) {
-      // Check if account is deactivated
-      if (data['deleted_at'] != null) {
-        _isDeactivated = true;
-        _currentProfile = UserProfile.fromJson(data);
-        notifyListeners();
-        return;
-      }
-      _isDeactivated = false;
-      _currentProfile = UserProfile.fromJson(data);
-      notifyListeners();
-    } else {
-      // Keine Profilzeile in der DB (noch nicht angelegt oder geloescht):
-      // gecachtes Profil verwerfen, sonst bleibt hasProfile true und der
-      // Wizard wird uebersprungen.
+    if (userId == null) {
       _currentProfile = null;
       _isDeactivated = false;
+      _errorMessage = 'Deine Sitzung ist abgelaufen.';
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
+
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final data = await _supabase
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .maybeSingle();
+
+      if (data != null) {
+        _isDeactivated = data['deleted_at'] != null;
+        _currentProfile = UserProfile.fromJson(data);
+      } else {
+        // Keine Profilzeile in der DB (noch nicht angelegt oder geloescht):
+        // gecachtes Profil verwerfen, sonst wird der Wizard uebersprungen.
+        _currentProfile = null;
+        _isDeactivated = false;
+      }
+    } catch (e, s) {
+      AppLog.e('profile-load', e, s);
+      _currentProfile = null;
+      _isDeactivated = false;
+      _errorMessage = 'Profil konnte nicht geladen werden.';
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }

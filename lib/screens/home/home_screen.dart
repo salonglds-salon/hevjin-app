@@ -15,6 +15,7 @@ import '../../services/language_provider.dart';
 import '../../utils/chip_emojis.dart';
 import '../profile/photo_upload_screen.dart';
 import '../profile/edit_profile_screen.dart';
+import '../profile/create_profile_screen.dart';
 import '../splash_screen.dart';
 import '../chat/chat_screen.dart';
 import '../../widgets/edit_field_sheet.dart';
@@ -49,6 +50,23 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     _checkUnread();
     _startUnreadTimer();
+  }
+
+  Future<void> _retryProfileLoad() async {
+    final service = context.read<ProfileService>();
+    await service.fetchProfile();
+    if (!mounted || service.errorMessage != null) return;
+    if (service.currentProfile == null) {
+      final userId = Supabase.instance.client.auth.currentUser?.id;
+      if (userId != null) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (_) =>
+                  CreateProfileScreen(startPage: 0, userId: userId)),
+          (route) => false,
+        );
+      }
+    }
   }
 
   void _startUnreadTimer() {
@@ -283,6 +301,37 @@ class _HomeScreenState extends State<HomeScreen> {
     // ===== APP-GATE (Release 108): min. 2 Fotos fuer die GESAMTE App =====
     final gateService = context.watch<ProfileService>();
     final me = gateService.currentProfile;
+
+    // Ein echter Ladefehler darf nicht als endloser Spinner erscheinen.
+    if (me == null && gateService.errorMessage != null) {
+      return Scaffold(
+        backgroundColor: HevjinTheme.background,
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.cloud_off,
+                      size: 54, color: HevjinTheme.secondary),
+                  const SizedBox(height: 18),
+                  Text(gateService.errorMessage!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 16)),
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    onPressed: _retryProfileLoad,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Erneut versuchen'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     // Profil noch nicht geladen -> Spinner, damit das Gate nicht faelschlich
     // aufblitzt, bevor die Fotos bekannt sind.
@@ -2306,25 +2355,6 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          _settingsItem(Icons.lock_outline, 'Privatsph\u00e4re', 'Fotos: ${profile.photosPrivate ? "Privat" : "\u00d6ffentlich"}', onTap: () async {
-            final confirm = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
-              title: const Text('Privatsph\u00e4re \u00e4ndern'),
-              content: Text('Fotos auf "${profile.photosPrivate ? "\u00d6ffentlich" : "Privat"}" setzen?'),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Abbrechen')),
-                TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Ja')),
-              ],
-            ));
-            if (confirm == true) {
-              final newVal = !profile.photosPrivate;
-              await Supabase.instance.client.from('profiles').update({'photos_private': newVal}).eq('id', profile.id);
-              // State.mounted pruefen (nicht context.mounted): setState und
-              // ScaffoldMessenger.of(context) haengen beide an diesem State.
-              if (!mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fotos jetzt ${newVal ? "privat" : "\u00d6ffentlich"}'), backgroundColor: HevjinTheme.success));
-              setState(() {});
-            }
-          }),
           _settingsItem(Icons.notifications_outlined, 'Benachrichtigungen', 'Aktiviert', onTap: () {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Push-Benachrichtigungen kommen bald!')));
           }),
@@ -2451,28 +2481,46 @@ class _ProfileTabState extends State<ProfileTab> with SingleTickerProviderStateM
                             // Navigation. Beide Handles ueberleben den Rebuild.
                             final messenger = ScaffoldMessenger.of(context);
                             final navigator = Navigator.of(context, rootNavigator: true);
+                            final profileService =
+                                context.read<ProfileService>();
                             Navigator.pop(ctx2);
+
+                            // RPC-Erfolg und Sign-out sind getrennt: Schlaegt
+                            // nur Sign-out fehl, ist die Loeschung trotzdem
+                            // korrekt angefordert und darf nicht als Fehler
+                            // dargestellt oder durch Retry verschoben werden.
                             try {
-                              // Soft-delete: mark as deleted (can be reactivated within 14 days)
-                              final uid = Supabase.instance.client.auth.currentUser?.id;
-                              if (uid != null) {
-                                await Supabase.instance.client.from('profiles').update({
-                                  'deleted_at': DateTime.now().toUtc().toIso8601String(),
-                                }).eq('id', uid);
-                              }
-                              // Sign out
-                              await Supabase.instance.client.auth.signOut(scope: SignOutScope.global);
+                              await Supabase.instance.client
+                                  .rpc('request_account_deletion');
                             } catch (e, s) {
                               AppLog.e('account-loeschen', e, s);
+                              messenger.showSnackBar(
+                                const SnackBar(
+                                  content: Text('Account konnte nicht gel\u00f6scht werden. Bitte versuche es erneut oder kontaktiere den Support.'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return;
+                            }
+
+                            try {
+                              await Supabase.instance.client.auth.signOut(
+                                  scope: SignOutScope.global);
+                            } catch (e, s) {
+                              AppLog.e('account-loeschen-signout', e, s);
                               try {
-                                await Supabase.instance.client.auth.signOut(scope: SignOutScope.global);
-                              } catch (e2, s2) {
-                                AppLog.e('account-loeschen-signout', e2, s2);
+                                await Supabase.instance.client.auth.signOut(
+                                    scope: SignOutScope.local);
+                              } catch (localError, localStack) {
+                                AppLog.e('account-loeschen-local-signout',
+                                    localError, localStack);
                               }
                             }
+
+                            profileService.reset();
                             messenger.showSnackBar(
                               const SnackBar(
-                                content: Text('\u2705 Account gel\u00f6scht. Innerhalb von 14 Tagen kannst du dich an hevjinsupport@gmail.com wenden.'),
+                                content: Text('\u2705 Account deaktiviert. Du kannst ihn innerhalb von 14 Tagen reaktivieren.'),
                                 duration: Duration(seconds: 5),
                                 backgroundColor: Colors.green,
                               ),

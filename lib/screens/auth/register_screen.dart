@@ -29,6 +29,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return DateTime(heute.year - 18, heute.month, heute.day);
   }
 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _password2Controller.dispose();
+    super.dispose();
+  }
+
   Future<void> _register() async {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();

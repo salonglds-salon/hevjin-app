@@ -1,0 +1,5 @@
+# Das bestehende Repository verwendet bei Dart/YAML CRLF. Git soll das
+# CR-Zeichen am Zeilenende nicht faelschlich als trailing whitespace melden.
+*.dart whitespace=cr-at-eol
+*.yaml whitespace=cr-at-eol
+*.yml whitespace=cr-at-eol

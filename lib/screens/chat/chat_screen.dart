@@ -234,10 +234,11 @@ class _ChatScreenState extends State<ChatScreen> {
     _messageController.clear();
     setState(() => _isSending = true);
 
-    await _chatService.sendMessage(widget.matchId, text);
+      await _chatService.sendMessage(widget.matchId, text);
 
-    setState(() => _isSending = false);
-    _scrollToBottom();
+      if (!mounted) return;
+      setState(() => _isSending = false);
+      _scrollToBottom();
   }
 
   Future<void> _sendImage() async {
@@ -265,15 +266,15 @@ class _ChatScreenState extends State<ChatScreen> {
       // Send as message with image prefix
       await _chatService.sendMessage(widget.matchId, '[IMAGE]$imageUrl');
 
+      if (!mounted) return;
       setState(() => _isSending = false);
       _scrollToBottom();
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isSending = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Bild konnte nicht gesendet werden: $e'), backgroundColor: Colors.red),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Bild konnte nicht gesendet werden: $e'), backgroundColor: Colors.red),
+      );
     }
   }
   Future<void> _deleteMessage(String messageId, String content) async {
@@ -389,12 +390,25 @@ class _ChatScreenState extends State<ChatScreen> {
                 ],
               ),
               const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(widget.otherName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                  Text(_lastSeen ?? '', style: TextStyle(fontSize: 11, color: _isOnline ? HevjinTheme.success : HevjinTheme.textSecondary)),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(widget.otherName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600)),
+                    Text(_lastSeen ?? '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 11,
+                            color: _isOnline
+                                ? HevjinTheme.success
+                                : HevjinTheme.textSecondary)),
+                  ],
+                ),
               ),
             ],
           ),

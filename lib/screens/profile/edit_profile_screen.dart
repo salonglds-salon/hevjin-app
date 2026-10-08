@@ -124,8 +124,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final keyboard = MediaQuery.of(context).viewInsets.bottom;
     return Scaffold(
       backgroundColor: HevjinTheme.background,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Profil bearbeiten'),
         leading: IconButton(
@@ -140,7 +142,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + keyboard),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

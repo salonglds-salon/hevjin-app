@@ -266,6 +266,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         _showError('Name und Geburtsdatum sind Pflicht');
         return;
       }
+      if (!_isAdult) {
+        _showError('Du musst mindestens 18 Jahre alt sein');
+        return;
+      }
     }
     if (_currentPage == 1) {
       if (!_art9Consent) {
@@ -349,9 +353,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               context: context,
               initialDate: DateTime(2000, 1, 1),
               firstDate: DateTime(1960),
-              lastDate: DateTime(2008),
+              lastDate: _adultCutoff(),
             );
-            if (date != null) setState(() => _birthDate = date);
+            if (date != null && mounted) setState(() => _birthDate = date);
           },
         ),
         if (_birthDate != null)
@@ -1144,6 +1148,14 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     );
   }
 
+  DateTime _adultCutoff() {
+    final today = DateTime.now();
+    return DateTime(today.year - 18, today.month, today.day);
+  }
+
+  bool get _isAdult =>
+      _birthDate != null && !_birthDate!.isAfter(_adultCutoff());
+
   int _calculateAge() {
     if (_birthDate == null) return 0;
     final now = DateTime.now();
@@ -1161,6 +1173,17 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     if (_effStart == 0 &&
         (_nameController.text.trim().isEmpty || _birthDate == null)) {
       _showError('Name und Geburtsdatum sind Pflicht');
+      return;
+    }
+
+    if (_birthDate == null) {
+      _showError('Name und Geburtsdatum sind Pflicht');
+      return;
+    }
+    // Gilt auch für Google-/OAuth-Nutzer und einen vorbefüllten Wizard,
+    // der direkt auf Seite 2 startet.
+    if (!_isAdult) {
+      _showError('Du musst mindestens 18 Jahre alt sein');
       return;
     }
 

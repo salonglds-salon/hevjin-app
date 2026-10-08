@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/profile_service.dart';
+import '../utils/app_logger.dart';
 import '../utils/theme.dart';
 import 'auth/welcome_screen.dart';
 import 'auth/set_new_password_screen.dart';
@@ -117,6 +118,14 @@ class _SplashScreenState extends State<SplashScreen>
 
       final profile = context.read<ProfileService>();
       await profile.fetchProfile();
+
+      // Netzwerk-/RLS-Fehler sind NICHT gleichbedeutend mit "kein Profil".
+      // Sonst würde ein bestehender Nutzer fälschlich in den Profil-Wizard
+      // geschickt. HomeScreen zeigt den Fehlerzustand mit Retry an.
+      if (profile.errorMessage != null) {
+        _goTo(const HomeScreen());
+        return;
+      }
 
       if (profile.isDeactivated) {
         // Navigate to reactivation screen
@@ -252,14 +261,23 @@ class ReactivationScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   onPressed: () async {
-                    final userId = Supabase.instance.client.auth.currentUser?.id;
-                    if (userId != null) {
-                      await Supabase.instance.client.from('profiles').update({'deleted_at': null}).eq('id', userId);
-                    }
-                    if (context.mounted) {
-                      Navigator.of(context).pushAndRemoveUntil(
+                    final messenger = ScaffoldMessenger.of(context);
+                    final navigator = Navigator.of(context);
+                    try {
+                      // Entfernt auch den Eintrag aus der Lösch-Queue.
+                      await Supabase.instance.client
+                          .rpc('cancel_account_deletion');
+                      navigator.pushAndRemoveUntil(
                         MaterialPageRoute(builder: (_) => const SplashScreen()),
                         (route) => false,
+                      );
+                    } catch (e, s) {
+                      AppLog.e('account-reaktivieren', e, s);
+                      messenger.showSnackBar(
+                        const SnackBar(
+                          content: Text('Account konnte nicht reaktiviert werden. Bitte kontaktiere den Support.'),
+                          backgroundColor: Colors.red,
+                        ),
                       );
                     }
                   },

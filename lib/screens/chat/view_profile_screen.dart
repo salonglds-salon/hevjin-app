@@ -35,7 +35,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
           .eq('id', widget.userId)
           .maybeSingle();
 
-      if (data != null && mounted) {
+      if (!mounted) return;
+      if (data != null) {
         setState(() {
           _profile = UserProfile.fromJson(data);
           _isLoading = false;
@@ -44,6 +45,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
         setState(() => _isLoading = false);
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }

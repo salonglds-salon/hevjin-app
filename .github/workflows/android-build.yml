@@ -15,7 +15,41 @@ on:
     tags: ['v*']
 
 jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.9.6
+
+      - name: Edge Function Typecheck
+        run: deno check --frozen --lock=deno.lock supabase/functions/purge-deleted-accounts/index.ts
+
+      - name: Migration und RPC Integration Tests
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql -h 127.0.0.1 -U postgres -d postgres -f supabase/tests/account_deletion_fixture.sql
+          psql -h 127.0.0.1 -U postgres -d postgres -f supabase/migrations/20260915170000_account_deletion_queue.sql
+          psql -h 127.0.0.1 -U postgres -d postgres -f supabase/tests/account_deletion_test.sql
+          bash supabase/tests/concurrent_claim_test.sh
+
   build:
+    needs: backend-test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +61,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          flutter-version: '3.44.6'
           cache: true
 
       - name: Keystore wiederherstellen
@@ -56,14 +90,18 @@ jobs:
           echo "vn=$VN" >> $GITHUB_OUTPUT
           echo "==> versionName=$VN  versionCode=$BN"
 
-      - run: flutter pub get
-      - name: Analyze (nur Info, blockiert nicht)
-        continue-on-error: true
-        run: flutter analyze lib --no-fatal-infos --no-fatal-warnings
+      - name: Dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze lib --no-pub
+
+      - name: Tests
+        run: flutter test --reporter expanded --no-pub
 
       - name: Build AAB
         run: |
-          flutter build appbundle --release \
+          flutter build appbundle --release --no-pub \
             --build-name=${{ steps.ver.outputs.vn }} \
             --build-number=${{ steps.ver.outputs.bn }}
 

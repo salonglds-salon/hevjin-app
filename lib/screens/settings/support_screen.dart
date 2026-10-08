@@ -57,18 +57,24 @@ class _SupportScreenState extends State<SupportScreen> {
         'status': 'offen',
       });
 
+      if (!mounted) return;
       setState(() {
         _sent = true;
         _isSending = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isSending = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.errorWithMsg(e.toString())), backgroundColor: Colors.red),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.errorWithMsg(e.toString())), backgroundColor: Colors.red),
+      );
     }
+  }
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
   }
 
   @override
