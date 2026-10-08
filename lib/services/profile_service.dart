@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_profile.dart';
@@ -47,7 +49,8 @@ class ProfileService extends ChangeNotifier {
           .from('profiles')
           .select()
           .eq('id', userId)
-          .maybeSingle();
+          .maybeSingle()
+          .timeout(const Duration(seconds: 15));
 
       if (data != null) {
         _isDeactivated = data['deleted_at'] != null;
@@ -71,10 +74,11 @@ class ProfileService extends ChangeNotifier {
 
   /// Create or update profile
   Future<bool> saveProfile(Map<String, dynamic> profileData) async {
-    try {
-      _isLoading = true;
-      notifyListeners();
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
 
+    try {
       final userId = _supabase.auth.currentUser?.id ?? profileData['id'];
       if (userId == null) throw Exception('Kein User eingeloggt');
       profileData['id'] = userId;
@@ -84,18 +88,28 @@ class ProfileService extends ChangeNotifier {
       AppLog.d('profile',
           'upsert fuer $userId, Felder: ${profileData.keys.join(", ")}');
 
-      await _supabase.from('profiles').upsert(profileData);
-      await fetchProfile();
-
-      _isLoading = false;
-      notifyListeners();
+      // Ein Roundtrip statt Upsert + anschließendem zweiten SELECT.
+      final data = await _supabase
+          .from('profiles')
+          .upsert(profileData)
+          .select()
+          .single()
+          .timeout(const Duration(seconds: 15));
+      _currentProfile = UserProfile.fromJson(data);
+      _isDeactivated = data['deleted_at'] != null;
       return true;
+    } on TimeoutException catch (e, s) {
+      AppLog.e('profile-save-timeout', e, s);
+      _errorMessage =
+          'Die Verbindung dauert zu lange. Bitte versuche es erneut.';
+      return false;
     } catch (e, s) {
       AppLog.e('profile-save', e, s);
       _errorMessage = e.toString();
+      return false;
+    } finally {
       _isLoading = false;
       notifyListeners();
-      return false;
     }
   }
   

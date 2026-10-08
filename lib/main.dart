@@ -86,19 +86,27 @@ Future<void> _bootstrap() async {
 ///
 /// Getrennt von [_bootstrap], damit der Retry-Button die einmaligen
 /// Setup-Schritte (Binding, Error-Handler, UrlStrategy) NICHT erneut ausfuehrt.
+Future<Supabase>? _supabaseInitFuture;
+
 Future<void> _initSupabaseAndRun() async {
-  // Supabase-Init darf main() nicht mitreissen. Ohne Netz (Flugmodus, schlechtes
-  // Mobilfunknetz beim Kaltstart) wirft initialize() - vorher endete das in einem
-  // weissen Screen ohne jede Erklaerung. Ein Play-Reviewer haette genau das gesehen.
+  // Immer denselben Initialisierungs-Future weiterverwenden. Future.timeout()
+  // beendet den SDK-Init nicht; ein neuer Supabase.initialize()-Aufruf koennte
+  // sonst einen teilweise initialisierten Auth-Singleton freigeben.
+  _supabaseInitFuture ??= Supabase.initialize(
+    url: 'https://lrmoxfjuhqesjoxjkftw.supabase.co',
+    publishableKey: 'sb_publishable_MyJQ6C3_P5ZyD34dr0u2vw_GvnTNch9',
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.implicit,
+    ),
+  );
   try {
-    await Supabase.initialize(
-      url: 'https://lrmoxfjuhqesjoxjkftw.supabase.co',
-      publishableKey: 'sb_publishable_MyJQ6C3_P5ZyD34dr0u2vw_GvnTNch9',
-      authOptions: const FlutterAuthClientOptions(
-        authFlowType: AuthFlowType.implicit,
-      ),
-    );
+    await _supabaseInitFuture!.timeout(const Duration(seconds: 15));
+  } on TimeoutException catch (error, stack) {
+    AppLog.e('supabase-init-timeout', error, stack);
+    runApp(const _StartupFailureApp());
+    return;
   } catch (error, stack) {
+    _supabaseInitFuture = null;
     AppLog.e('supabase-init', error, stack);
     runApp(const _StartupFailureApp());
     return;

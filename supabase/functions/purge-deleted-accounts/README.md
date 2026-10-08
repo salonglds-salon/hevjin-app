@@ -49,7 +49,8 @@ supabase functions deploy purge-deleted-accounts --no-verify-jwt
 
 # Eigenes kryptografisch zufälliges Secret setzen, nicht im Repo speichern:
 $bytes = New-Object byte[] 48
-[System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
+$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+try { $rng.GetBytes($bytes) } finally { $rng.Dispose() }
 $secret = [Convert]::ToBase64String($bytes)
 supabase secrets set "PURGE_CRON_SECRET=$secret"
 ```

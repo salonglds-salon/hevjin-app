@@ -75,7 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           'birth_date': _birthDate!.toIso8601String().split('T').first,
           'gender': _gender,
         },
-      );
+      ).timeout(const Duration(seconds: 15));
       final user = response.user;
       if (user == null) {
         setState(() { _isLoading = false; _error = 'Registrierung fehlgeschlagen'; });
@@ -90,7 +90,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       Navigator.pushReplacement(context, MaterialPageRoute(
         builder: (_) => _EmailConfirmationScreen(email: email),
       ));
+    } on TimeoutException {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _error = 'Die Verbindung dauert zu lange. Bitte prüfe dein Internet und versuche es erneut.';
+      });
     } catch (e) {
+      if (!mounted) return;
       setState(() { _isLoading = false; _error = e.toString(); });
     }
   }

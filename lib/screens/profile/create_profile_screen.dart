@@ -22,6 +22,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final _tribeController = TextEditingController();
   final _jobController = TextEditingController();
   final _zipController = TextEditingController();
+  final _scrollController = ScrollController();
+  bool _isSaving = false;
+  bool _isTransitioning = false;
 
   String _gender = 'male';
   String _caste = 'murid';
@@ -163,6 +166,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     _tribeController.dispose();
     _jobController.dispose();
     _zipController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -185,7 +189,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           // Überspringen Button (nicht auf Pflicht-Seiten)
           if (_currentPage > 0 && _currentPage < _totalPages - 1)
             TextButton(
-              onPressed: _nextPage,
+              onPressed: (_isSaving || _isTransitioning) ? null : _nextPage,
               child: Text(AppLocalizations.of(context)?.skip ?? 'Ueberspringen',
                   style: const TextStyle(color: HevjinTheme.textSecondary)),
             ),
@@ -204,6 +208,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           // Content
           Expanded(
             child: SingleChildScrollView(
+              controller: _scrollController,
               // Tastaturhoehe unten drauflegen: so laesst sich das fokussierte
               // Feld ueber die Tastatur nach oben scrollen.
               padding: EdgeInsets.only(
@@ -228,7 +233,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     // auf schmalen iPhones zu wenig Breite und brach zu
                     // "Zur\u00fc / ck" um. Jetzt so breit wie der Text braucht.
                     OutlinedButton(
-                      onPressed: () => setState(() => _currentPage--),
+                      onPressed: (_isSaving || _isTransitioning)
+                          ? null
+                          : _previousPage,
                       child: Text(
                         AppLocalizations.of(context)?.back ?? 'Zur\u00fcck',
                         maxLines: 1,
@@ -238,10 +245,19 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                   if (_currentPage > _effStart) const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _currentPage == _totalPages - 1
-                          ? _saveProfile
-                          : _nextPage,
-                      child: Text(
+                      onPressed: (_isSaving || _isTransitioning)
+                          ? null
+                          : (_currentPage == _totalPages - 1
+                              ? _saveProfile
+                              : _nextPage),
+                      child: _isSaving
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                  color: Colors.white, strokeWidth: 2),
+                            )
+                          : Text(
                         _currentPage == _totalPages - 1
                             ? (AppLocalizations.of(context)?.createProfile ??
                                 'Profil erstellen')
@@ -281,7 +297,29 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         return;
       }
     }
-    setState(() => _currentPage++);
+    if (_isSaving || _isTransitioning ||
+        _currentPage >= _totalPages - 1) {
+      return;
+    }
+    _changePage(_currentPage + 1);
+  }
+
+  void _previousPage() {
+    if (_isSaving || _isTransitioning || _currentPage <= _effStart) return;
+    _changePage(_currentPage - 1);
+  }
+
+  void _changePage(int page) {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() {
+      _isTransitioning = true;
+      _currentPage = page.clamp(_effStart, _totalPages - 1);
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_scrollController.hasClients) _scrollController.jumpTo(0);
+      setState(() => _isTransitioning = false);
+    });
   }
 
   Widget _buildPage() {
@@ -1169,6 +1207,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   // ===== SAVE =====
   Future<void> _saveProfile() async {
+    if (_isSaving) return;
+    FocusManager.instance.primaryFocus?.unfocus();
     // Only validate name/birthdate if user started at page 0 (full wizard)
     if (_effStart == 0 &&
         (_nameController.text.trim().isEmpty || _birthDate == null)) {
@@ -1268,16 +1308,21 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     if (_selectedSports.isNotEmpty) profileData['sports'] = _selectedSports;
     if (_selectedTravel.isNotEmpty) profileData['travel'] = _selectedTravel;
 
-    final success = await profileService.saveProfile(profileData);
+    if (mounted) setState(() => _isSaving = true);
+    try {
+      final success = await profileService.saveProfile(profileData);
 
-    if (success && mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const OnboardingPhotoScreen()),
-      );
-    } else if (mounted) {
-      final error = profileService.errorMessage ?? 'Unbekannter Fehler';
-      _showError('Fehler: $error');
+      if (success && mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const OnboardingPhotoScreen()),
+        );
+      } else if (mounted) {
+        final error = profileService.errorMessage ?? 'Unbekannter Fehler';
+        _showError('Fehler: $error');
+      }
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 

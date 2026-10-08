@@ -140,13 +140,9 @@ class _SplashScreenState extends State<SplashScreen>
       if (profile.hasProfile) {
         _goTo(const HomeScreen());
       } else {
-        await Future.delayed(const Duration(milliseconds: 500));
-        await profile.fetchProfile();
-        if (profile.hasProfile) {
-          _goTo(const HomeScreen());
-        } else {
-          _goTo(CreateProfileScreen(startPage: 0, userId: userId));
-        }
+        // Neue Nutzer besitzen vor dem Wizard bewusst noch keine Profilzeile.
+        // Kein zweiter identischer SELECT und keine feste 500-ms-Wartezeit.
+        _goTo(CreateProfileScreen(startPage: 0, userId: userId));
       }
     } catch (e) {
       _goTo(const WelcomeScreen());
