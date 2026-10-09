@@ -103,6 +103,7 @@ create index if not exists account_deletion_queue_claim_idx
 alter table public.account_deletion_queue enable row level security;
 revoke all on public.account_deletion_queue from public, anon, authenticated;
 grant select, update, delete on public.account_deletion_queue to service_role;
+grant select on public.matches to service_role;
 
 -- Stellt sicher, dass ein erfolgreicher Auth-Delete die bekannten
 -- nutzerbezogenen Tabellen reproduzierbar mitloescht. Die Migration bricht ab,
