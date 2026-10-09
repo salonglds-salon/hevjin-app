@@ -36,8 +36,10 @@ jobs:
         with:
           deno-version: v2.9.6
 
-      - name: Edge Function Typecheck
-        run: deno check --frozen --lock=deno.lock supabase/functions/purge-deleted-accounts/index.ts
+      - name: Edge Function Typecheck und Tests
+        run: |
+          deno check --frozen --lock=deno.lock supabase/functions/purge-deleted-accounts/index.ts
+          deno test --frozen --lock=deno.lock supabase/functions/purge-deleted-accounts/error_utils_test.ts
 
       - name: Migration und RPC Integration Tests
         env:

@@ -8,6 +8,7 @@
 //   PURGE_CRON_SECRET muss als eigener CSPRNG-Wert gesetzt werden.
 
 import { createClient } from "jsr:@supabase/supabase-js@2.117.2";
+import { describeError } from "./error_utils.ts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -114,13 +115,16 @@ async function listAllMatchIds(item: QueueItem): Promise<string[]> {
 async function purgeOne(item: QueueItem): Promise<void> {
   const userId = item.user_id;
   let matchIds = item.match_ids ?? [];
+  let stage = "renew-claim";
 
   try {
     await renewClaim(item);
     // Die Claim-RPC hat diese Zeile atomar auf processing gesetzt. Cancel und
     // ein zweiter Worker koennen sie ab jetzt nicht mehr ueberholen.
     if (matchIds.length === 0) {
+      stage = "load-match-ids";
       matchIds = await listAllMatchIds(item);
+      stage = "save-match-snapshot";
 
       const { data: savedClaim, error: saveMatchIdsError } = await admin
         .from("account_deletion_queue")
@@ -137,6 +141,7 @@ async function purgeOne(item: QueueItem): Promise<void> {
     // Auth-User zuerst endgueltig loeschen. Die Migration erzwingt fuer alle
     // bekannten Nutzertabellen ON DELETE CASCADE. Bei FK-Problemen schlaegt
     // der Auth-Delete atomar fehl und Storage bleibt unberuehrt.
+    stage = "lookup-auth-user";
     const { data: userResult, error: userLookupError } =
       await admin.auth.admin.getUserById(userId);
     const lookupStatus = (userLookupError as { status?: number } | null)?.status;
@@ -144,10 +149,11 @@ async function purgeOne(item: QueueItem): Promise<void> {
       userLookupError?.message.toLowerCase().includes("not found");
     if (userLookupError && !lookupNotFound) throw userLookupError;
 
-    // Unmittelbar vor dem irreversiblen Schritt Claim erneuern/pruefen.
+    stage = "renew-before-delete";
     await renewClaim(item);
 
     if (userResult.user) {
+      stage = "delete-auth-user";
       const { error: deleteError } = await admin.auth.admin.deleteUser(
         userId,
         false,
@@ -157,13 +163,16 @@ async function purgeOne(item: QueueItem): Promise<void> {
 
     // Storage immer ueber die Storage API loeschen. SQL-DELETE auf
     // storage.objects wuerde physische Dateien verwaisen lassen.
+    stage = "delete-profile-photos";
     await removePrefix("profile-photos", userId);
+    stage = "delete-chat-images";
     for (const matchId of matchIds) {
       await removePrefix("chat-images", `chat/${matchId}`);
     }
 
     // Keine unbegrenzte Retention von User-/Match-IDs: nach vollstaendigem
     // Cleanup wird der Queue-Eintrag selbst geloescht.
+    stage = "delete-queue-row";
     const { data: deletedQueue, error: queueDeleteError } = await admin
       .from("account_deletion_queue")
       .delete()
@@ -175,7 +184,13 @@ async function purgeOne(item: QueueItem): Promise<void> {
     if (queueDeleteError) throw queueDeleteError;
     if (!deletedQueue) throw new Error("Claim verloren");
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    const message = `${stage}: ${describeError(error)}`;
+    console.error("PURGE_ACCOUNT_FAILED", {
+      userId,
+      claimId: item.claim_id,
+      stage,
+      error: describeError(error),
+    });
     const requiresManualReview = item.attempts >= 5;
     const delayHours = Math.min(24, 2 ** Math.min(item.attempts, 4));
     const nextAttempt = requiresManualReview
@@ -234,9 +249,7 @@ Deno.serve(async (request) => {
       results.push({
         userId: item.user_id,
         ok: false,
-        error: purgeError instanceof Error
-          ? purgeError.message
-          : String(purgeError),
+        error: describeError(purgeError),
       });
     }
   }
